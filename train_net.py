@@ -69,12 +69,7 @@ from maft import (
     MaskFormerSemanticDatasetMapper,
     SemanticSegmentorWithTTA,
     add_maskformer2_config,
-<<<<<<< HEAD
     add_fcclip_config
-=======
-    add_fcclip_config,
-    add_cat_seg_config,
->>>>>>> feabc4013b61fef153ad34f36e70956f1345eb0d
 )
 
 
@@ -264,11 +259,6 @@ def setup(args):
     add_deeplab_config(cfg)
     add_maskformer2_config(cfg)
     add_fcclip_config(cfg)
-<<<<<<< HEAD
-=======
-    add_cat_seg_config(cfg)
-    print(cfg)
->>>>>>> feabc4013b61fef153ad34f36e70956f1345eb0d
     cfg.merge_from_file(args.config_file)
     cfg.merge_from_list(args.opts)
     cfg.merge_from_list(['SEED', 123])

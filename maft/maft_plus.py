@@ -298,10 +298,8 @@ class MAFT_Plus(nn.Module):
             metadata = self.test_metadata[dataname]
 
         _,_,classnames = self.prepare_raw_class_names_from_metadata(metadata, self.train_metadata)
-<<<<<<< HEAD
+        
         self.raw_class_names = classnames
-=======
->>>>>>> feabc4013b61fef153ad34f36e70956f1345eb0d
 
         for classname in classnames:
             if ', ' in classname:
@@ -555,11 +553,7 @@ class MAFT_Plus(nn.Module):
 
                 # 检查这是否是一个有效的（非空）掩码
                 if mask.sum() > 0:
-<<<<<<< HEAD
                     print(f"处理类别 {self.raw_class_names[c]} 的簇 {k}，掩码非空")
-=======
-                    print(f"处理类别 {c} 的簇 {k}，掩码非空，开始叠加...")
->>>>>>> feabc4013b61fef153ad34f36e70956f1345eb0d
                     # a. 上采样掩码到原图尺寸
                     mask_upsampled = F.interpolate(
                         mask.unsqueeze(0).unsqueeze(0),  # 增加批次和通道维度 -> [1, 1, h, w]
@@ -580,24 +574,15 @@ class MAFT_Plus(nn.Module):
                     ).astype(np.uint8)
                     # e.  单独保存掩码（可选）
                     # 创建单独掩码保存的文件名
-<<<<<<< HEAD
                     mask_save_path = os.path.join(mask_save_dir, f"{file_name}_class_{self.raw_class_names[c]}_cluster{k}.png")
-=======
-                    mask_save_path = os.path.join(mask_save_dir, f"{file_name}_class{c}_cluster{k}.png")
->>>>>>> feabc4013b61fef153ad34f36e70956f1345eb0d
                     # 保存掩码图像。将掩码乘以255，然后转为 uint8 格式
                     plt.imsave(mask_save_path, mask_upsampled.numpy() * 255, cmap='gray')
                     #print(f"已保存掩码: {mask_save_path}")
 
 
         # --- 3. 保存混合后的图像，并退出 ---
-<<<<<<< HEAD
         # plt.imsave(blended_image_save_path, blended_image)
         # print(f"已保存混合图像: {blended_image_save_path}")
-=======
-        plt.imsave(blended_image_save_path, blended_image)
-        print(f"已保存混合图像: {blended_image_save_path}")
->>>>>>> feabc4013b61fef153ad34f36e70956f1345eb0d
         plt.imsave(original_image_save_path, image_for_display)
         print(f"已保存原始图像: {original_image_save_path}")
         print("可视化完成，程序即将退出。")

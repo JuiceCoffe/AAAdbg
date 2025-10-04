@@ -17,11 +17,7 @@ from . import data  # register all new datasets
 from . import modeling
 
 # config
-<<<<<<< HEAD
 from .config import add_maskformer2_config, add_fcclip_config
-=======
-from .config import add_maskformer2_config, add_fcclip_config, add_cat_seg_config
->>>>>>> feabc4013b61fef153ad34f36e70956f1345eb0d
 
 # dataset loading
 from .data.dataset_mappers.coco_instance_new_baseline_dataset_mapper import COCOInstanceNewBaselineDatasetMapper
@@ -40,10 +36,7 @@ from .data.dataset_mappers.mask_former_semantic_dataset_mapper import (
 # models
 from .fcclip import FCCLIP
 from .maft_plus import MAFT_Plus
-<<<<<<< HEAD
 from .maft_plus_FreezeClipV import MAFT_Plus_FreezeClipV
-=======
->>>>>>> feabc4013b61fef153ad34f36e70956f1345eb0d
 from .demo import MAFT_Plus_DEMO
 
 
@@ -51,8 +44,5 @@ from .demo import MAFT_Plus_DEMO
 from .evaluation.instance_evaluation import InstanceSegEvaluator
 from .evaluation.semantic_evaluation import SemSegEvaluator
 from .test_time_augmentation import SemanticSegmentorWithTTA
-<<<<<<< HEAD
 
 from .modeling.heads.AAA_seg_head import AAASegHead
-=======
->>>>>>> feabc4013b61fef153ad34f36e70956f1345eb0d

@@ -80,7 +80,6 @@ class AAASegHead(nn.Module):
         img_feat = features
         corr = self.correlation(img_feat, raw_text_feature)
         # print("corr shape:", corr.shape) # corr shape: torch.Size([B, 1, 171, 36, 25])
-<<<<<<< HEAD
         # corr_prob = self.softmax0(corr)
         """
         PPG applies a softmax operati onto the correlation map Cn v&l∈R1×H×W for each n-th class to generate class specific object probability masks
@@ -90,11 +89,6 @@ class AAASegHead(nn.Module):
         # corr_prob = corr
         
         alpha = 1.0 / (h * w)
-=======
-        corr_prob = self.softmax0(corr)
-        
-        alpha = 0.1
->>>>>>> feabc4013b61fef153ad34f36e70956f1345eb0d
         binary_mask = (corr_prob > alpha).float()
         PseudoMask = self.PMG(binary_mask) # out shape: torch.Size([1, 171, 5, 36, 25])
         PseudoPoint = self.PPG(PseudoMask , corr_prob)

@@ -15,12 +15,4 @@ limitations under the License.
 """
 from .backbone.clip import CLIP
 from .pixel_decoder.msdeformattn import MSDeformAttnPixelDecoder
-<<<<<<< HEAD
 from .meta_arch.fcclip_head import FCCLIPHead
-=======
-from .meta_arch.fcclip_head import FCCLIPHead
-
-
-# from .backbone.swin import D2SwinTransformer
-from .heads.AAA_seg_head import AAASegHead
->>>>>>> feabc4013b61fef153ad34f36e70956f1345eb0d
