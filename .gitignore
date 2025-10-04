@@ -1,0 +1,98 @@
+datasets/
+weights/
+detectron2/
+
+# =======================================================
+# Python
+# =======================================================
+# 字节码和缓存文件
+__pycache__/
+*.pyc
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+
+
+# =======================================================
+# 操作系统 / Editors
+# =======================================================
+# macOS
+.DS_Store
+
+# VSCode
+.vscode/
+
+
+# =======================================================
+# 项目特定的输出和日志
+# =======================================================
+# 训练/评估的输出目录，包含日志、模型权重(.pth)、配置文件等
+out/
+
+
+# =======================================================
+# 其他 (根据项目情况)
+# =======================================================
+# 如果有本地配置文件，可以添加
+# config.local.yaml
+
+# 如果有数据集，务必添加
+# data/
+*.csv
+*.zip
+
+out/
+*.pth
+log.txt
+*.tfevents.*
+metrics.json
+
+*.png
+*.json
+*.diff
+*.jpg
+!/projects/DensePose/doc/images/*.jpg
+
+# compilation and distribution
+__pycache__
+_ext
+*.pyc
+*.pyd
+*.so
+*.dll
+*.egg-info/
+build/
+dist/
+wheels/
+
+# pytorch/python/numpy formats
+*.pth
+*.pkl
+*.npy
+*.ts
+model_ts*.txt
+
+# ipython/jupyter notebooks
+*.ipynb
+**/.ipynb_checkpoints/
+
+# Editor temporaries
+*.swn
+*.swo
+*.swp
+*~
+
+# editor settings
+.idea
+.vscode
+_darcs
+
+# project dirs
+/detectron2/model_zoo/configs
+/datasets/*
+!/datasets/*.*
+/projects/*/datasets
+/models
+/snippet

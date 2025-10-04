@@ -1,0 +1,45 @@
+# python train_net.py --config-file configs/semantic/eval.yaml  --num-gpus 8 --eval-only
+
+_BASE_: ./train_semantic_large.yaml
+MODEL:
+  META_ARCHITECTURE: "MAFT_Plus"  # FCCLIP MAFT_Plus
+  # SEM_SEG_HEAD:
+    # NAME: "FCCLIPHead"
+    # NUM_CLASSES: 171
+  SEM_SEG_HEAD:
+    NAME: "CATSegHead"
+    IN_FEATURES: ["res2", "res3", "res4"]
+    IGNORE_VALUE: 255
+    NUM_CLASSES: 171
+    TRAIN_CLASS_JSON: "datasets/coco.json"
+    TEST_CLASS_JSON: "datasets/coco.json"
+    CLIP_PRETRAINED: "ViT-L/14@336px"
+    PROMPT_DEPTH: 0
+    PROMPT_LENGTH: 0
+    TEXT_GUIDANCE_DIM: 768
+    TEXT_GUIDANCE_PROJ_DIM: 128
+    APPEARANCE_GUIDANCE_DIM: 768
+    APPEARANCE_GUIDANCE_PROJ_DIM: 128
+    DECODER_DIMS: [64, 32]
+    DECODER_GUIDANCE_DIMS: [256, 128]
+    DECODER_GUIDANCE_PROJ_DIMS: [32, 16]
+    NUM_LAYERS: 2
+    NUM_HEADS: 4
+    HIDDEN_DIMS: 128
+    POOLING_SIZES: [2, 2]
+    FEATURE_RESOLUTION: [24, 24]
+    WINDOW_SIZES: 12
+    ATTENTION_TYPE: "linear"
+    CLIP_FINETUNE: "attention"
+  FC_CLIP:
+    CLIP_MODEL_NAME: "convnext_large_d_320"  
+    CLIP_PRETRAINED_WEIGHTS: "laion2b_s29b_b131k_ft_soup" 
+    EMBED_DIM: 768
+    GEOMETRIC_ENSEMBLE_ALPHA: -1.
+    GEOMETRIC_ENSEMBLE_BETA: -1.
+  rc_weights: 0.1
+DATASETS:
+  # TEST: ("openvocab_pascal20_sem_seg_val", "openvocab_ade20k_full_sem_seg_val", 'openvocab_pascal_ctx459_sem_seg_val', 'openvocab_pascal_ctx59_sem_seg_val', 'openvocab_ade20k_panoptic_val') 
+  TEST: ("openvocab_ade20k_full_sem_seg_val", 'openvocab_ade20k_panoptic_val') 
+
+OUTPUT_DIR: ./out/semantic/evaluation
