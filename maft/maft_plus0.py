@@ -23,10 +23,7 @@ from .modeling.matcher import HungarianMatcher
 from .modeling.transformer_decoder.fcclip_transformer_decoder import MaskPooling, get_classification_logits
 
 from .modeling.maft.mask_aware_loss import  MA_Loss
-<<<<<<< HEAD
 from .modeling.maft.mask_aware_loss_pro import  MA_Loss_pro
-=======
->>>>>>> feabc4013b61fef153ad34f36e70956f1345eb0d
 from .modeling.maft.representation_compensation import  Representation_Compensation
 from .modeling.maft.content_dependent_transfer import ContentDependentTransfer
 
