@@ -165,6 +165,7 @@ class MAFT_Plus(nn.Module):
        
         num_templates = []
         templated_class_names = []
+        # print('class_names: ',len(class_names)) 171
         for x in class_names:
             templated_classes, templated_classes_num = fill_all_templates_ensemble(x)
             templated_class_names += templated_classes
@@ -249,6 +250,9 @@ class MAFT_Plus(nn.Module):
                 text_classifier /= text_classifier.norm(dim=-1, keepdim=True)
                 self.train_text_classifier = text_classifier
                 self.train_dataname = dataname
+                self.class_name_of_classifier = [element for index, element in enumerate(self.train_class_names) if index % len(VILD_PROMPT) == 0]
+                # print('train_class_names: ',len(self.class_name_of_classifier))
+                # exit()
             return self.train_text_classifier, self.train_num_templates
         else:
             if self.test_dataname != dataname:
@@ -262,15 +266,16 @@ class MAFT_Plus(nn.Module):
                 # print('test_class_names: ',self.test_class_names)
                 # print('text_classifier shape: ', text_classifier.shape)
                 """
-                test_class_names是类别名加上多种prompt的组合，故数量远多于原始分类数
+                test_class_names是328个类别名加上14种prompt
                 text_classifier shape:  torch.Size([5642, 768])
                 """
                 # average across templates and normalization.
                 text_classifier /= text_classifier.norm(dim=-1, keepdim=True)
-                text_classifier = text_classifier.reshape(text_classifier.shape[0]//len(VILD_PROMPT), len(VILD_PROMPT), text_classifier.shape[-1]).mean(1)
+                text_classifier = text_classifier.reshape(text_classifier.shape[0]//len(VILD_PROMPT), len(VILD_PROMPT), text_classifier.shape[-1]).mean(1) 
                 text_classifier /= text_classifier.norm(dim=-1, keepdim=True)
                 self.test_text_classifier = text_classifier
                 self.test_dataname = dataname
+                self.class_name_of_classifier = [element for index, element in enumerate(self.train_class_names) if index % len(VILD_PROMPT) == 0]
             return self.test_text_classifier, self.test_num_templates
 
     def get_text_embeds(self, dataname): # 来自CAT-SEG，用于计算代价体
@@ -449,7 +454,7 @@ class MAFT_Plus(nn.Module):
         meta = batched_inputs[0]["meta"]
         text_classifier, num_templates = self.get_text_classifier(meta['dataname'])
         text_classifier = torch.cat([text_classifier, F.normalize(self.void_embedding.weight, dim=-1)], dim=0)
-        # print("text_classifier:", text_classifier.shape) # text_classifier: torch.Size([329, 768])
+        # print("text_classifier:", text_classifier.shape) # text_classifier: torch.Size([329, 768]) 328个类别+1个void
        
 
         features = self.backbone.extract_features(images.tensor) # 多尺度特征图,不包括用于与文本匹配的（该层在self.backbone.visual_prediction_forward中调用）
@@ -474,10 +479,11 @@ class MAFT_Plus(nn.Module):
         clip_feature = features['clip_vis_dense'] # torch.Size([1, 1536, 38, 25])
         img_feat = self.visual_prediction_forward_convnext(clip_feature) # 输出可以在CLIP空间中直接理解的语义特征图
 
-        raw_text_feature = self.get_text_embeds(meta['dataname'])
+        # raw_text_feature = self.get_text_embeds(meta['dataname']) # torch.Size([171, 768])
+        # outputs = self.sem_seg_head(img_feat, raw_text_feature) 
 
         # outputs = self.sem_seg_head(img_feat,features) # features在CAT-SEG的设计里用于增强特征，但在ESC-NET与当前设计里无用
-        outputs = self.sem_seg_head(img_feat, raw_text_feature) # features在CAT-SEG的设计里用于增强特征，但在ESC-NET与当前设计里无用
+        outputs = self.sem_seg_head(img_feat, text_classifier[:-1]) # 不包括void
 
         # ======================= 可视化代码插入处 =======================
         print("进入可视化代码段...")
@@ -523,7 +529,7 @@ class MAFT_Plus(nn.Module):
 
         # --- 2.1 定义保存路径 ---
         # 你的 Linux 服务器上的保存路径
-        root_dir = "/data/hmp/TASK/OVS/AAA/show"  # 根目录，请根据实际情况修改
+        root_dir = "/data/hmp/TASK/OVS/AAAdbg/show"  # 根目录，请根据实际情况修改
         task_name = "OVS"  # 任务名称，例如 "OVS"
         # AAA_folder = "AAA"  # AAA 文件夹，已经在 root_dir 中
         # 从file_names中获取文件名，用于生成保存路径
@@ -553,7 +559,7 @@ class MAFT_Plus(nn.Module):
 
                 # 检查这是否是一个有效的（非空）掩码
                 if mask.sum() > 0:
-                    print(f"处理类别 {self.raw_class_names[c]} 的簇 {k}，掩码非空")
+                    print(f"处理类别 {self.class_name_of_classifier[c]} 的簇 {k}，掩码非空")
                     # a. 上采样掩码到原图尺寸
                     mask_upsampled = F.interpolate(
                         mask.unsqueeze(0).unsqueeze(0),  # 增加批次和通道维度 -> [1, 1, h, w]
@@ -574,7 +580,7 @@ class MAFT_Plus(nn.Module):
                     ).astype(np.uint8)
                     # e.  单独保存掩码（可选）
                     # 创建单独掩码保存的文件名
-                    mask_save_path = os.path.join(mask_save_dir, f"{file_name}_class_{self.raw_class_names[c]}_cluster{k}.png")
+                    mask_save_path = os.path.join(mask_save_dir, f"{file_name}_class_{self.class_name_of_classifier[c]}_cluster{k}.png")
                     # 保存掩码图像。将掩码乘以255，然后转为 uint8 格式
                     plt.imsave(mask_save_path, mask_upsampled.numpy() * 255, cmap='gray')
                     #print(f"已保存掩码: {mask_save_path}")

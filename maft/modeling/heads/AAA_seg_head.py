@@ -60,6 +60,9 @@ class AAASegHead(nn.Module):
         """
         img_feats = F.normalize(img_feats, dim=1) # B C H W
         text_feats = F.normalize(text_feats, dim=-1) # B T P C
+        if text_feats.dim() == 2:
+            text_feats = text_feats.view(1,text_feats.size(0),1, text_feats.size(1))
+            text_feats = text_feats.expand(img_feats.size(0), -1, -1, -1)
         # print("text_feats shape:", text_feats.shape)
         corr = torch.einsum('bchw, btpc -> bpthw', img_feats, text_feats)
         return corr
@@ -88,7 +91,7 @@ class AAASegHead(nn.Module):
         corr_prob = F.softmax(corr.view(b, 1, t, -1), dim=-1).view(b, 1, t, h, w)
         # corr_prob = corr
         
-        alpha = 1.0 / (h * w)
+        alpha = 1.1 / (h * w)
         binary_mask = (corr_prob > alpha).float()
         PseudoMask = self.PMG(binary_mask) # out shape: torch.Size([1, 171, 5, 36, 25])
         PseudoPoint = self.PPG(PseudoMask , corr_prob)
