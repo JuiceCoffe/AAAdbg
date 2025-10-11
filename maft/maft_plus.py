@@ -493,9 +493,12 @@ class MAFT_Plus(nn.Module):
 
 
         # visualize_segmentation(outputs["pred_result"], self.class_name_of_classifier,batched_inputs[0]["image"])
-        visualize_segmentation(outputs["pred_result"], self.raw_class_names+['background'],batched_inputs[0]["image"])
+        visualize_segmentation(outputs["pred_result"], self.raw_class_names+['background'],batched_inputs[0]["image"],f"./show/{file_names[0]}/")
         # visualize_segmentation(outputs["upsampled_pred_result"], self.raw_class_names)
-        exit()
+        losses = {}
+        losses["test1"] = text_classifier.sum() * 1e-7
+        losses["test2"] = text_classifier.sum() * (-1e-7)
+        return losses
 
         mask_results = outputs["pred_masks"].detach()
         # print("mask_results:", mask_results.shape)

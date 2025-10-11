@@ -72,8 +72,8 @@ class AAASegHead(nn.Module):
 
         
         logit_scale = 40
-        alpha = 0.2
-        area_thd = 0.001
+        alpha = 1
+        area_thd = 3
         prob_thd = 0.05
         """
         Arguments:
@@ -99,7 +99,7 @@ class AAASegHead(nn.Module):
         pred_mask = F.one_hot(pred_cls, num_classes=t)
         pred_mask = pred_mask.permute(0, 3, 1, 2).contiguous()  # shape: torch.Size([B, num_classes, h, w])
         area = torch.sum(pred_mask, dim=(2,3))  # shape: torch.Size([B, num_classes])
-        valid_area_cls = (area > area_thd * h * w).float()  # shape: torch.Size([B, num_classes])
+        valid_area_cls = (area > area_thd ).float()  # shape: torch.Size([B, num_classes])
         pred_result = pred_mask * valid_area_cls.view(b, t, 1, 1)  # shape: torch.Size([B, num_classes, h, w])
 
 
