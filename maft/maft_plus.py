@@ -28,6 +28,10 @@ from .modeling.maft.content_dependent_transfer import ContentDependentTransfer
 
 from .utils.text_templetes import VILD_PROMPT
 
+import matplotlib.pyplot as plt
+import os
+import numpy as np
+
 
 @META_ARCH_REGISTRY.register()
 class MAFT_Plus(nn.Module):
@@ -479,122 +483,19 @@ class MAFT_Plus(nn.Module):
         clip_feature = features['clip_vis_dense'] # torch.Size([1, 1536, 38, 25])
         img_feat = self.visual_prediction_forward_convnext(clip_feature) # 输出可以在CLIP空间中直接理解的语义特征图
 
-        # raw_text_feature = self.get_text_embeds(meta['dataname']) # torch.Size([171, 768])
-        # outputs = self.sem_seg_head(img_feat, raw_text_feature) 
+        raw_text_feature = self.get_text_embeds(meta['dataname']) # torch.Size([171, 768])
+        outputs = self.sem_seg_head(img_feat, raw_text_feature, batched_inputs) 
+        # outputs = self.sem_seg_head(features['res4'], raw_text_feature)
 
         # outputs = self.sem_seg_head(img_feat,features) # features在CAT-SEG的设计里用于增强特征，但在ESC-NET与当前设计里无用
-        outputs = self.sem_seg_head(img_feat, text_classifier[:-1]) # 不包括void
-
-        # ======================= 可视化代码插入处 =======================
-        print("进入可视化代码段...")
-        import matplotlib.pyplot as plt
-        import numpy as np
-        import random
-        import os  # 导入 os 模块
-
-        # --- 将这段代码插入到你的主程序中 ---
-
-        # 你已经获取了以下变量：
-        # images: ImageList 对象
-        # outputs: 模型的输出字典
-        # batched_inputs: 模型的输入
-        # file_names: 图像的文件名列表（不包含扩展名）
-
-        # 从ImageList中获取原始的、未归一化的图像张量
-        # 注意：batched_inputs中的"image"已经是原始的CHW张量了
-        original_image_tensor = batched_inputs[0]["image"].cpu() # [3, H, W]
-
-        pseudo_masks_batch = outputs["PseudoMask"]
-
-        # 选择要可视化的内容 (批次中的第一张图)
-        # original_image_tensor 已经是 [3, H, W] 的张量
-        pseudo_masks_to_viz = pseudo_masks_batch[0].cpu() # [171, 5, 36, 25]
-
-        # --- 1. 准备用于显示的图像 ---
-        # 将图像张量从 [C, H, W] 转换为 [H, W, C] 并且将像素值从 0-1 转换为 0-255
-        # 注意：PyTorch读入的图像已经是 0-255 的 uint8, Detectron2会转为float
-        # 我们只需要转换维度和类型即可
-        image_for_display = original_image_tensor.permute(1, 2, 0).numpy().astype(np.uint8)
-        
-
-        # 创建一个用于叠加掩码的图像副本
-        blended_image = image_for_display.copy()
-
-        # --- 2. 准备并叠加掩码 ---
-        num_classes, num_clusters, h_mask, w_mask = pseudo_masks_to_viz.shape
-        img_h, img_w, _ = image_for_display.shape
-
-        # 定义叠加的透明度
-        alpha = 0.1
-
-        # --- 2.1 定义保存路径 ---
-        # 你的 Linux 服务器上的保存路径
-        root_dir = "/data/hmp/TASK/OVS/AAAdbg/show"  # 根目录，请根据实际情况修改
-        task_name = "OVS"  # 任务名称，例如 "OVS"
-        # AAA_folder = "AAA"  # AAA 文件夹，已经在 root_dir 中
-        # 从file_names中获取文件名，用于生成保存路径
-        # 假设每个批次处理一张图片，并且file_names是已经处理过的文件名
-        file_name = file_names[0]  # 获取不带扩展名的文件名
-        #print(f"file_name: {file_name}")
-        # 创建完整的保存路径
-        save_dir = os.path.join(root_dir, task_name) # 拼接路径
-        #print(f"save_dir: {save_dir}")
-        original_image_save_path = os.path.join(save_dir, f"{file_name}_original.png")  # 保存混合图像的路径
-        blended_image_save_path = os.path.join(save_dir, f"{file_name}_blended.png")  # 保存混合图像的路径
-        #print(f"image_save_path: {image_save_path}")
-        mask_save_dir = os.path.join(save_dir, "masks")  # 保存单个掩码的子目录
-        #print(f"mask_save_dir: {mask_save_dir}")
-
-        # --- 2.2 创建必要的目录 (如果它们不存在) ---
-        os.makedirs(save_dir, exist_ok=True)  # 创建主目录
-        os.makedirs(mask_save_dir, exist_ok=True)  # 创建子目录
-
-        # --- 2.3 开始可视化 ---
-        print(f"正在可视化 {file_name} 的结果...")
-
-        # 遍历所有类别和所有簇
-        for c in range(num_classes):
-            for k in range(num_clusters):
-                mask = pseudo_masks_to_viz[c, k]  # [h_mask, w_mask]
-
-                # 检查这是否是一个有效的（非空）掩码
-                if mask.sum() > 0:
-                    print(f"处理类别 {self.class_name_of_classifier[c]} 的簇 {k}，掩码非空")
-                    # a. 上采样掩码到原图尺寸
-                    mask_upsampled = F.interpolate(
-                        mask.unsqueeze(0).unsqueeze(0),  # 增加批次和通道维度 -> [1, 1, h, w]
-                        size=(img_h, img_w),
-                        mode='bilinear',
-                        align_corners=False
-                    ).squeeze()  # 移除批次和通道维度 -> [img_h, img_w]
-
-                    # b. 将上采样后的掩码二值化
-                    mask_bool = (mask_upsampled > 0.5).numpy()  # 转换为布尔型Numpy数组
-
-                    # c. 为这个有效的掩码生成一个随机颜色
-                    color = np.array([random.randint(50, 255), random.randint(50, 255), random.randint(50, 255)])
-
-                    # d. 将颜色应用到掩码区域，并与原图进行混合
-                    blended_image[mask_bool] = (
-                        blended_image[mask_bool] * (1 - alpha) + color * alpha
-                    ).astype(np.uint8)
-                    # e.  单独保存掩码（可选）
-                    # 创建单独掩码保存的文件名
-                    mask_save_path = os.path.join(mask_save_dir, f"{file_name}_class_{self.class_name_of_classifier[c]}_cluster{k}.png")
-                    # 保存掩码图像。将掩码乘以255，然后转为 uint8 格式
-                    plt.imsave(mask_save_path, mask_upsampled.numpy() * 255, cmap='gray')
-                    #print(f"已保存掩码: {mask_save_path}")
+        # outputs = self.sem_seg_head(img_feat, text_classifier[:-1]) # 不包括void
+        # outputs = self.sem_seg_head(features['res4'], text_classifier)
 
 
-        # --- 3. 保存混合后的图像，并退出 ---
-        # plt.imsave(blended_image_save_path, blended_image)
-        # print(f"已保存混合图像: {blended_image_save_path}")
-        plt.imsave(original_image_save_path, image_for_display)
-        print(f"已保存原始图像: {original_image_save_path}")
-        print("可视化完成，程序即将退出。")
-        exit()  # 根据你的要求，显示后直接退出
-        
-        # ======================= 可视化代码结束 =======================
+        # visualize_segmentation(outputs["pred_result"], self.class_name_of_classifier,batched_inputs[0]["image"])
+        visualize_segmentation(outputs["pred_result"], self.raw_class_names+['background'],batched_inputs[0]["image"])
+        # visualize_segmentation(outputs["upsampled_pred_result"], self.raw_class_names)
+        exit()
 
         mask_results = outputs["pred_masks"].detach()
         # print("mask_results:", mask_results.shape)
@@ -856,3 +757,98 @@ class MAFT_Plus(nn.Module):
         x = self.backbone.clip_model.visual.head(x)
         return x.reshape(batch, h, w, x.shape[-1]).permute(0,3,1,2) 
     
+
+
+def visualize_segmentation(pred_result, class_names,original_image_tensor, save_path="./show/"):
+    """
+    可视化初步分割结果并将其保存到文件。
+    图例会根据每个类别占有的像素数从多到少进行排序。
+
+    Arguments:
+        pred_result (torch.Tensor): 模型预测的分割结果，形状为 (H, W)，值为类别索引。
+        class_names (list): 一个包含分类器所有类别实际名称的列表。
+        save_path (str): 可视化结果的保存路径。
+    """
+    print("类别数：", len(class_names))
+
+   
+    # 确保pred_result在CPU上并且是numpy数组
+    if isinstance(pred_result, torch.Tensor):
+        pred_result = pred_result.cpu().numpy()
+
+    # 检查是否是批处理的结果，如果是，则只取第一个样本
+    if len(pred_result.shape) == 3 and pred_result.shape[0] == 1:
+        pred_result = pred_result[0]
+    
+    height, width = pred_result.shape
+    num_classes = len(class_names)
+
+    # 1. 为所有可能的类别生成一个固定的随机颜色调色板
+    np.random.seed(0) # 使用固定的种子以确保每次颜色一致
+    palette = np.random.randint(0, 255, size=(num_classes, 3))
+
+    # 2. 创建一个彩色的图像（与之前相同）
+    color_image = np.zeros((height, width, 3), dtype=np.uint8)
+    for class_index in range(num_classes):
+        color_image[pred_result == class_index] = palette[class_index]
+
+    # 3. 统计每个类别的像素数
+    # np.unique 返回图像中实际出现过的类别索引和它们对应的像素数
+    unique_classes, pixel_counts = np.unique(pred_result, return_counts=True)
+    
+    # 4. 将统计结果与类名结合，并按像素数降序排序
+    class_statistics = []
+    for i, class_index in enumerate(unique_classes):
+        if class_index < num_classes: # 避免索引越界
+            class_statistics.append({
+                "index": class_index,
+                "name": class_names[class_index],
+                "count": pixel_counts[i]
+            })
+
+    sorted_class_statistics = sorted(class_statistics, key=lambda x: x['count'], reverse=True)
+
+    # 5. 创建保存目录（如果不存在）
+    try:
+        os.makedirs(os.path.dirname(save_path+"prediction.png"), exist_ok=True)
+    except OSError as e:
+        print(f"创建目录时出错: {e}")
+        return
+
+
+    original_image = original_image_tensor.permute(1, 2, 0).numpy().astype(np.uint8).copy()
+    plt.imsave(save_path+'original_image.png', original_image)
+    
+
+    # 6. 使用matplotlib进行可视化和保存
+    fig, ax = plt.subplots(1, 1, figsize=(10, 10))
+    ax.imshow(color_image)
+    ax.axis('off')
+
+    # 7. 根据排序后的结果创建图例
+    legend_elements = []
+    for stats in sorted_class_statistics:
+        class_index = stats["index"]
+        class_name = stats["name"]
+        pixel_count = stats["count"]
+        
+        color = palette[class_index] / 255.0
+        label = f"{class_name} ({pixel_count:,} pixels)" # 格式化数字，例如 1,234
+        
+        legend_elements.append(plt.Rectangle((0, 0), 1, 1, color=color, label=label))
+    
+    ax.legend(handles=legend_elements, bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0.)
+
+    # 调整布局以适应图例
+    plt.tight_layout()
+    
+    # 8. 保存图像
+    try:
+        pred_save_path = save_path+"prediction.png" 
+        plt.savefig(pred_save_path, bbox_inches='tight')
+        print(f"可视化结果已保存至: {pred_save_path}")
+    except Exception as e:
+        print(f"保存文件时出错: {e}")
+    
+    plt.close(fig) # 关闭图像以释放内存
+

@@ -63,12 +63,18 @@ class AAASegHead(nn.Module):
         if text_feats.dim() == 2:
             text_feats = text_feats.view(1,text_feats.size(0),1, text_feats.size(1))
             text_feats = text_feats.expand(img_feats.size(0), -1, -1, -1)
-        # print("text_feats shape:", text_feats.shape)
+        print("text_feats shape:", text_feats.shape)
         corr = torch.einsum('bchw, btpc -> bpthw', img_feats, text_feats)
         return corr
 
 
-    def forward(self, features, raw_text_feature):
+    def forward(self, features, text_feature,batched_inputs=None):
+
+        
+        logit_scale = 40
+        alpha = 0.2
+        area_thd = 0.001
+        prob_thd = 0.05
         """
         Arguments:
             features: (B, C, H, W) or (B, HW, C)
@@ -81,17 +87,42 @@ class AAASegHead(nn.Module):
         """
         # img_feat = rearrange(features[:, 1:, :], "b (h w) c->b c h w", h=self.feature_resolution[0], w=self.feature_resolution[1])
         img_feat = features
-        corr = self.correlation(img_feat, raw_text_feature)
-        # print("corr shape:", corr.shape) # corr shape: torch.Size([B, 1, 171, 36, 25])
-        # corr_prob = self.softmax0(corr)
-        """
-        PPG applies a softmax operati onto the correlation map Cn v&l∈R1×H×W for each n-th class to generate class specific object probability masks
-        """
+        corr = self.correlation(img_feat, text_feature)
         b, _, t, h, w = corr.shape
-        corr_prob = F.softmax(corr.view(b, 1, t, -1), dim=-1).view(b, 1, t, h, w)
-        # corr_prob = corr
+        # print("corr shape:", corr.shape) # corr shape: torch.Size([B, 1, 171, 36, 25])
+
+
+
+        pred_cls = torch.argmax(corr, dim=2) 
+        pred_cls = pred_cls.squeeze(1)   # shape: torch.Size([B, h, w]) 每个位置为最大概率类别
+
+        pred_mask = F.one_hot(pred_cls, num_classes=t)
+        pred_mask = pred_mask.permute(0, 3, 1, 2).contiguous()  # shape: torch.Size([B, num_classes, h, w])
+        area = torch.sum(pred_mask, dim=(2,3))  # shape: torch.Size([B, num_classes])
+        valid_area_cls = (area > area_thd * h * w).float()  # shape: torch.Size([B, num_classes])
+        pred_result = pred_mask * valid_area_cls.view(b, t, 1, 1)  # shape: torch.Size([B, num_classes, h, w])
+
+
+
+        # print("pred_result shape:", pred_result.shape) # pred_result shape: torch.Size([1, 36, 25])
+
+        # corr_prob = F.softmax(corr.view(b, 1, t, -1) * logit_scale, dim=-1).view(b, 1, t, h, w)  # 该版本是ESC-NET的做法，对类内SoftMAX而非类间
+
+        corr_prob = F.softmax(corr * logit_scale, dim=2)  # ResCLIP的做法，对类间SoftMAX [B,1, T, H, W]
+        corr_prob = corr_prob.permute(0, 3, 4, 2, 1).contiguous() # shape: torch.Size([B, H, W, T, 1])
+        corr_prob = corr_prob.squeeze(-1) # shape: torch.Size([B, H, W, T])
+        max_probs, _ = corr_prob.max(dim=-1) 
+        valid_prob_mask = max_probs > prob_thd # shape: torch.Size([B, H, W])
+
+
+
+        pred_result = pred_result.permute(0, 2, 3, 1).contiguous() # shape: torch.Size([B, h, w, T])
+
+        pred_result = pred_result * valid_prob_mask.unsqueeze(-1) # shape: torch.Size([B, h, w, T])
+        pred_result = torch.cat((pred_result, 1 - pred_result.sum(dim=-1, keepdim=True)), dim=-1) # shape: torch.Size([B, h, w, T+1])
+        pred_result = torch.argmax(pred_result, dim=-1) # shape: torch.Size([B, h, w])
         
-        alpha = 1.1 / (h * w)
+        
         binary_mask = (corr_prob > alpha).float()
         PseudoMask = self.PMG(binary_mask) # out shape: torch.Size([1, 171, 5, 36, 25])
         PseudoPoint = self.PPG(PseudoMask , corr_prob)
@@ -100,6 +131,8 @@ class AAASegHead(nn.Module):
         out = {
             "segmentation": corr,
             "PseudoMask": PseudoMask,
-            "PseudoPoint": PseudoPoint
+            "PseudoPoint": PseudoPoint,
+            "pred_result": pred_result,
+            # "upsampled_pred_result": upsampled_pred_result
         }
         return out
