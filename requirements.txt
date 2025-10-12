@@ -16,10 +16,4 @@ tqdm
 ftfy
 regex
 opencv-python
-<<<<<<< HEAD
 open_clip_torch==2.16.0
-=======
-open_clip_torch==2.16.0
-einops
-git+https://github.com/facebookresearch/detectron2.git
->>>>>>> feabc4013b61fef153ad34f36e70956f1345eb0d

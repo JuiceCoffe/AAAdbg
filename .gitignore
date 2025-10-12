@@ -1,53 +1,8 @@
-datasets/
-weights/
-detectron2/
+# output dir
+output
+instant_test_output
+inference_test_output
 
-# =======================================================
-# Python
-# =======================================================
-# 字节码和缓存文件
-__pycache__/
-*.pyc
-
-# Distribution / packaging
-build/
-dist/
-*.egg-info/
-
-
-# =======================================================
-# 操作系统 / Editors
-# =======================================================
-# macOS
-.DS_Store
-
-# VSCode
-.vscode/
-
-
-# =======================================================
-# 项目特定的输出和日志
-# =======================================================
-# 训练/评估的输出目录，包含日志、模型权重(.pth)、配置文件等
-out/
-
-
-# =======================================================
-# 其他 (根据项目情况)
-# =======================================================
-# 如果有本地配置文件，可以添加
-# config.local.yaml
-
-# 如果有数据集，务必添加
-# data/
-*.csv
-*.zip
-
-out/
-*.pth
-log.txt
-*.tfevents.*
-metrics.json
 
 *.png
 *.json
@@ -90,7 +45,7 @@ model_ts*.txt
 _darcs
 
 # project dirs
-/detectron2/model_zoo/configs
+/detectron2
 /datasets/*
 !/datasets/*.*
 /projects/*/datasets

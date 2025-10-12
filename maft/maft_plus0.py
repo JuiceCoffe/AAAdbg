@@ -23,7 +23,6 @@ from .modeling.matcher import HungarianMatcher
 from .modeling.transformer_decoder.fcclip_transformer_decoder import MaskPooling, get_classification_logits
 
 from .modeling.maft.mask_aware_loss import  MA_Loss
-from .modeling.maft.mask_aware_loss_pro import  MA_Loss_pro
 from .modeling.maft.representation_compensation import  Representation_Compensation
 from .modeling.maft.content_dependent_transfer import ContentDependentTransfer
 
@@ -99,12 +98,7 @@ class MAFT_Plus(nn.Module):
         _, self.train_num_templates, self.train_class_names = self.prepare_class_names_from_metadata(train_metadata, train_metadata)
 
         self.cdt = ContentDependentTransfer(d_model = cdt_params[0], nhead = cdt_params[1], panoptic_on = panoptic_on)
-<<<<<<< HEAD
-        # self.ma_loss = MA_Loss()  # BCELoss BCEWithLogitsLoss SmoothL1Loss
-        self.ma_loss_pro = MA_Loss_pro()
-=======
         self.ma_loss = MA_Loss()  # BCELoss BCEWithLogitsLoss SmoothL1Loss
->>>>>>> feabc4013b61fef153ad34f36e70956f1345eb0d
         self.rc_loss = Representation_Compensation()
         self.rc_weights = rc_weights
 
@@ -206,16 +200,7 @@ class MAFT_Plus(nn.Module):
                 for idx in range(0, len(self.test_class_names), bs):
                     text_classifier.append(self.backbone.get_text_classifier(self.test_class_names[idx:idx+bs], self.device).detach())
                 text_classifier = torch.cat(text_classifier, dim=0)
-<<<<<<< HEAD
 
-=======
-                # print('test_class_names: ',self.test_class_names)
-                # print('text_classifier shape: ', text_classifier.shape)
-                """
-                test_class_names是类别名加上多种prompt的组合，故数量远多于原始分类数
-                text_classifier shape:  torch.Size([5642, 768])
-                """
->>>>>>> feabc4013b61fef153ad34f36e70956f1345eb0d
                 # average across templates and normalization.
                 text_classifier /= text_classifier.norm(dim=-1, keepdim=True)
                 text_classifier = text_classifier.reshape(text_classifier.shape[0]//len(VILD_PROMPT), len(VILD_PROMPT), text_classifier.shape[-1]).mean(1)
@@ -223,10 +208,6 @@ class MAFT_Plus(nn.Module):
                 self.test_text_classifier = text_classifier
                 self.test_dataname = dataname
             return self.test_text_classifier, self.test_num_templates
-<<<<<<< HEAD
-=======
-    
->>>>>>> feabc4013b61fef153ad34f36e70956f1345eb0d
 
     @classmethod
     def from_config(cls, cfg):
@@ -335,103 +316,41 @@ class MAFT_Plus(nn.Module):
         images = [x["image"].to(self.device) for x in batched_inputs]
         images = [(x - self.pixel_mean) / self.pixel_std for x in images]
         images = ImageList.from_tensors(images, self.size_divisibility)
-<<<<<<< HEAD
         file_names = [x["file_name"] for x in batched_inputs]
         file_names = [x.split('/')[-1].split('.')[0] for x in file_names]
-=======
-        file_names = [x["file_name"] for x in batched_inputs] # 可去变量
-        file_names = [x.split('/')[-1].split('.')[0] for x in file_names] # 可去变量
->>>>>>> feabc4013b61fef153ad34f36e70956f1345eb0d
 
         meta = batched_inputs[0]["meta"]
         text_classifier, num_templates = self.get_text_classifier(meta['dataname'])
         text_classifier = torch.cat([text_classifier, F.normalize(self.void_embedding.weight, dim=-1)], dim=0)
 
-<<<<<<< HEAD
         features = self.backbone.extract_features(images.tensor)
         for k in features.keys():
             features[k] = features[k].detach()
-=======
-        features = self.backbone.extract_features(images.tensor) # 多尺度特征图,不包括用于与文本匹配的（该层在self.backbone.visual_prediction_forward中调用）
-        for k in features.keys():
-            features[k] = features[k].detach()
-            # print(f"feature {k}:", features[k].shape)
-            """
-            
-            feature stem: torch.Size([1, 192, 304, 200])
-            feature res2: torch.Size([1, 192, 304, 200])
-            feature res3: torch.Size([1, 384, 152, 100])
-            feature res4: torch.Size([1, 768, 76, 50])
-            feature res5: torch.Size([1, 1536, 38, 25])
-            feature clip_vis_dense: torch.Size([1, 1536, 38, 25])
-
-            """
->>>>>>> feabc4013b61fef153ad34f36e70956f1345eb0d
         features['text_classifier'] = text_classifier
         features['num_templates'] = num_templates
         outputs = self.sem_seg_head(features)
         mask_results = outputs["pred_masks"].detach()
-<<<<<<< HEAD
-=======
-        # print("mask_results:", mask_results.shape)
-        """
-        mask_results: torch.Size([1, 100, 272, 200])
-        """
->>>>>>> feabc4013b61fef153ad34f36e70956f1345eb0d
 
 
         if self.training:
             with torch.no_grad():
                 features_t = self.backbone_t.extract_features(images.tensor)
                 clip_feature_t = features_t['clip_vis_dense']
-<<<<<<< HEAD
             clip_feature = self.backbone.extract_features(images.tensor)['clip_vis_dense']
         else:
             clip_feature = features['clip_vis_dense']
-=======
-            # clip_feature = self.backbone.extract_features(images.tensor)['clip_vis_dense']
-            # print("clip_feature:", clip_feature.shape)
-        # else:
-            # clip_feature = features['clip_vis_dense']
-        clip_feature = features['clip_vis_dense'] # torch.Size([1, 1536, 38, 25])
->>>>>>> feabc4013b61fef153ad34f36e70956f1345eb0d
         mask_for_pooling = F.interpolate(mask_results, size=clip_feature.shape[-2:], mode='bilinear', align_corners=False)
         
         if "convnext" in self.backbone.model_name.lower():
             pooled_clip_feature = self.mask_pooling(clip_feature, mask_for_pooling)
-<<<<<<< HEAD
             pooled_clip_feature = self.backbone.visual_prediction_forward(pooled_clip_feature)
-=======
-            # print("pooled_clip_feature 1:", pooled_clip_feature.shape)
-            pooled_clip_feature = self.backbone.visual_prediction_forward(pooled_clip_feature)
-            # print("pooled_clip_feature 2:", pooled_clip_feature.shape)
-            '''
-            pooled_clip_feature 1: torch.Size([1, 100, 1536])
-            pooled_clip_feature 2: torch.Size([1, 100, 768])
-            '''
->>>>>>> feabc4013b61fef153ad34f36e70956f1345eb0d
         elif "rn" in self.backbone.model_name.lower():
             pooled_clip_feature = self.backbone.visual_prediction_forward(clip_feature, mask_for_pooling)
         else:
             raise NotImplementedError
 
-<<<<<<< HEAD
         img_feat = self.visual_prediction_forward_convnext(clip_feature)
         text_classifier = self.cdt(img_feat, text_classifier)
-=======
-        img_feat = self.visual_prediction_forward_convnext(clip_feature) # 输出可以在CLIP空间中直接理解的语义特征图
-
-        text_classifier = self.cdt(img_feat, text_classifier)   
-        # print("text_classifier:", text_classifier.shape)
-        """
-        text_classifier: torch.Size([1, 80, 768])
-        pooled_clip_feature: torch.Size([1, 100, 768])
-        """
-        
-        # print("pooled_clip_feature:", pooled_clip_feature.shape)
-        pooled_clip_feature = F.normalize(pooled_clip_feature, dim=-1)
-
->>>>>>> feabc4013b61fef153ad34f36e70956f1345eb0d
         out_vocab_cls_results = get_classification_logits(pooled_clip_feature, text_classifier, self.backbone.clip_model.logit_scale, num_templates)  # bs * N * (C+1)
 
         if self.training:
@@ -452,14 +371,7 @@ class MAFT_Plus(nn.Module):
                     # remove this loss if not specified in `weight_dict`
                     losses.pop(k)
             
-<<<<<<< HEAD
-            losses['ranking_loss'] = self.ma_loss_pro(out_vocab_cls_results, mask_results, targets)
-            # with torch.no_grad():
-            #     print("原ma_loss:",self.ma_loss(out_vocab_cls_results, mask_results, targets))
-            #     print("新ma_loss:",losses['ranking_loss'])
-=======
             losses['ranking_loss'] = self.ma_loss(out_vocab_cls_results, mask_results, targets)
->>>>>>> feabc4013b61fef153ad34f36e70956f1345eb0d
             losses['rc_loss'] = self.rc_loss(clip_feature, clip_feature_t)  * self.rc_weights
 
             return losses

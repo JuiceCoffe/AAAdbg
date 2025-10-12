@@ -154,6 +154,7 @@ class MAFT_Plus(nn.Module):
             train_class_names = split_labels(train_metadata.thing_classes)
         train_class_names = {l for label in train_class_names for l in label}
         category_overlapping_list = []
+        self.vis_class_names = class_names
         for test_class_names in class_names:
             is_overlapping = not set(train_class_names).isdisjoint(set(test_class_names)) 
             category_overlapping_list.append(is_overlapping)
@@ -262,18 +263,11 @@ class MAFT_Plus(nn.Module):
             if self.test_dataname != dataname:
                 self.category_overlapping_mask, self.test_num_templates, self.test_class_names = self.prepare_class_names_from_metadata(self.test_metadata[dataname], self.train_metadata)
                 text_classifier = []
-                # this is needed to avoid oom, which may happen when num of class is large
                 bs = 128
                 for idx in range(0, len(self.test_class_names), bs):
                     text_classifier.append(self.backbone.get_text_classifier(self.test_class_names[idx:idx+bs], self.device).detach())
                 text_classifier = torch.cat(text_classifier, dim=0)
-                # print('test_class_names: ',self.test_class_names)
-                # print('text_classifier shape: ', text_classifier.shape)
-                """
-                test_class_names是328个类别名加上14种prompt
-                text_classifier shape:  torch.Size([5642, 768])
-                """
-                # average across templates and normalization.
+
                 text_classifier /= text_classifier.norm(dim=-1, keepdim=True)
                 text_classifier = text_classifier.reshape(text_classifier.shape[0]//len(VILD_PROMPT), len(VILD_PROMPT), text_classifier.shape[-1]).mean(1) 
                 text_classifier /= text_classifier.norm(dim=-1, keepdim=True)
@@ -346,7 +340,8 @@ class MAFT_Plus(nn.Module):
         backbone = build_backbone(cfg) # cfg.MODEL.BACKBONE.NAME : CLIP
         # backbone_t = build_backbone(cfg)
         # sem_seg_head = build_sem_seg_head(cfg, backbone.output_shape())
-        sem_seg_head = build_sem_seg_head(cfg, None)
+        # sem_seg_head = build_sem_seg_head(cfg, None)
+        sem_seg_head = None
 
         # Loss parameters:
         deep_supervision = cfg.MODEL.MASK_FORMER.DEEP_SUPERVISION
@@ -376,16 +371,17 @@ class MAFT_Plus(nn.Module):
 
         losses = ["labels", "masks"]
 
-        criterion = SetCriterion(
-            sem_seg_head.num_classes,
-            matcher=matcher,
-            weight_dict=weight_dict,
-            eos_coef=no_object_weight,
-            losses=losses,
-            num_points=cfg.MODEL.MASK_FORMER.TRAIN_NUM_POINTS,
-            oversample_ratio=cfg.MODEL.MASK_FORMER.OVERSAMPLE_RATIO,
-            importance_sample_ratio=cfg.MODEL.MASK_FORMER.IMPORTANCE_SAMPLE_RATIO,
-        )
+        # criterion = SetCriterion(
+        #     sem_seg_head.num_classes,
+        #     matcher=matcher,
+        #     weight_dict=weight_dict,
+        #     eos_coef=no_object_weight,
+        #     losses=losses,
+        #     num_points=cfg.MODEL.MASK_FORMER.TRAIN_NUM_POINTS,
+        #     oversample_ratio=cfg.MODEL.MASK_FORMER.OVERSAMPLE_RATIO,
+        #     importance_sample_ratio=cfg.MODEL.MASK_FORMER.IMPORTANCE_SAMPLE_RATIO,
+        # )
+        criterion = None
 
         test_metadata = {i: MetadataCatalog.get(i) for i in cfg.DATASETS.TEST}
         return {
@@ -455,8 +451,8 @@ class MAFT_Plus(nn.Module):
         file_names = [x["file_name"] for x in batched_inputs] # 可去变量
         file_names = [x.split('/')[-1].split('.')[0] for x in file_names] # 可去变量
 
-        meta = batched_inputs[0]["meta"]
-        text_classifier, num_templates = self.get_text_classifier(meta['dataname'])
+        #meta = batched_inputs[0]["meta"]
+        text_classifier, num_templates = self.get_text_classifier('openvocab_ade20k_panoptic_val')
         text_classifier = torch.cat([text_classifier, F.normalize(self.void_embedding.weight, dim=-1)], dim=0)
         # print("text_classifier:", text_classifier.shape) # text_classifier: torch.Size([329, 768]) 328个类别+1个void
        
@@ -466,38 +462,89 @@ class MAFT_Plus(nn.Module):
         
         for k in features.keys():
             features[k] = features[k].detach()
-            # print(f"feature {k}:", features[k].shape)
-            """
-            
-            feature stem: torch.Size([1, 192, 304, 200])
-            feature res2: torch.Size([1, 192, 304, 200])
-            feature res3: torch.Size([1, 384, 152, 100])
-            feature res4: torch.Size([1, 768, 76, 50])
-            feature res5: torch.Size([1, 1536, 38, 25])
-            feature clip_vis_dense: torch.Size([1, 1536, 38, 25])
 
-            """
         features['text_classifier'] = text_classifier
         features['num_templates'] = num_templates
 
         clip_feature = features['clip_vis_dense'] # torch.Size([1, 1536, 38, 25])
-        img_feat = self.visual_prediction_forward_convnext(clip_feature) # 输出可以在CLIP空间中直接理解的语义特征图
+        img_feat = self.visual_prediction_forward_convnext_2d(clip_feature) # 输出可以在CLIP空间中直接理解的语义特征图
+        
+        img_feats = F.normalize(img_feat, dim=1) # B C H W
+        text_feats = text_classifier# T C 带模板
+        # print("text_feats shape:", text_feats.shape)
+        logit_scale = torch.clamp(self.backbone.clip_model.logit_scale.exp(), max=100)
+        logits = self.backbone.clip_model.logit_scale * torch.einsum('bchw, tc -> bthw', img_feats, text_feats)
+        
+        # ade20K: seg_logits:[1,150,336,448] --> [1,150,512,683]
+        seg_logits = logits
 
-        raw_text_feature = self.get_text_embeds(meta['dataname']) # torch.Size([171, 768])
-        outputs = self.sem_seg_head(img_feat, raw_text_feature, batched_inputs) 
-        # outputs = self.sem_seg_head(features['res4'], raw_text_feature)
+        
 
-        # outputs = self.sem_seg_head(img_feat,features) # features在CAT-SEG的设计里用于增强特征，但在ESC-NET与当前设计里无用
-        # outputs = self.sem_seg_head(img_feat, text_classifier[:-1]) # 不包括void
-        # outputs = self.sem_seg_head(features['res4'], text_classifier)
+        final_seg_logits = []
+        cur_idx = 0
+        for num_t in num_templates: 
+            final_seg_logits.append(seg_logits[:, cur_idx: cur_idx + num_t,:,:].max(1).values)
+            cur_idx += num_t
+        final_seg_logits.append(seg_logits[:, -1,:,:]) # the last classifier is for void
+        final_seg_logits = torch.stack(final_seg_logits, dim=1)
+        #final_seg_logits = nn.functional.interpolate(final_seg_logits, size=original_image.shape[-2:], mode='bilinear', align_corners=False)
+        seg_probs = torch.softmax(final_seg_logits, dim=1) # B T(纯类别)+1 H W
+
+        pred_result = torch.argmax(seg_probs, dim=1) # B H W
+
+        def post_process(seg_probs,pred_result):
+            prob_thd = 0.008
+            area_thd = 4
+
+            corr_prob = seg_probs[:, :-1, :, :].clone()  # B T H W 去除void
+            b, t, h, w = corr_prob.shape
+            pred_mask = F.one_hot(pred_result, num_classes=t+1)[:,:,:,:-1] # B H W T
+
+            # 概率过滤
+            corr_prob = corr_prob.permute(0, 2, 3, 1).contiguous() # B H W T
+            valid_prob_mask = corr_prob > prob_thd # B H W T
+
+            pred_mask = pred_mask * valid_prob_mask # B H W T
+
+            # 面积过滤
+            
+            area = pred_mask.sum(dim=(1, 2))  # [B, T]
+            valid_area_cls = area > area_thd 
+            pred_mask = torch.einsum('bhwt, bt -> bhwt', pred_mask, valid_area_cls)
+
+            pred_mask = torch.cat([pred_mask, (1 - pred_mask.sum(-1, keepdim=True)).clamp(min=0)], dim=-1) # B H W T+1 恢复 void
+            pred_result = pred_mask.argmax(dim=-1) # B H W
+
+            return pred_result
 
 
-        # visualize_segmentation(outputs["pred_result"], self.class_name_of_classifier,batched_inputs[0]["image"])
-        visualize_segmentation(outputs["pred_result"], self.raw_class_names+['background'],batched_inputs[0]["image"],f"./show/{file_names[0]}/")
+        pred_result = post_process(seg_probs, pred_result)
+        
+        # batch_size = seg_logits.shape[0]
+        # for i in range(batch_size):
+        #     seg_probs = torch.softmax(seg_logits[i] * self.backbone.clip_model.logit_scale, dim=0)  # n_queries * w * h
+        #     num_cls, num_queries = max(self.query_idx) + 1, len(self.query_idx)
+        #     if num_cls != num_queries:
+        #         seg_probs = seg_probs.unsqueeze(0)
+        #         cls_index = nn.functional.one_hot(self.query_idx)
+        #         cls_index = cls_index.T.view(num_cls, num_queries, 1, 1)
+        #         seg_probs = (seg_probs * cls_index).max(1)[0]
+
+        #     if self.area_thd is not None:  # SCLIP setting
+        #         predictions = nn.functional.one_hot(seg_logits.argmax(0), num_cls).to(seg_logits.dtype)
+        #         area_pred = predictions[:, :, 1:].sum((0, 1), keepdim=True)  # prone background
+        #         area_pred = (area_pred > self.area_thd * area_pred.sum()).to(seg_logits.dtype)
+        #         seg_logits[1:] *= area_pred.transpose(0, -1)
+
+        #     seg_pred = seg_probs.argmax(0, keepdim=True)
+        #     seg_pred[seg_probs.max(0, keepdim=True)[0] < self.prob_thd] = 0
+        #     seg_probs /= seg_probs.sum(0, keepdim=True)
+
+        visualize_segmentation(pred_result, self.vis_class_names+['void'],batched_inputs[0]["image"],f"./show/{file_names[0]}/")
         # visualize_segmentation(outputs["upsampled_pred_result"], self.raw_class_names)
         losses = {}
-        losses["test1"] = text_classifier.sum() * 1e-7
-        losses["test2"] = text_classifier.sum() * (-1e-7)
+        losses["test1"] = text_classifier.sum() * 1e-9
+        losses["test2"] = text_classifier.sum() * (-1e-9)
         return losses
 
         mask_results = outputs["pred_masks"].detach()
@@ -752,7 +799,7 @@ class MAFT_Plus(nn.Module):
         return result
 
 
-
+    #错误的函数
     def visual_prediction_forward_convnext(self, x):
         batch, channel, h, w = x.shape
         x = x.reshape(batch*h*w, channel).unsqueeze(-1).unsqueeze(-1) # fake 2D input
@@ -760,9 +807,15 @@ class MAFT_Plus(nn.Module):
         x = self.backbone.clip_model.visual.head(x)
         return x.reshape(batch, h, w, x.shape[-1]).permute(0,3,1,2) 
     
+    def visual_prediction_forward_convnext_2d(self, x):
+        
+        clip_vis_dense = self.backbone.clip_model.visual.trunk.head.norm(x)
+        clip_vis_dense = self.backbone.clip_model.visual.trunk.head.drop(clip_vis_dense.permute(0, 2, 3, 1))
+        clip_vis_dense = self.backbone.clip_model.visual.head(clip_vis_dense).permute(0, 3, 1, 2)
+        
+        return clip_vis_dense
 
-
-def visualize_segmentation(pred_result, class_names,original_image_tensor, save_path="./show/"):
+def visualize_segmentation(pred_result, class_names,original_image_tensor, save_path="./show/",fig_size=(10, 10)):
     """
     可视化初步分割结果并将其保存到文件。
     图例会根据每个类别占有的像素数从多到少进行排序。
@@ -802,56 +855,55 @@ def visualize_segmentation(pred_result, class_names,original_image_tensor, save_
     # 4. 将统计结果与类名结合，并按像素数降序排序
     class_statistics = []
     for i, class_index in enumerate(unique_classes):
-        if class_index < num_classes: # 避免索引越界
+        if class_index < num_classes:
             class_statistics.append({
                 "index": class_index,
                 "name": class_names[class_index],
                 "count": pixel_counts[i]
             })
-
     sorted_class_statistics = sorted(class_statistics, key=lambda x: x['count'], reverse=True)
 
-    # 5. 创建保存目录（如果不存在）
-    try:
-        os.makedirs(os.path.dirname(save_path+"prediction.png"), exist_ok=True)
-    except OSError as e:
-        print(f"创建目录时出错: {e}")
-        return
+    # 创建目录
+    os.makedirs(os.path.dirname(save_path + "prediction.png"), exist_ok=True)
 
-
+    # 保存原图
     original_image = original_image_tensor.permute(1, 2, 0).numpy().astype(np.uint8).copy()
-    plt.imsave(save_path+'original_image.png', original_image)
-    
+    plt.imsave(save_path + 'original_image.png', original_image)
 
-    # 6. 使用matplotlib进行可视化和保存
-    fig, ax = plt.subplots(1, 1, figsize=(10, 10))
+    # 绘制分割结果
+    fig, ax = plt.subplots(figsize=fig_size)
     ax.imshow(color_image)
     ax.axis('off')
 
-    # 7. 根据排序后的结果创建图例
+    # 图例放在底部
     legend_elements = []
     for stats in sorted_class_statistics:
         class_index = stats["index"]
         class_name = stats["name"]
         pixel_count = stats["count"]
-        
         color = palette[class_index] / 255.0
-        label = f"{class_name} ({pixel_count:,} pixels)" # 格式化数字，例如 1,234
-        
+        label = f"{class_name} ({pixel_count:,} px)"
         legend_elements.append(plt.Rectangle((0, 0), 1, 1, color=color, label=label))
-    
-    ax.legend(handles=legend_elements, bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0.)
 
-    # 调整布局以适应图例
+    # 使用 fig.legend 放置在底部
+    fig.legend(
+        handles=legend_elements,
+        loc='lower center',
+        bbox_to_anchor=(0.5, -0.05),
+        ncol=min(4, len(legend_elements)),  # 一行最多显示4个类别
+        frameon=False
+    )
+
     plt.tight_layout()
-    
-    # 8. 保存图像
+    plt.subplots_adjust(bottom=0.15)  # 给图例留空间
+
+    # 保存
+    pred_save_path = save_path + "prediction.png"
     try:
-        pred_save_path = save_path+"prediction.png" 
         plt.savefig(pred_save_path, bbox_inches='tight')
         print(f"可视化结果已保存至: {pred_save_path}")
     except Exception as e:
         print(f"保存文件时出错: {e}")
-    
-    plt.close(fig) # 关闭图像以释放内存
+
+    plt.close(fig)
 

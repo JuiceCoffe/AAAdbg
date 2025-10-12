@@ -20,14 +20,7 @@ import copy
 import itertools
 import logging
 import os
-
-
 # os.environ['CUDA_VISIBLE_DEVICES'] = '2,4,6'
-os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:256"
-import warnings
-warnings.filterwarnings("ignore", message="__floordiv__ is deprecated")
-warnings.filterwarnings('ignore', category=FutureWarning, module='timm')
-
 
 from collections import OrderedDict
 from typing import Any, Dict, List, Set

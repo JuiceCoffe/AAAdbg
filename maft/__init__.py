@@ -36,7 +36,6 @@ from .data.dataset_mappers.mask_former_semantic_dataset_mapper import (
 # models
 from .fcclip import FCCLIP
 from .maft_plus import MAFT_Plus
-from .maft_plus_FreezeClipV import MAFT_Plus_FreezeClipV
 from .demo import MAFT_Plus_DEMO
 
 
@@ -44,5 +43,3 @@ from .demo import MAFT_Plus_DEMO
 from .evaluation.instance_evaluation import InstanceSegEvaluator
 from .evaluation.semantic_evaluation import SemSegEvaluator
 from .test_time_augmentation import SemanticSegmentorWithTTA
-
-from .modeling.heads.AAA_seg_head import AAASegHead

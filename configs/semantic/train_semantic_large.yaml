@@ -21,7 +21,7 @@ DATASETS:
   TEST: ("openvocab_ade20k_full_sem_seg_val", 'openvocab_ade20k_panoptic_val') 
 
 SOLVER:
-  IMS_PER_BATCH: 1 # 8
+  IMS_PER_BATCH: 1
   BASE_LR: 0.0001
   MAX_ITER: 55000
 
