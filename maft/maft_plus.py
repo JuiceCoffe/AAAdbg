@@ -468,8 +468,11 @@ class MAFT_Plus(nn.Module):
 
             corr_prob = corr_prob * valid_area_mask.permute(0, 3, 1, 2).contiguous() # B T H W
             corr_prob = F.softmax(corr_prob, dim=1)
+
+            original_h, original_w = batched_inputs[0]["height"], batched_inputs[0]["width"]
+            corr_prob = F.interpolate(corr_prob, size=(original_h, original_w), mode='bilinear', align_corners=False)
             
-            max_prob, pred_result = corr_prob.max(dim=1) # B H W 最大索引为T-1/T(启用概率过滤)
+            max_prob, pred_result = corr_prob.max(dim=1) # B H W 最大索引为T-1
 
             return pred_result
 
@@ -487,7 +490,7 @@ class MAFT_Plus(nn.Module):
             pass
         else:
             original_h, original_w = batched_inputs[0]["height"], batched_inputs[0]["width"]
-            mask_results = F.interpolate(mask_results, size=(original_h, original_w), mode='bilinear', align_corners=False)[0,:-1]     
+            # mask_results = F.interpolate(mask_results, size=(original_h, original_w), mode='bilinear', align_corners=False)[0,:-1]     
             # print("mask_results:", mask_results.shape) # mask_results: torch.Size([150, 512, 683]) ade20k
             mask_results = retry_if_cuda_oom(sem_seg_postprocess)(mask_results, images.image_sizes[0], original_h, original_w)
             return [{"sem_seg": mask_results}] # 去除void
