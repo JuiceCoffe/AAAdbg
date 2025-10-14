@@ -45,8 +45,6 @@ class MAFT_Plus(nn.Module):
         *,
         backbone: Backbone,
         # backbone_t,
-        sem_seg_head: nn.Module,
-        criterion: nn.Module,
         num_queries: int,
         object_mask_threshold: float,
         overlap_threshold: float,
@@ -69,8 +67,6 @@ class MAFT_Plus(nn.Module):
         super().__init__()
         self.backbone = backbone
         # self.backbone_t = backbone_t
-        self.sem_seg_head = sem_seg_head
-        self.criterion = criterion
         self.num_queries = num_queries
         self.overlap_threshold = overlap_threshold
         self.object_mask_threshold = object_mask_threshold
@@ -94,7 +90,7 @@ class MAFT_Plus(nn.Module):
             assert self.sem_seg_postprocess_before_inference
 
         # FC-CLIP args
-        self.mask_pooling = MaskPooling()
+        # self.mask_pooling = MaskPooling()
         self.train_text_classifier = None
         self.test_text_classifier = None
         self.void_embedding = nn.Embedding(1, backbone.dim_latent) # use this for void
@@ -103,9 +99,9 @@ class MAFT_Plus(nn.Module):
         _, _, self.raw_class_names = self.prepare_raw_class_names_from_metadata(train_metadata, train_metadata)
         # print(f"Test dataset has {len(self.raw_class_names)} classes:\n", self.raw_class_names)
 
-        self.cdt = ContentDependentTransfer(d_model = cdt_params[0], nhead = cdt_params[1], panoptic_on = panoptic_on)
-        self.ma_loss = MA_Loss()  # BCELoss BCEWithLogitsLoss SmoothL1Loss
-        self.rc_loss = Representation_Compensation()
+        # self.cdt = ContentDependentTransfer(d_model = cdt_params[0], nhead = cdt_params[1], panoptic_on = panoptic_on)
+        # self.ma_loss = MA_Loss()  # BCELoss BCEWithLogitsLoss SmoothL1Loss
+        # self.rc_loss = Representation_Compensation()
         self.rc_weights = rc_weights
 
         self._freeze()
@@ -339,9 +335,7 @@ class MAFT_Plus(nn.Module):
     def from_config(cls, cfg):
         backbone = build_backbone(cfg) # cfg.MODEL.BACKBONE.NAME : CLIP
         # backbone_t = build_backbone(cfg)
-        # sem_seg_head = build_sem_seg_head(cfg, backbone.output_shape())
-        # sem_seg_head = build_sem_seg_head(cfg, None)
-        sem_seg_head = None
+
 
         # Loss parameters:
         deep_supervision = cfg.MODEL.MASK_FORMER.DEEP_SUPERVISION
@@ -352,43 +346,10 @@ class MAFT_Plus(nn.Module):
         dice_weight = cfg.MODEL.MASK_FORMER.DICE_WEIGHT
         mask_weight = cfg.MODEL.MASK_FORMER.MASK_WEIGHT
 
-        # building criterion
-        matcher = HungarianMatcher(
-            cost_class=class_weight,
-            cost_mask=mask_weight,
-            cost_dice=dice_weight,
-            num_points=cfg.MODEL.MASK_FORMER.TRAIN_NUM_POINTS,
-        )
-
-        weight_dict = {"loss_ce": class_weight, "loss_mask": mask_weight, "loss_dice": dice_weight}
-
-        if deep_supervision:
-            dec_layers = cfg.MODEL.MASK_FORMER.DEC_LAYERS
-            aux_weight_dict = {}
-            for i in range(dec_layers - 1):
-                aux_weight_dict.update({k + f"_{i}": v for k, v in weight_dict.items()})
-            weight_dict.update(aux_weight_dict)
-
-        losses = ["labels", "masks"]
-
-        # criterion = SetCriterion(
-        #     sem_seg_head.num_classes,
-        #     matcher=matcher,
-        #     weight_dict=weight_dict,
-        #     eos_coef=no_object_weight,
-        #     losses=losses,
-        #     num_points=cfg.MODEL.MASK_FORMER.TRAIN_NUM_POINTS,
-        #     oversample_ratio=cfg.MODEL.MASK_FORMER.OVERSAMPLE_RATIO,
-        #     importance_sample_ratio=cfg.MODEL.MASK_FORMER.IMPORTANCE_SAMPLE_RATIO,
-        # )
-        criterion = None
-
         test_metadata = {i: MetadataCatalog.get(i) for i in cfg.DATASETS.TEST}
         return {
             "backbone": backbone,
             # "backbone_t":backbone_t,
-            "sem_seg_head": sem_seg_head,
-            "criterion": criterion,
             "num_queries": cfg.MODEL.MASK_FORMER.NUM_OBJECT_QUERIES,
             "object_mask_threshold": cfg.MODEL.MASK_FORMER.TEST.OBJECT_MASK_THRESHOLD,
             "overlap_threshold": cfg.MODEL.MASK_FORMER.TEST.OVERLAP_THRESHOLD,
@@ -451,8 +412,10 @@ class MAFT_Plus(nn.Module):
         file_names = [x["file_name"] for x in batched_inputs] # 可去变量
         file_names = [x.split('/')[-1].split('.')[0] for x in file_names] # 可去变量
 
-        #meta = batched_inputs[0]["meta"]
-        text_classifier, num_templates = self.get_text_classifier('openvocab_ade20k_panoptic_val')
+        meta = batched_inputs[0]["meta"]
+        # text_classifier, num_templates = self.get_text_classifier('openvocab_ade20k_panoptic_val')
+        text_classifier, num_templates = self.get_text_classifier(meta['dataname'])
+        # print("meta['dataname']:",meta['dataname'])
         text_classifier = torch.cat([text_classifier, F.normalize(self.void_embedding.weight, dim=-1)], dim=0)
         # print("text_classifier:", text_classifier.shape) # text_classifier: torch.Size([329, 768]) 328个类别+1个void
        
@@ -490,190 +453,46 @@ class MAFT_Plus(nn.Module):
         #final_seg_logits = nn.functional.interpolate(final_seg_logits, size=original_image.shape[-2:], mode='bilinear', align_corners=False)
         seg_probs = torch.softmax(final_seg_logits, dim=1) # B T(纯类别)+1 H W
 
-        pred_result = torch.argmax(seg_probs, dim=1) # B H W
+        # pred_result = torch.argmax(seg_probs, dim=1) # B H W
 
-        def post_process(seg_probs,pred_result):
-            prob_thd = 0.008
-            area_thd = 4
+        def post_process(seg_probs):
+        
+            area_thd = 7.5 # 当前最佳 7.5 -> mIoU=7.3
 
             corr_prob = seg_probs[:, :-1, :, :].clone()  # B T H W 去除void
-            b, t, h, w = corr_prob.shape
-            pred_mask = F.one_hot(pred_result, num_classes=t+1)[:,:,:,:-1] # B H W T
-
-            # 概率过滤
-            corr_prob = corr_prob.permute(0, 2, 3, 1).contiguous() # B H W T
-            valid_prob_mask = corr_prob > prob_thd # B H W T
-
-            pred_mask = pred_mask * valid_prob_mask # B H W T
-
-            # 面积过滤
-            
+            pred_cls = corr_prob.argmax(dim=1) # B H W 最大索引为T-1
+            pred_mask = F.one_hot(pred_cls, num_classes=corr_prob.size(1)) # B H W T
             area = pred_mask.sum(dim=(1, 2))  # [B, T]
-            valid_area_cls = area > area_thd 
-            pred_mask = torch.einsum('bhwt, bt -> bhwt', pred_mask, valid_area_cls)
+            valid_area_cls = area > area_thd
+            valid_area_mask = torch.einsum('bhwt, bt -> bhwt', pred_mask, valid_area_cls)
 
-            pred_mask = torch.cat([pred_mask, (1 - pred_mask.sum(-1, keepdim=True)).clamp(min=0)], dim=-1) # B H W T+1 恢复 void
-            pred_result = pred_mask.argmax(dim=-1) # B H W
+            corr_prob = corr_prob * valid_area_mask.permute(0, 3, 1, 2).contiguous() # B T H W
+            corr_prob = F.softmax(corr_prob, dim=1)
+            
+            max_prob, pred_result = corr_prob.max(dim=1) # B H W 最大索引为T-1/T(启用概率过滤)
 
             return pred_result
 
-
-        pred_result = post_process(seg_probs, pred_result)
+        pred_result = post_process(seg_probs)
         
-        # batch_size = seg_logits.shape[0]
-        # for i in range(batch_size):
-        #     seg_probs = torch.softmax(seg_logits[i] * self.backbone.clip_model.logit_scale, dim=0)  # n_queries * w * h
-        #     num_cls, num_queries = max(self.query_idx) + 1, len(self.query_idx)
-        #     if num_cls != num_queries:
-        #         seg_probs = seg_probs.unsqueeze(0)
-        #         cls_index = nn.functional.one_hot(self.query_idx)
-        #         cls_index = cls_index.T.view(num_cls, num_queries, 1, 1)
-        #         seg_probs = (seg_probs * cls_index).max(1)[0]
 
-        #     if self.area_thd is not None:  # SCLIP setting
-        #         predictions = nn.functional.one_hot(seg_logits.argmax(0), num_cls).to(seg_logits.dtype)
-        #         area_pred = predictions[:, :, 1:].sum((0, 1), keepdim=True)  # prone background
-        #         area_pred = (area_pred > self.area_thd * area_pred.sum()).to(seg_logits.dtype)
-        #         seg_logits[1:] *= area_pred.transpose(0, -1)
-
-        #     seg_pred = seg_probs.argmax(0, keepdim=True)
-        #     seg_pred[seg_probs.max(0, keepdim=True)[0] < self.prob_thd] = 0
-        #     seg_probs /= seg_probs.sum(0, keepdim=True)
-
-        visualize_segmentation(pred_result, self.vis_class_names+['void'],batched_inputs[0]["image"],f"./show/{file_names[0]}/")
-        # visualize_segmentation(outputs["upsampled_pred_result"], self.raw_class_names)
-        losses = {}
-        losses["test1"] = text_classifier.sum() * 1e-9
-        losses["test2"] = text_classifier.sum() * (-1e-9)
-        return losses
-
-        mask_results = outputs["pred_masks"].detach()
-        # print("mask_results:", mask_results.shape)
-        """
-        mask_results: torch.Size([1, 100, 272, 200])
-        """
+        # visualize_segmentation(pred_result, self.vis_class_names+['void'],batched_inputs[0]["image"],f"./show/{file_names[0]}_")
 
 
-        # if self.training:
-        #     with torch.no_grad():
-        #         features_t = self.backbone_t.extract_features(images.tensor)
-        #         clip_feature_t = features_t['clip_vis_dense']
-            # clip_feature = self.backbone.extract_features(images.tensor)['clip_vis_dense']
-            # print("clip_feature:", clip_feature.shape)
-        # else:
-            # clip_feature = features['clip_vis_dense']
-        # clip_feature = features['clip_vis_dense'] # torch.Size([1, 1536, 38, 25])
-        mask_for_pooling = F.interpolate(mask_results, size=clip_feature.shape[-2:], mode='bilinear', align_corners=False)
-        
-        if "convnext" in self.backbone.model_name.lower():
-            pooled_clip_feature = self.mask_pooling(clip_feature, mask_for_pooling)
-            # print("pooled_clip_feature 1:", pooled_clip_feature.shape)
-            pooled_clip_feature = self.backbone.visual_prediction_forward(pooled_clip_feature)
-            # print("pooled_clip_feature 2:", pooled_clip_feature.shape)
-            '''
-            pooled_clip_feature 1: torch.Size([1, 100, 1536])
-            pooled_clip_feature 2: torch.Size([1, 100, 768])
-            '''
-        elif "rn" in self.backbone.model_name.lower():
-            pooled_clip_feature = self.backbone.visual_prediction_forward(clip_feature, mask_for_pooling)
-        else:
-            raise NotImplementedError
 
-        # img_feat = self.visual_prediction_forward_convnext(clip_feature) # 输出可以在CLIP空间中直接理解的语义特征图
-
-        text_classifier = self.cdt(img_feat, text_classifier)   
-        # print("text_classifier:", text_classifier.shape)
-        """
-        text_classifier: torch.Size([1, 80, 768])
-        pooled_clip_feature: torch.Size([1, 100, 768])
-        """
-        
-        # print("pooled_clip_feature:", pooled_clip_feature.shape)
-        pooled_clip_feature = F.normalize(pooled_clip_feature, dim=-1)
-
-        out_vocab_cls_results = get_classification_logits(pooled_clip_feature, text_classifier, self.backbone.clip_model.logit_scale, num_templates)  # bs * N * (C+1)
+        mask_results = F.one_hot(pred_result, num_classes=seg_probs.shape[1]).permute(0, 3, 1, 2).float() # B T H W
+        # mask_results = mask_results[0].detach() # T H W
 
         if self.training:
-            # mask classification target
-            if "instances" in batched_inputs[0]:
-                gt_instances = [x["instances"].to(self.device) for x in batched_inputs]
-                targets = self.prepare_targets(gt_instances, images)
-            else:
-                targets = None
-
-            # bipartite matching-based loss
-            losses = self.criterion(outputs, targets)
-
-            for k in list(losses.keys()):
-                if k in self.criterion.weight_dict:
-                    losses[k] *= self.criterion.weight_dict[k]
-                else:
-                    # remove this loss if not specified in `weight_dict`
-                    losses.pop(k)
-            
-            losses['ranking_loss'] = self.ma_loss(out_vocab_cls_results, mask_results, targets)
-            losses['rc_loss'] = self.rc_loss(clip_feature, clip_feature_t)  * self.rc_weights
-
-            return losses
+            pass
         else:
-            mask_cls_results = outputs["pred_logits"]
-            mask_pred_results = outputs["pred_masks"]
+            original_h, original_w = batched_inputs[0]["height"], batched_inputs[0]["width"]
+            mask_results = F.interpolate(mask_results, size=(original_h, original_w), mode='bilinear', align_corners=False)[0,:-1]     
+            # print("mask_results:", mask_results.shape) # mask_results: torch.Size([150, 512, 683]) ade20k
+            mask_results = retry_if_cuda_oom(sem_seg_postprocess)(mask_results, images.image_sizes[0], original_h, original_w)
+            return [{"sem_seg": mask_results}] # 去除void
 
 
-            # in_vocab is not used !!!
-            # in_vocab_cls_results = mask_cls_results[..., :-1] # remove void
-            # in_vocab_cls_results = in_vocab_cls_results.softmax(-1)
-            cls_results = out_vocab_cls_results[..., :-1] # remove void
-
-            # This is used to filtering void predictions.
-            is_void_prob = F.softmax(mask_cls_results, dim=-1)[..., -1:]
-            mask_cls_probs = torch.cat([
-                cls_results.softmax(-1) * (1.0 - is_void_prob),
-                is_void_prob], dim=-1)
-            mask_cls_results = torch.log(mask_cls_probs + 1e-8)
-
-            # upsample masks
-            mask_pred_results = F.interpolate(
-                mask_pred_results,
-                size=(images.tensor.shape[-2], images.tensor.shape[-1]),
-                mode="bilinear",
-                align_corners=False,
-            )
-
-            del outputs
-
-            processed_results = []
-            for mask_cls_result, mask_pred_result, input_per_image, image_size, file_name in zip(
-                mask_cls_results, mask_pred_results, batched_inputs, images.image_sizes, file_names
-            ):
-                height = input_per_image.get("height", image_size[0])
-                width = input_per_image.get("width", image_size[1])
-                processed_results.append({})
-
-                if self.sem_seg_postprocess_before_inference:
-                    mask_pred_result = retry_if_cuda_oom(sem_seg_postprocess)(
-                        mask_pred_result, image_size, height, width
-                    )
-                    mask_cls_result = mask_cls_result.to(mask_pred_result)
-
-                # semantic segmentation inference
-                if self.semantic_on:
-                    r = retry_if_cuda_oom(self.semantic_inference)(mask_cls_result, mask_pred_result)
-                    if not self.sem_seg_postprocess_before_inference:
-                        r = retry_if_cuda_oom(sem_seg_postprocess)(r, image_size, height, width)
-                    processed_results[-1]["sem_seg"] = r
-
-                # panoptic segmentation inference
-                if self.panoptic_on:
-                    panoptic_r = retry_if_cuda_oom(self.panoptic_inference)(mask_cls_result, mask_pred_result, meta['dataname'])
-                    processed_results[-1]["panoptic_seg"] = panoptic_r
-                
-                # instance segmentation inference
-                if self.instance_on:
-                    instance_r = retry_if_cuda_oom(self.instance_inference)(mask_cls_result, mask_pred_result, meta['dataname'])
-                    processed_results[-1]["instances"] = instance_r
-
-            return processed_results
 
     def prepare_targets(self, targets, images):
         h_pad, w_pad = images.tensor.shape[-2:]

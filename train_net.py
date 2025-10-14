@@ -268,9 +268,15 @@ def main(args):
 
     if args.eval_only:
         model = Trainer.build_model(cfg)
-        DetectionCheckpointer(model, save_dir=cfg.OUTPUT_DIR).resume_or_load(
-            cfg.MODEL.WEIGHTS, resume=args.resume
-        )
+        # DetectionCheckpointer(model, save_dir=cfg.OUTPUT_DIR).resume_or_load(
+        #     cfg.MODEL.WEIGHTS, resume=args.resume
+        # )
+        try:
+            DetectionCheckpointer(model, save_dir=cfg.OUTPUT_DIR).resume_or_load(
+                cfg.MODEL.WEIGHTS, resume=args.resume
+            )
+        except:
+            print("="*20,"跳过模型权重加载","="*20)
         res = Trainer.test(cfg, model)
         if cfg.TEST.AUG.ENABLED:
             res.update(Trainer.test_with_TTA(cfg, model))
