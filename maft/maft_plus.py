@@ -31,6 +31,7 @@ from .utils.text_templetes import VILD_PROMPT
 import matplotlib.pyplot as plt
 import os
 import numpy as np
+import torchvision
 
 
 @META_ARCH_REGISTRY.register()
@@ -62,6 +63,8 @@ class MAFT_Plus(nn.Module):
         # MAFT
         rc_weights,
         cdt_params,
+        # PE
+        PE_ENABLED: bool,
     ):
 
         super().__init__()
@@ -109,6 +112,9 @@ class MAFT_Plus(nn.Module):
         self.test_dataname = None
 
         self.cache = None # for caching RAW text embeds in inference
+        self.PE_ENABLED = PE_ENABLED
+        if self.PE_ENABLED:
+            print("Using PE ")
 
     def _freeze(self, ):
         for name, param in self.named_parameters():
@@ -370,6 +376,7 @@ class MAFT_Plus(nn.Module):
             "test_topk_per_image": cfg.TEST.DETECTIONS_PER_IMAGE,
             "rc_weights": cfg.MODEL.rc_weights,
             "cdt_params": cfg.MODEL.cdt_params,
+            "PE_ENABLED": cfg.PE.ENABLED,
         }
 
     @property
@@ -407,8 +414,21 @@ class MAFT_Plus(nn.Module):
 
         original_image = images[0].clone() # for visualization only
 
-        images = [(x - self.pixel_mean) / self.pixel_std for x in images]
-        images = ImageList.from_tensors(images, self.size_divisibility)
+        
+        if self.PE_ENABLED:
+            # import torch
+            # import torchvision.transforms as T
+            # from torchvision.transforms import functional as F
+            images = [image.float().div(127.5).sub(1.0) for image in images]  # scale to [-1, 1]
+            images = ImageList.from_tensors(images, self.size_divisibility)
+            features = self.backbone.extract_features(images.tensor) 
+        else:
+            images = [(x - self.pixel_mean) / self.pixel_std for x in images]
+
+            images = ImageList.from_tensors(images, self.size_divisibility)
+
+            features = self.backbone.extract_features(images.tensor) # 多尺度特征图,不包括用于与文本匹配的（该层在self.backbone.visual_prediction_forward中调用）
+
         file_names = [x["file_name"] for x in batched_inputs] # 可去变量
         file_names = [x.split('/')[-1].split('.')[0] for x in file_names] # 可去变量
 
@@ -418,9 +438,6 @@ class MAFT_Plus(nn.Module):
         # print("meta['dataname']:",meta['dataname'])
         text_classifier = torch.cat([text_classifier, F.normalize(self.void_embedding.weight, dim=-1)], dim=0)
         # print("text_classifier:", text_classifier.shape) # text_classifier: torch.Size([329, 768]) 328个类别+1个void
-       
-
-        features = self.backbone.extract_features(images.tensor) # 多尺度特征图,不包括用于与文本匹配的（该层在self.backbone.visual_prediction_forward中调用）
     
         
         for k in features.keys():
@@ -430,8 +447,12 @@ class MAFT_Plus(nn.Module):
         features['num_templates'] = num_templates
 
         clip_feature = features['clip_vis_dense'] # torch.Size([1, 1536, 38, 25])
-        img_feat = self.visual_prediction_forward_convnext_2d(clip_feature) # 输出可以在CLIP空间中直接理解的语义特征图
-        
+        if self.PE_ENABLED:
+            img_feat = clip_feature # PE情况下直接输出图像特征
+        else:
+            img_feat = self.visual_prediction_forward_convnext_2d(clip_feature) # 输出可以在CLIP空间中直接理解的语义特征图
+        # print("img_feat shape:", img_feat.shape)
+
         img_feats = F.normalize(img_feat, dim=1) # B C H W
         text_feats = text_classifier# T C 带模板
         # print("text_feats shape:", text_feats.shape)
@@ -457,7 +478,7 @@ class MAFT_Plus(nn.Module):
 
         def post_process(seg_probs):
         
-            area_thd = 7.5 # 当前最佳 7.5 -> mIoU=7.3
+            area_thd = 28.1 # 当前最佳 8.5 
 
             corr_prob = seg_probs[:, :-1, :, :].clone()  # B T H W 去除void
             pred_cls = corr_prob.argmax(dim=1) # B H W 最大索引为T-1
@@ -469,6 +490,7 @@ class MAFT_Plus(nn.Module):
             corr_prob = corr_prob * valid_area_mask.permute(0, 3, 1, 2).contiguous() # B T H W
             corr_prob = F.softmax(corr_prob, dim=1)
 
+            # 将corr_prob上采样到原始图像大小
             original_h, original_w = batched_inputs[0]["height"], batched_inputs[0]["width"]
             corr_prob = F.interpolate(corr_prob, size=(original_h, original_w), mode='bilinear', align_corners=False)
             
@@ -479,7 +501,7 @@ class MAFT_Plus(nn.Module):
         pred_result = post_process(seg_probs)
         
 
-        # visualize_segmentation(pred_result, self.vis_class_names+['void'],batched_inputs[0]["image"],f"./show/{file_names[0]}_")
+        visualize_segmentation(pred_result, self.vis_class_names+['void'],batched_inputs[0]["image"],f"./show/{file_names[0]}_")
 
 
 

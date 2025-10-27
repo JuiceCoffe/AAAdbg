@@ -12,7 +12,7 @@ MODEL:
     GEOMETRIC_ENSEMBLE_BETA: -1.
 
 DATASETS:
-  # TEST: ("openvocab_pascal20_sem_seg_val", "openvocab_ade20k_full_sem_seg_val", 'openvocab_pascal_ctx459_sem_seg_val', 'openvocab_pascal_ctx59_sem_seg_val', 'openvocab_ade20k_panoptic_val') 
-  TEST: ("openvocab_ade20k_full_sem_seg_val",)
+  TEST: ("openvocab_pascal20_sem_seg_val", "openvocab_ade20k_full_sem_seg_val", 'openvocab_pascal_ctx459_sem_seg_val', 'openvocab_pascal_ctx59_sem_seg_val', 'openvocab_ade20k_panoptic_val') 
+  # TEST: ("openvocab_ade20k_full_sem_seg_val",) #'openvocab_ade20k_panoptic_val',)
 
 OUTPUT_DIR: ./out/semantic/evaluation

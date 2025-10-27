@@ -131,3 +131,9 @@ def add_fcclip_config(cfg):
     cfg.MODEL.rc_weights = None
     cfg.MODEL.cdt_params = [768, 8]
     cfg.MODEL.relu = 'relu'
+
+def add_pe_config(cfg):
+    # PE model config
+    cfg.PE = CN()
+    cfg.PE.ENABLED = False
+    cfg.PE.MODEL_NAME = "PE-Core-L14-336"

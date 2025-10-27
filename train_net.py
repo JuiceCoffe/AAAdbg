@@ -62,8 +62,10 @@ from maft import (
     MaskFormerSemanticDatasetMapper,
     SemanticSegmentorWithTTA,
     add_maskformer2_config,
-    add_fcclip_config
+    add_fcclip_config,
 )
+
+from maft.config import add_pe_config
 
 
 class Trainer(DefaultTrainer):
@@ -252,6 +254,7 @@ def setup(args):
     add_deeplab_config(cfg)
     add_maskformer2_config(cfg)
     add_fcclip_config(cfg)
+    add_pe_config(cfg)
     cfg.merge_from_file(args.config_file)
     cfg.merge_from_list(args.opts)
     cfg.merge_from_list(['SEED', 123])

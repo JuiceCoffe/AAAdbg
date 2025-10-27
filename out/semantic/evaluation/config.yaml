@@ -12,7 +12,7 @@ DATASETS:
   PROPOSAL_FILES_TEST: []
   PROPOSAL_FILES_TRAIN: []
   TEST:
-  - openvocab_ade20k_full_sem_seg_val
+  - openvocab_ade20k_panoptic_val
   TRAIN:
   - openvocab_coco_2017_train_stuff_sem_seg
 FLOAT32_PRECISION: ''
@@ -61,7 +61,7 @@ MODEL:
       - 512
   BACKBONE:
     FREEZE_AT: 0
-    NAME: CLIP
+    NAME: PEEncoder
   DEVICE: cuda
   FC_CLIP:
     CLIP_MODEL_NAME: convnext_large_d_320
@@ -352,13 +352,16 @@ MODEL:
     QK_SCALE: null
     USE_CHECKPOINT: false
     WINDOW_SIZE: 7
-  WEIGHTS: out/semantic/MAFT_Plus/maftp_l.pth
+  WEIGHTS: ''
   cdt_params:
   - 768
   - 8
   rc_weights: 0.1
   relu: relu
 OUTPUT_DIR: ./out/semantic/evaluation
+PE:
+  ENABLED: true
+  MODEL_NAME: PE-Core-L14-336
 SEED: 123
 SOLVER:
   AMP:
