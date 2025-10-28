@@ -78,6 +78,15 @@ class AttentionPooling(nn.Module):
         )
 
     def forward(self, x: torch.Tensor):
+        batch, _, _ = x.shape
+
+        q = self.probe.repeat((batch, 1, 1)).to(x.dtype)
+        x = self.attn(q, x, x, need_weights=False)[0]
+        x = x + self.mlp(self.layernorm(x))
+
+        return x
+
+    def dense_forward(self, x: torch.Tensor):
         batch, num, _ = x.shape
         q = self.probe.repeat((batch * num, 1, 1)).to(x.dtype)
         x = x.view(batch * num, 1, -1)

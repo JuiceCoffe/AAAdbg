@@ -26536,3 +26536,1177 @@ MAFT_Plus(
 [10/28 12:56:20] d2.evaluation.evaluator INFO: Inference done 26/2000. Dataloading: 0.0032 s/iter. Inference: 1.1782 s/iter. Eval: 0.0084 s/iter. Total: 1.1899 s/iter. ETA=0:39:08
 [10/28 12:56:25] d2.evaluation.evaluator INFO: Inference done 31/2000. Dataloading: 0.0032 s/iter. Inference: 1.1634 s/iter. Eval: 0.0088 s/iter. Total: 1.1756 s/iter. ETA=0:38:34
 [10/28 12:56:31] d2.evaluation.evaluator INFO: Inference done 36/2000. Dataloading: 0.0033 s/iter. Inference: 1.1524 s/iter. Eval: 0.0092 s/iter. Total: 1.1650 s/iter. ETA=0:38:07
+[10/28 15:50:32] detectron2 INFO: Rank of current process: 0. World size: 4
+[10/28 15:50:33] detectron2 INFO: Environment info:
+-------------------------------  ------------------------------------------------------------------------
+sys.platform                     linux
+Python                           3.8.20 (default, Oct  3 2024, 15:24:27) [GCC 11.2.0]
+numpy                            1.22.4
+detectron2                       0.6 @/data/hmp/conda_envs/AAA/lib/python3.8/site-packages/detectron2
+Compiler                         GCC 9.4
+CUDA compiler                    CUDA 11.8
+detectron2 arch flags            8.6
+DETECTRON2_ENV_MODULE            <not set>
+PyTorch                          2.4.1 @/data/hmp/conda_envs/AAA/lib/python3.8/site-packages/torch
+PyTorch debug build              False
+torch._C._GLIBCXX_USE_CXX11_ABI  False
+GPU available                    Yes
+GPU 0,1,2,3                      NVIDIA GeForce RTX 3090 (arch=8.6)
+Driver version                   550.144.03
+CUDA_HOME                        /data/hmp/CUDA/11.8
+Pillow                           9.3.0
+torchvision                      0.20.0 @/data/hmp/conda_envs/AAA/lib/python3.8/site-packages/torchvision
+torchvision arch flags           3.5, 5.0, 6.0, 7.0, 7.5, 8.0, 8.6
+fvcore                           0.1.5.post20221221
+iopath                           0.1.9
+cv2                              4.12.0
+-------------------------------  ------------------------------------------------------------------------
+PyTorch built with:
+  - GCC 9.3
+  - C++ Version: 201703
+  - Intel(R) oneAPI Math Kernel Library Version 2023.1-Product Build 20230303 for Intel(R) 64 architecture applications
+  - Intel(R) MKL-DNN v3.4.2 (Git Hash 1137e04ec0b5251ca2b4400a4fd3c667ce843d67)
+  - OpenMP 201511 (a.k.a. OpenMP 4.5)
+  - LAPACK is enabled (usually provided by MKL)
+  - NNPACK is enabled
+  - CPU capability usage: AVX512
+  - CUDA Runtime 11.8
+  - NVCC architecture flags: -gencode;arch=compute_50,code=sm_50;-gencode;arch=compute_60,code=sm_60;-gencode;arch=compute_61,code=sm_61;-gencode;arch=compute_70,code=sm_70;-gencode;arch=compute_75,code=sm_75;-gencode;arch=compute_80,code=sm_80;-gencode;arch=compute_86,code=sm_86;-gencode;arch=compute_37,code=sm_37;-gencode;arch=compute_90,code=sm_90;-gencode;arch=compute_37,code=compute_37
+  - CuDNN 90.1
+  - Magma 2.6.1
+  - Build settings: BLAS_INFO=mkl, BUILD_TYPE=Release, CUDA_VERSION=11.8, CUDNN_VERSION=9.1.0, CXX_COMPILER=/opt/rh/devtoolset-9/root/usr/bin/c++, CXX_FLAGS= -D_GLIBCXX_USE_CXX11_ABI=0 -fabi-version=11 -fvisibility-inlines-hidden -DUSE_PTHREADPOOL -DNDEBUG -DUSE_KINETO -DLIBKINETO_NOROCTRACER -DUSE_FBGEMM -DUSE_PYTORCH_QNNPACK -DUSE_XNNPACK -DSYMBOLICATE_MOBILE_DEBUG_HANDLE -O2 -fPIC -Wall -Wextra -Werror=return-type -Werror=non-virtual-dtor -Werror=bool-operation -Wnarrowing -Wno-missing-field-initializers -Wno-type-limits -Wno-array-bounds -Wno-unknown-pragmas -Wno-unused-parameter -Wno-unused-function -Wno-unused-result -Wno-strict-overflow -Wno-strict-aliasing -Wno-stringop-overflow -Wsuggest-override -Wno-psabi -Wno-error=pedantic -Wno-error=old-style-cast -Wno-missing-braces -fdiagnostics-color=always -faligned-new -Wno-unused-but-set-variable -Wno-maybe-uninitialized -fno-math-errno -fno-trapping-math -Werror=format -Wno-stringop-overflow, LAPACK_INFO=mkl, PERF_WITH_AVX=1, PERF_WITH_AVX2=1, PERF_WITH_AVX512=1, TORCH_VERSION=2.4.1, USE_CUDA=ON, USE_CUDNN=ON, USE_CUSPARSELT=1, USE_EXCEPTION_PTR=1, USE_GFLAGS=OFF, USE_GLOG=OFF, USE_GLOO=ON, USE_MKL=ON, USE_MKLDNN=ON, USE_MPI=OFF, USE_NCCL=ON, USE_NNPACK=ON, USE_OPENMP=ON, USE_ROCM=OFF, USE_ROCM_KERNEL_ASSERT=OFF, 
+
+[10/28 15:50:33] detectron2 INFO: Command line arguments: Namespace(config_file='configs/semantic/eval_PE.yaml', dist_url='tcp://127.0.0.1:50185', eval_only=True, machine_rank=0, num_gpus=4, num_machines=1, opts=[], resume=False)
+[10/28 15:50:33] detectron2 INFO: Contents of args.config_file=configs/semantic/eval_PE.yaml:
+# python train_net.py --config-file configs/semantic/eval.yaml  --num-gpus 8 --eval-only
+
+_BASE_: ./train_semantic_large.yaml
+MODEL:
+  BACKBONE:
+    NAME: "PEEncoder"
+  META_ARCHITECTURE: "MAFT_Plus"
+
+
+DATASETS:
+  # TEST: ("openvocab_pascal20_sem_seg_val", "openvocab_ade20k_full_sem_seg_val", 'openvocab_pascal_ctx459_sem_seg_val', 'openvocab_pascal_ctx59_sem_seg_val', 'openvocab_ade20k_panoptic_val') 
+  TEST: ( 'openvocab_ade20k_panoptic_val',)
+
+OUTPUT_DIR: ./out/semantic/evaluation
+
+PE:
+  ENABLED: True
+  MODEL_NAME: "PE-Core-L14-336"
+[10/28 15:50:33] detectron2 INFO: Running with full config:
+CUDNN_BENCHMARK: false
+DATALOADER:
+  ASPECT_RATIO_GROUPING: true
+  FILTER_EMPTY_ANNOTATIONS: true
+  NUM_WORKERS: 4
+  REPEAT_SQRT: true
+  REPEAT_THRESHOLD: 0.0
+  SAMPLER_TRAIN: TrainingSampler
+DATASETS:
+  PRECOMPUTED_PROPOSAL_TOPK_TEST: 1000
+  PRECOMPUTED_PROPOSAL_TOPK_TRAIN: 2000
+  PROPOSAL_FILES_TEST: []
+  PROPOSAL_FILES_TRAIN: []
+  TEST:
+  - openvocab_ade20k_panoptic_val
+  TRAIN:
+  - openvocab_coco_2017_train_stuff_sem_seg
+FLOAT32_PRECISION: ''
+GLOBAL:
+  HACK: 1.0
+INPUT:
+  COLOR_AUG_SSD: false
+  CROP:
+    ENABLED: false
+    SINGLE_CATEGORY_MAX_AREA: 1.0
+    SIZE:
+    - 0.9
+    - 0.9
+    TYPE: relative_range
+  DATASET_MAPPER_NAME: mask_former_semantic
+  FORMAT: RGB
+  IMAGE_SIZE: 1024
+  MASK_FORMAT: polygon
+  MAX_SCALE: 2.0
+  MAX_SIZE_TEST: 1333
+  MAX_SIZE_TRAIN: 1333
+  MIN_SCALE: 0.1
+  MIN_SIZE_TEST: 800
+  MIN_SIZE_TRAIN:
+  - 800
+  MIN_SIZE_TRAIN_SAMPLING: choice
+  RANDOM_FLIP: horizontal
+  SIZE_DIVISIBILITY: -1
+MODEL:
+  ANCHOR_GENERATOR:
+    ANGLES:
+    - - -90
+      - 0
+      - 90
+    ASPECT_RATIOS:
+    - - 0.5
+      - 1.0
+      - 2.0
+    NAME: DefaultAnchorGenerator
+    OFFSET: 0.0
+    SIZES:
+    - - 32
+      - 64
+      - 128
+      - 256
+      - 512
+  BACKBONE:
+    FREEZE_AT: 0
+    NAME: PEEncoder
+  DEVICE: cuda
+  FC_CLIP:
+    CLIP_MODEL_NAME: convnext_large_d_320
+    CLIP_PRETRAINED_WEIGHTS: laion2b_s29b_b131k_ft_soup
+    EMBED_DIM: 768
+    ENSEMBLE_ON_VALID_MASK: false
+    GEOMETRIC_ENSEMBLE_ALPHA: -1.0
+    GEOMETRIC_ENSEMBLE_BETA: -1.0
+  FPN:
+    FUSE_TYPE: sum
+    IN_FEATURES: []
+    NORM: ''
+    OUT_CHANNELS: 256
+  KEYPOINT_ON: false
+  LOAD_PROPOSALS: false
+  MASK_FORMER:
+    CLASS_WEIGHT: 2.0
+    DEC_LAYERS: 10
+    DEEP_SUPERVISION: true
+    DICE_WEIGHT: 5.0
+    DIM_FEEDFORWARD: 2048
+    DROPOUT: 0.0
+    ENC_LAYERS: 0
+    ENFORCE_INPUT_PROJ: false
+    HIDDEN_DIM: 256
+    IMPORTANCE_SAMPLE_RATIO: 0.75
+    MASK_WEIGHT: 5.0
+    NHEADS: 8
+    NO_OBJECT_WEIGHT: 0.1
+    NUM_OBJECT_QUERIES: 100
+    OVERSAMPLE_RATIO: 3.0
+    PRE_NORM: false
+    SIZE_DIVISIBILITY: 32
+    TEST:
+      INSTANCE_ON: false
+      OBJECT_MASK_THRESHOLD: 0.2
+      OVERLAP_THRESHOLD: 0.7
+      PANOPTIC_ON: false
+      SEMANTIC_ON: true
+      SEM_SEG_POSTPROCESSING_BEFORE_INFERENCE: false
+    TRAIN_NUM_POINTS: 12544
+    TRANSFORMER_DECODER_NAME: MultiScaleMaskedTransformerDecoder
+    TRANSFORMER_IN_FEATURE: multi_scale_pixel_decoder
+  MASK_ON: false
+  META_ARCHITECTURE: MAFT_Plus
+  PANOPTIC_FPN:
+    COMBINE:
+      ENABLED: true
+      INSTANCES_CONFIDENCE_THRESH: 0.5
+      OVERLAP_THRESH: 0.5
+      STUFF_AREA_LIMIT: 4096
+    INSTANCE_LOSS_WEIGHT: 1.0
+  PIXEL_MEAN:
+  - 122.7709383
+  - 116.7460125
+  - 104.09373615
+  PIXEL_STD:
+  - 68.5005327
+  - 66.6321579
+  - 70.32316305
+  PROPOSAL_GENERATOR:
+    MIN_SIZE: 0
+    NAME: RPN
+  RESNETS:
+    DEFORM_MODULATED: false
+    DEFORM_NUM_GROUPS: 1
+    DEFORM_ON_PER_STAGE:
+    - false
+    - false
+    - false
+    - false
+    DEPTH: 50
+    NORM: FrozenBN
+    NUM_GROUPS: 1
+    OUT_FEATURES:
+    - res2
+    - res3
+    - res4
+    - res5
+    RES2_OUT_CHANNELS: 256
+    RES4_DILATION: 1
+    RES5_DILATION: 1
+    RES5_MULTI_GRID:
+    - 1
+    - 1
+    - 1
+    STEM_OUT_CHANNELS: 64
+    STEM_TYPE: basic
+    STRIDE_IN_1X1: false
+    WIDTH_PER_GROUP: 64
+  RETINANET:
+    BBOX_REG_LOSS_TYPE: smooth_l1
+    BBOX_REG_WEIGHTS: &id002
+    - 1.0
+    - 1.0
+    - 1.0
+    - 1.0
+    FOCAL_LOSS_ALPHA: 0.25
+    FOCAL_LOSS_GAMMA: 2.0
+    IN_FEATURES:
+    - p3
+    - p4
+    - p5
+    - p6
+    - p7
+    IOU_LABELS:
+    - 0
+    - -1
+    - 1
+    IOU_THRESHOLDS:
+    - 0.4
+    - 0.5
+    NMS_THRESH_TEST: 0.5
+    NORM: ''
+    NUM_CLASSES: 80
+    NUM_CONVS: 4
+    PRIOR_PROB: 0.01
+    SCORE_THRESH_TEST: 0.05
+    SMOOTH_L1_LOSS_BETA: 0.1
+    TOPK_CANDIDATES_TEST: 1000
+  ROI_BOX_CASCADE_HEAD:
+    BBOX_REG_WEIGHTS:
+    - &id001
+      - 10.0
+      - 10.0
+      - 5.0
+      - 5.0
+    - - 20.0
+      - 20.0
+      - 10.0
+      - 10.0
+    - - 30.0
+      - 30.0
+      - 15.0
+      - 15.0
+    IOUS:
+    - 0.5
+    - 0.6
+    - 0.7
+  ROI_BOX_HEAD:
+    BBOX_REG_LOSS_TYPE: smooth_l1
+    BBOX_REG_LOSS_WEIGHT: 1.0
+    BBOX_REG_WEIGHTS: *id001
+    CLS_AGNOSTIC_BBOX_REG: false
+    CONV_DIM: 256
+    FC_DIM: 1024
+    FED_LOSS_FREQ_WEIGHT_POWER: 0.5
+    FED_LOSS_NUM_CLASSES: 50
+    NAME: ''
+    NORM: ''
+    NUM_CONV: 0
+    NUM_FC: 0
+    POOLER_RESOLUTION: 14
+    POOLER_SAMPLING_RATIO: 0
+    POOLER_TYPE: ROIAlignV2
+    SMOOTH_L1_BETA: 0.0
+    TRAIN_ON_PRED_BOXES: false
+    USE_FED_LOSS: false
+    USE_SIGMOID_CE: false
+  ROI_HEADS:
+    BATCH_SIZE_PER_IMAGE: 512
+    IN_FEATURES:
+    - res4
+    IOU_LABELS:
+    - 0
+    - 1
+    IOU_THRESHOLDS:
+    - 0.5
+    NAME: Res5ROIHeads
+    NMS_THRESH_TEST: 0.5
+    NUM_CLASSES: 80
+    POSITIVE_FRACTION: 0.25
+    PROPOSAL_APPEND_GT: true
+    SCORE_THRESH_TEST: 0.05
+  ROI_KEYPOINT_HEAD:
+    CONV_DIMS:
+    - 512
+    - 512
+    - 512
+    - 512
+    - 512
+    - 512
+    - 512
+    - 512
+    LOSS_WEIGHT: 1.0
+    MIN_KEYPOINTS_PER_IMAGE: 1
+    NAME: KRCNNConvDeconvUpsampleHead
+    NORMALIZE_LOSS_BY_VISIBLE_KEYPOINTS: true
+    NUM_KEYPOINTS: 17
+    POOLER_RESOLUTION: 14
+    POOLER_SAMPLING_RATIO: 0
+    POOLER_TYPE: ROIAlignV2
+  ROI_MASK_HEAD:
+    CLS_AGNOSTIC_MASK: false
+    CONV_DIM: 256
+    NAME: MaskRCNNConvUpsampleHead
+    NORM: ''
+    NUM_CONV: 0
+    POOLER_RESOLUTION: 14
+    POOLER_SAMPLING_RATIO: 0
+    POOLER_TYPE: ROIAlignV2
+  RPN:
+    BATCH_SIZE_PER_IMAGE: 256
+    BBOX_REG_LOSS_TYPE: smooth_l1
+    BBOX_REG_LOSS_WEIGHT: 1.0
+    BBOX_REG_WEIGHTS: *id002
+    BOUNDARY_THRESH: -1
+    CONV_DIMS:
+    - -1
+    HEAD_NAME: StandardRPNHead
+    IN_FEATURES:
+    - res4
+    IOU_LABELS:
+    - 0
+    - -1
+    - 1
+    IOU_THRESHOLDS:
+    - 0.3
+    - 0.7
+    LOSS_WEIGHT: 1.0
+    NMS_THRESH: 0.7
+    POSITIVE_FRACTION: 0.5
+    POST_NMS_TOPK_TEST: 1000
+    POST_NMS_TOPK_TRAIN: 2000
+    PRE_NMS_TOPK_TEST: 6000
+    PRE_NMS_TOPK_TRAIN: 12000
+    SMOOTH_L1_BETA: 0.0
+  SEM_SEG_HEAD:
+    ASPP_CHANNELS: 256
+    ASPP_DILATIONS:
+    - 6
+    - 12
+    - 18
+    ASPP_DROPOUT: 0.1
+    COMMON_STRIDE: 4
+    CONVS_DIM: 256
+    DEFORMABLE_TRANSFORMER_ENCODER_IN_FEATURES:
+    - res3
+    - res4
+    - res5
+    DEFORMABLE_TRANSFORMER_ENCODER_N_HEADS: 8
+    DEFORMABLE_TRANSFORMER_ENCODER_N_POINTS: 4
+    IGNORE_VALUE: 255
+    IN_FEATURES:
+    - res2
+    - res3
+    - res4
+    - res5
+    LOSS_TYPE: hard_pixel_mining
+    LOSS_WEIGHT: 1.0
+    MASK_DIM: 256
+    NAME: FCCLIPHead
+    NORM: GN
+    NUM_CLASSES: 171
+    PIXEL_DECODER_NAME: MSDeformAttnPixelDecoder
+    PROJECT_CHANNELS:
+    - 48
+    PROJECT_FEATURES:
+    - res2
+    TRANSFORMER_ENC_LAYERS: 6
+    USE_DEPTHWISE_SEPARABLE_CONV: false
+  SWIN:
+    APE: false
+    ATTN_DROP_RATE: 0.0
+    DEPTHS:
+    - 2
+    - 2
+    - 6
+    - 2
+    DROP_PATH_RATE: 0.3
+    DROP_RATE: 0.0
+    EMBED_DIM: 96
+    MLP_RATIO: 4.0
+    NUM_HEADS:
+    - 3
+    - 6
+    - 12
+    - 24
+    OUT_FEATURES:
+    - res2
+    - res3
+    - res4
+    - res5
+    PATCH_NORM: true
+    PATCH_SIZE: 4
+    PRETRAIN_IMG_SIZE: 224
+    QKV_BIAS: true
+    QK_SCALE: null
+    USE_CHECKPOINT: false
+    WINDOW_SIZE: 7
+  WEIGHTS: ''
+  cdt_params:
+  - 768
+  - 8
+  rc_weights: 0.1
+  relu: relu
+OUTPUT_DIR: ./out/semantic/evaluation
+PE:
+  ENABLED: true
+  MODEL_NAME: PE-Core-L14-336
+SEED: 123
+SOLVER:
+  AMP:
+    ENABLED: true
+  BACKBONE_MULTIPLIER: 0.1
+  BASE_LR: 0.0001
+  BASE_LR_END: 0.0
+  BIAS_LR_FACTOR: 1.0
+  CHECKPOINT_PERIOD: 50000000
+  CLIP_GRADIENTS:
+    CLIP_TYPE: full_model
+    CLIP_VALUE: 0.01
+    ENABLED: true
+    NORM_TYPE: 2.0
+  GAMMA: 0.1
+  IMS_PER_BATCH: 1
+  LR_SCHEDULER_NAME: WarmupPolyLR
+  MAX_ITER: 55000
+  MOMENTUM: 0.9
+  NESTEROV: false
+  NUM_DECAYS: 3
+  OPTIMIZER: ADAMW
+  POLY_LR_CONSTANT_ENDING: 0.0
+  POLY_LR_POWER: 0.9
+  REFERENCE_WORLD_SIZE: 0
+  RESCALE_INTERVAL: false
+  STEPS:
+  - 327778
+  - 355092
+  WARMUP_FACTOR: 1.0
+  WARMUP_ITERS: 0
+  WARMUP_METHOD: linear
+  WEIGHT_DECAY: 2.0e-05
+  WEIGHT_DECAY_BIAS: null
+  WEIGHT_DECAY_EMBED: 0.0
+  WEIGHT_DECAY_NORM: 0.0
+TEST:
+  AUG:
+    ENABLED: false
+    FLIP: true
+    MAX_SIZE: 4000
+    MIN_SIZES:
+    - 400
+    - 500
+    - 600
+    - 700
+    - 800
+    - 900
+    - 1000
+    - 1100
+    - 1200
+  DETECTIONS_PER_IMAGE: 100
+  EVAL_PERIOD: 5000
+  EXPECTED_RESULTS: []
+  KEYPOINT_OKS_SIGMAS: []
+  PRECISE_BN:
+    ENABLED: false
+    NUM_ITER: 200
+VERSION: 2
+VIS_PERIOD: 0
+
+[10/28 15:50:33] detectron2 INFO: Full config saved to ./out/semantic/evaluation/config.yaml
+[10/28 15:50:52] d2.engine.defaults INFO: Model:
+MAFT_Plus(
+  (backbone): PEEncoder(
+    (pe_model): CLIP(
+      (token_embedding): Embedding(49408, 1024)
+      (transformer): Transformer(
+        (resblocks): ModuleList(
+          (0-23): 24 x ResidualAttentionBlock(
+            (attn): MultiheadAttention(
+              (out_proj): NonDynamicallyQuantizableLinear(in_features=1024, out_features=1024, bias=True)
+            )
+            (ls_1): Identity()
+            (ls_2): Identity()
+            (ln_1): LayerNorm((1024,), eps=1e-05, elementwise_affine=True)
+            (ln_2): LayerNorm((1024,), eps=1e-05, elementwise_affine=True)
+            (drop_path1): Identity()
+            (drop_path2): Identity()
+            (mlp): Sequential(
+              (c_fc): Linear(in_features=1024, out_features=4096, bias=True)
+              (gelu): GELU(approximate='none')
+              (c_proj): Linear(in_features=4096, out_features=1024, bias=True)
+            )
+          )
+        )
+      )
+      (ln_final): LayerNorm((1024,), eps=1e-05, elementwise_affine=True)
+      (visual): VisionTransformer(
+        (conv1): Conv2d(3, 1024, kernel_size=(14, 14), stride=(14, 14), bias=False)
+        (ln_pre): LayerNorm((1024,), eps=1e-05, elementwise_affine=True)
+        (ln_post): LayerNorm((1024,), eps=1e-05, elementwise_affine=True)
+        (transformer): Transformer(
+          (resblocks): ModuleList(
+            (0-23): 24 x ResidualAttentionBlock(
+              (attn): SelfAttention(
+                (out_proj): Linear(in_features=1024, out_features=1024, bias=True)
+              )
+              (ls_1): Identity()
+              (ls_2): Identity()
+              (ln_1): LayerNorm((1024,), eps=1e-05, elementwise_affine=True)
+              (ln_2): LayerNorm((1024,), eps=1e-05, elementwise_affine=True)
+              (drop_path1): Identity()
+              (drop_path2): Identity()
+              (mlp): Sequential(
+                (c_fc): Linear(in_features=1024, out_features=4096, bias=True)
+                (gelu): GELU(approximate='none')
+                (c_proj): Linear(in_features=4096, out_features=1024, bias=True)
+              )
+            )
+          )
+        )
+        (attn_pool): AttentionPooling(
+          (attn): MultiheadAttention(
+            (out_proj): NonDynamicallyQuantizableLinear(in_features=1024, out_features=1024, bias=True)
+          )
+          (layernorm): LayerNorm((1024,), eps=1e-05, elementwise_affine=True)
+          (mlp): Sequential(
+            (c_fc): Linear(in_features=1024, out_features=4096, bias=True)
+            (gelu): GELU(approximate='none')
+            (c_proj): Linear(in_features=4096, out_features=1024, bias=True)
+          )
+        )
+      )
+    )
+  )
+  (void_embedding): Embedding(1, 1024)
+)
+[10/28 15:50:52] d2.checkpoint.detection_checkpoint INFO: [DetectionCheckpointer] Loading from  ...
+[10/28 15:50:52] fvcore.common.checkpoint INFO: No checkpoint found. Initializing model from scratch
+[10/28 15:50:52] d2.data.dataset_mapper INFO: [DatasetMapper] Augmentations used in inference: [ResizeShortestEdge(short_edge_length=(800, 800), max_size=1333, sample_style='choice')]
+[10/28 15:50:52] d2.data.common INFO: Serializing the dataset using: <class 'detectron2.data.common._TorchSerializedList'>
+[10/28 15:50:52] d2.data.common INFO: Serializing 2000 elements to byte tensors and concatenating them all ...
+[10/28 15:50:52] d2.data.common INFO: Serialized dataset takes 15.18 MiB
+[10/28 15:50:53] d2.evaluation.evaluator INFO: Start inference on 500 batches
+[10/28 15:51:57] detectron2 INFO: Rank of current process: 0. World size: 4
+[10/28 15:51:58] detectron2 INFO: Environment info:
+-------------------------------  ------------------------------------------------------------------------
+sys.platform                     linux
+Python                           3.8.20 (default, Oct  3 2024, 15:24:27) [GCC 11.2.0]
+numpy                            1.22.4
+detectron2                       0.6 @/data/hmp/conda_envs/AAA/lib/python3.8/site-packages/detectron2
+Compiler                         GCC 9.4
+CUDA compiler                    CUDA 11.8
+detectron2 arch flags            8.6
+DETECTRON2_ENV_MODULE            <not set>
+PyTorch                          2.4.1 @/data/hmp/conda_envs/AAA/lib/python3.8/site-packages/torch
+PyTorch debug build              False
+torch._C._GLIBCXX_USE_CXX11_ABI  False
+GPU available                    Yes
+GPU 0,1,2,3                      NVIDIA GeForce RTX 3090 (arch=8.6)
+Driver version                   550.144.03
+CUDA_HOME                        /data/hmp/CUDA/11.8
+Pillow                           9.3.0
+torchvision                      0.20.0 @/data/hmp/conda_envs/AAA/lib/python3.8/site-packages/torchvision
+torchvision arch flags           3.5, 5.0, 6.0, 7.0, 7.5, 8.0, 8.6
+fvcore                           0.1.5.post20221221
+iopath                           0.1.9
+cv2                              4.12.0
+-------------------------------  ------------------------------------------------------------------------
+PyTorch built with:
+  - GCC 9.3
+  - C++ Version: 201703
+  - Intel(R) oneAPI Math Kernel Library Version 2023.1-Product Build 20230303 for Intel(R) 64 architecture applications
+  - Intel(R) MKL-DNN v3.4.2 (Git Hash 1137e04ec0b5251ca2b4400a4fd3c667ce843d67)
+  - OpenMP 201511 (a.k.a. OpenMP 4.5)
+  - LAPACK is enabled (usually provided by MKL)
+  - NNPACK is enabled
+  - CPU capability usage: AVX512
+  - CUDA Runtime 11.8
+  - NVCC architecture flags: -gencode;arch=compute_50,code=sm_50;-gencode;arch=compute_60,code=sm_60;-gencode;arch=compute_61,code=sm_61;-gencode;arch=compute_70,code=sm_70;-gencode;arch=compute_75,code=sm_75;-gencode;arch=compute_80,code=sm_80;-gencode;arch=compute_86,code=sm_86;-gencode;arch=compute_37,code=sm_37;-gencode;arch=compute_90,code=sm_90;-gencode;arch=compute_37,code=compute_37
+  - CuDNN 90.1
+  - Magma 2.6.1
+  - Build settings: BLAS_INFO=mkl, BUILD_TYPE=Release, CUDA_VERSION=11.8, CUDNN_VERSION=9.1.0, CXX_COMPILER=/opt/rh/devtoolset-9/root/usr/bin/c++, CXX_FLAGS= -D_GLIBCXX_USE_CXX11_ABI=0 -fabi-version=11 -fvisibility-inlines-hidden -DUSE_PTHREADPOOL -DNDEBUG -DUSE_KINETO -DLIBKINETO_NOROCTRACER -DUSE_FBGEMM -DUSE_PYTORCH_QNNPACK -DUSE_XNNPACK -DSYMBOLICATE_MOBILE_DEBUG_HANDLE -O2 -fPIC -Wall -Wextra -Werror=return-type -Werror=non-virtual-dtor -Werror=bool-operation -Wnarrowing -Wno-missing-field-initializers -Wno-type-limits -Wno-array-bounds -Wno-unknown-pragmas -Wno-unused-parameter -Wno-unused-function -Wno-unused-result -Wno-strict-overflow -Wno-strict-aliasing -Wno-stringop-overflow -Wsuggest-override -Wno-psabi -Wno-error=pedantic -Wno-error=old-style-cast -Wno-missing-braces -fdiagnostics-color=always -faligned-new -Wno-unused-but-set-variable -Wno-maybe-uninitialized -fno-math-errno -fno-trapping-math -Werror=format -Wno-stringop-overflow, LAPACK_INFO=mkl, PERF_WITH_AVX=1, PERF_WITH_AVX2=1, PERF_WITH_AVX512=1, TORCH_VERSION=2.4.1, USE_CUDA=ON, USE_CUDNN=ON, USE_CUSPARSELT=1, USE_EXCEPTION_PTR=1, USE_GFLAGS=OFF, USE_GLOG=OFF, USE_GLOO=ON, USE_MKL=ON, USE_MKLDNN=ON, USE_MPI=OFF, USE_NCCL=ON, USE_NNPACK=ON, USE_OPENMP=ON, USE_ROCM=OFF, USE_ROCM_KERNEL_ASSERT=OFF, 
+
+[10/28 15:51:58] detectron2 INFO: Command line arguments: Namespace(config_file='configs/semantic/eval_PE.yaml', dist_url='tcp://127.0.0.1:50185', eval_only=True, machine_rank=0, num_gpus=4, num_machines=1, opts=[], resume=False)
+[10/28 15:51:58] detectron2 INFO: Contents of args.config_file=configs/semantic/eval_PE.yaml:
+# python train_net.py --config-file configs/semantic/eval.yaml  --num-gpus 8 --eval-only
+
+_BASE_: ./train_semantic_large.yaml
+MODEL:
+  BACKBONE:
+    NAME: "PEEncoder"
+  META_ARCHITECTURE: "MAFT_Plus"
+
+
+DATASETS:
+  # TEST: ("openvocab_pascal20_sem_seg_val", "openvocab_ade20k_full_sem_seg_val", 'openvocab_pascal_ctx459_sem_seg_val', 'openvocab_pascal_ctx59_sem_seg_val', 'openvocab_ade20k_panoptic_val') 
+  TEST: ( 'openvocab_ade20k_panoptic_val',)
+
+OUTPUT_DIR: ./out/semantic/evaluation
+
+PE:
+  ENABLED: True
+  MODEL_NAME: "PE-Core-L14-336"
+[10/28 15:51:58] detectron2 INFO: Running with full config:
+CUDNN_BENCHMARK: false
+DATALOADER:
+  ASPECT_RATIO_GROUPING: true
+  FILTER_EMPTY_ANNOTATIONS: true
+  NUM_WORKERS: 4
+  REPEAT_SQRT: true
+  REPEAT_THRESHOLD: 0.0
+  SAMPLER_TRAIN: TrainingSampler
+DATASETS:
+  PRECOMPUTED_PROPOSAL_TOPK_TEST: 1000
+  PRECOMPUTED_PROPOSAL_TOPK_TRAIN: 2000
+  PROPOSAL_FILES_TEST: []
+  PROPOSAL_FILES_TRAIN: []
+  TEST:
+  - openvocab_ade20k_panoptic_val
+  TRAIN:
+  - openvocab_coco_2017_train_stuff_sem_seg
+FLOAT32_PRECISION: ''
+GLOBAL:
+  HACK: 1.0
+INPUT:
+  COLOR_AUG_SSD: false
+  CROP:
+    ENABLED: false
+    SINGLE_CATEGORY_MAX_AREA: 1.0
+    SIZE:
+    - 0.9
+    - 0.9
+    TYPE: relative_range
+  DATASET_MAPPER_NAME: mask_former_semantic
+  FORMAT: RGB
+  IMAGE_SIZE: 1024
+  MASK_FORMAT: polygon
+  MAX_SCALE: 2.0
+  MAX_SIZE_TEST: 1333
+  MAX_SIZE_TRAIN: 1333
+  MIN_SCALE: 0.1
+  MIN_SIZE_TEST: 800
+  MIN_SIZE_TRAIN:
+  - 800
+  MIN_SIZE_TRAIN_SAMPLING: choice
+  RANDOM_FLIP: horizontal
+  SIZE_DIVISIBILITY: -1
+MODEL:
+  ANCHOR_GENERATOR:
+    ANGLES:
+    - - -90
+      - 0
+      - 90
+    ASPECT_RATIOS:
+    - - 0.5
+      - 1.0
+      - 2.0
+    NAME: DefaultAnchorGenerator
+    OFFSET: 0.0
+    SIZES:
+    - - 32
+      - 64
+      - 128
+      - 256
+      - 512
+  BACKBONE:
+    FREEZE_AT: 0
+    NAME: PEEncoder
+  DEVICE: cuda
+  FC_CLIP:
+    CLIP_MODEL_NAME: convnext_large_d_320
+    CLIP_PRETRAINED_WEIGHTS: laion2b_s29b_b131k_ft_soup
+    EMBED_DIM: 768
+    ENSEMBLE_ON_VALID_MASK: false
+    GEOMETRIC_ENSEMBLE_ALPHA: -1.0
+    GEOMETRIC_ENSEMBLE_BETA: -1.0
+  FPN:
+    FUSE_TYPE: sum
+    IN_FEATURES: []
+    NORM: ''
+    OUT_CHANNELS: 256
+  KEYPOINT_ON: false
+  LOAD_PROPOSALS: false
+  MASK_FORMER:
+    CLASS_WEIGHT: 2.0
+    DEC_LAYERS: 10
+    DEEP_SUPERVISION: true
+    DICE_WEIGHT: 5.0
+    DIM_FEEDFORWARD: 2048
+    DROPOUT: 0.0
+    ENC_LAYERS: 0
+    ENFORCE_INPUT_PROJ: false
+    HIDDEN_DIM: 256
+    IMPORTANCE_SAMPLE_RATIO: 0.75
+    MASK_WEIGHT: 5.0
+    NHEADS: 8
+    NO_OBJECT_WEIGHT: 0.1
+    NUM_OBJECT_QUERIES: 100
+    OVERSAMPLE_RATIO: 3.0
+    PRE_NORM: false
+    SIZE_DIVISIBILITY: 32
+    TEST:
+      INSTANCE_ON: false
+      OBJECT_MASK_THRESHOLD: 0.2
+      OVERLAP_THRESHOLD: 0.7
+      PANOPTIC_ON: false
+      SEMANTIC_ON: true
+      SEM_SEG_POSTPROCESSING_BEFORE_INFERENCE: false
+    TRAIN_NUM_POINTS: 12544
+    TRANSFORMER_DECODER_NAME: MultiScaleMaskedTransformerDecoder
+    TRANSFORMER_IN_FEATURE: multi_scale_pixel_decoder
+  MASK_ON: false
+  META_ARCHITECTURE: MAFT_Plus
+  PANOPTIC_FPN:
+    COMBINE:
+      ENABLED: true
+      INSTANCES_CONFIDENCE_THRESH: 0.5
+      OVERLAP_THRESH: 0.5
+      STUFF_AREA_LIMIT: 4096
+    INSTANCE_LOSS_WEIGHT: 1.0
+  PIXEL_MEAN:
+  - 122.7709383
+  - 116.7460125
+  - 104.09373615
+  PIXEL_STD:
+  - 68.5005327
+  - 66.6321579
+  - 70.32316305
+  PROPOSAL_GENERATOR:
+    MIN_SIZE: 0
+    NAME: RPN
+  RESNETS:
+    DEFORM_MODULATED: false
+    DEFORM_NUM_GROUPS: 1
+    DEFORM_ON_PER_STAGE:
+    - false
+    - false
+    - false
+    - false
+    DEPTH: 50
+    NORM: FrozenBN
+    NUM_GROUPS: 1
+    OUT_FEATURES:
+    - res2
+    - res3
+    - res4
+    - res5
+    RES2_OUT_CHANNELS: 256
+    RES4_DILATION: 1
+    RES5_DILATION: 1
+    RES5_MULTI_GRID:
+    - 1
+    - 1
+    - 1
+    STEM_OUT_CHANNELS: 64
+    STEM_TYPE: basic
+    STRIDE_IN_1X1: false
+    WIDTH_PER_GROUP: 64
+  RETINANET:
+    BBOX_REG_LOSS_TYPE: smooth_l1
+    BBOX_REG_WEIGHTS: &id002
+    - 1.0
+    - 1.0
+    - 1.0
+    - 1.0
+    FOCAL_LOSS_ALPHA: 0.25
+    FOCAL_LOSS_GAMMA: 2.0
+    IN_FEATURES:
+    - p3
+    - p4
+    - p5
+    - p6
+    - p7
+    IOU_LABELS:
+    - 0
+    - -1
+    - 1
+    IOU_THRESHOLDS:
+    - 0.4
+    - 0.5
+    NMS_THRESH_TEST: 0.5
+    NORM: ''
+    NUM_CLASSES: 80
+    NUM_CONVS: 4
+    PRIOR_PROB: 0.01
+    SCORE_THRESH_TEST: 0.05
+    SMOOTH_L1_LOSS_BETA: 0.1
+    TOPK_CANDIDATES_TEST: 1000
+  ROI_BOX_CASCADE_HEAD:
+    BBOX_REG_WEIGHTS:
+    - &id001
+      - 10.0
+      - 10.0
+      - 5.0
+      - 5.0
+    - - 20.0
+      - 20.0
+      - 10.0
+      - 10.0
+    - - 30.0
+      - 30.0
+      - 15.0
+      - 15.0
+    IOUS:
+    - 0.5
+    - 0.6
+    - 0.7
+  ROI_BOX_HEAD:
+    BBOX_REG_LOSS_TYPE: smooth_l1
+    BBOX_REG_LOSS_WEIGHT: 1.0
+    BBOX_REG_WEIGHTS: *id001
+    CLS_AGNOSTIC_BBOX_REG: false
+    CONV_DIM: 256
+    FC_DIM: 1024
+    FED_LOSS_FREQ_WEIGHT_POWER: 0.5
+    FED_LOSS_NUM_CLASSES: 50
+    NAME: ''
+    NORM: ''
+    NUM_CONV: 0
+    NUM_FC: 0
+    POOLER_RESOLUTION: 14
+    POOLER_SAMPLING_RATIO: 0
+    POOLER_TYPE: ROIAlignV2
+    SMOOTH_L1_BETA: 0.0
+    TRAIN_ON_PRED_BOXES: false
+    USE_FED_LOSS: false
+    USE_SIGMOID_CE: false
+  ROI_HEADS:
+    BATCH_SIZE_PER_IMAGE: 512
+    IN_FEATURES:
+    - res4
+    IOU_LABELS:
+    - 0
+    - 1
+    IOU_THRESHOLDS:
+    - 0.5
+    NAME: Res5ROIHeads
+    NMS_THRESH_TEST: 0.5
+    NUM_CLASSES: 80
+    POSITIVE_FRACTION: 0.25
+    PROPOSAL_APPEND_GT: true
+    SCORE_THRESH_TEST: 0.05
+  ROI_KEYPOINT_HEAD:
+    CONV_DIMS:
+    - 512
+    - 512
+    - 512
+    - 512
+    - 512
+    - 512
+    - 512
+    - 512
+    LOSS_WEIGHT: 1.0
+    MIN_KEYPOINTS_PER_IMAGE: 1
+    NAME: KRCNNConvDeconvUpsampleHead
+    NORMALIZE_LOSS_BY_VISIBLE_KEYPOINTS: true
+    NUM_KEYPOINTS: 17
+    POOLER_RESOLUTION: 14
+    POOLER_SAMPLING_RATIO: 0
+    POOLER_TYPE: ROIAlignV2
+  ROI_MASK_HEAD:
+    CLS_AGNOSTIC_MASK: false
+    CONV_DIM: 256
+    NAME: MaskRCNNConvUpsampleHead
+    NORM: ''
+    NUM_CONV: 0
+    POOLER_RESOLUTION: 14
+    POOLER_SAMPLING_RATIO: 0
+    POOLER_TYPE: ROIAlignV2
+  RPN:
+    BATCH_SIZE_PER_IMAGE: 256
+    BBOX_REG_LOSS_TYPE: smooth_l1
+    BBOX_REG_LOSS_WEIGHT: 1.0
+    BBOX_REG_WEIGHTS: *id002
+    BOUNDARY_THRESH: -1
+    CONV_DIMS:
+    - -1
+    HEAD_NAME: StandardRPNHead
+    IN_FEATURES:
+    - res4
+    IOU_LABELS:
+    - 0
+    - -1
+    - 1
+    IOU_THRESHOLDS:
+    - 0.3
+    - 0.7
+    LOSS_WEIGHT: 1.0
+    NMS_THRESH: 0.7
+    POSITIVE_FRACTION: 0.5
+    POST_NMS_TOPK_TEST: 1000
+    POST_NMS_TOPK_TRAIN: 2000
+    PRE_NMS_TOPK_TEST: 6000
+    PRE_NMS_TOPK_TRAIN: 12000
+    SMOOTH_L1_BETA: 0.0
+  SEM_SEG_HEAD:
+    ASPP_CHANNELS: 256
+    ASPP_DILATIONS:
+    - 6
+    - 12
+    - 18
+    ASPP_DROPOUT: 0.1
+    COMMON_STRIDE: 4
+    CONVS_DIM: 256
+    DEFORMABLE_TRANSFORMER_ENCODER_IN_FEATURES:
+    - res3
+    - res4
+    - res5
+    DEFORMABLE_TRANSFORMER_ENCODER_N_HEADS: 8
+    DEFORMABLE_TRANSFORMER_ENCODER_N_POINTS: 4
+    IGNORE_VALUE: 255
+    IN_FEATURES:
+    - res2
+    - res3
+    - res4
+    - res5
+    LOSS_TYPE: hard_pixel_mining
+    LOSS_WEIGHT: 1.0
+    MASK_DIM: 256
+    NAME: FCCLIPHead
+    NORM: GN
+    NUM_CLASSES: 171
+    PIXEL_DECODER_NAME: MSDeformAttnPixelDecoder
+    PROJECT_CHANNELS:
+    - 48
+    PROJECT_FEATURES:
+    - res2
+    TRANSFORMER_ENC_LAYERS: 6
+    USE_DEPTHWISE_SEPARABLE_CONV: false
+  SWIN:
+    APE: false
+    ATTN_DROP_RATE: 0.0
+    DEPTHS:
+    - 2
+    - 2
+    - 6
+    - 2
+    DROP_PATH_RATE: 0.3
+    DROP_RATE: 0.0
+    EMBED_DIM: 96
+    MLP_RATIO: 4.0
+    NUM_HEADS:
+    - 3
+    - 6
+    - 12
+    - 24
+    OUT_FEATURES:
+    - res2
+    - res3
+    - res4
+    - res5
+    PATCH_NORM: true
+    PATCH_SIZE: 4
+    PRETRAIN_IMG_SIZE: 224
+    QKV_BIAS: true
+    QK_SCALE: null
+    USE_CHECKPOINT: false
+    WINDOW_SIZE: 7
+  WEIGHTS: ''
+  cdt_params:
+  - 768
+  - 8
+  rc_weights: 0.1
+  relu: relu
+OUTPUT_DIR: ./out/semantic/evaluation
+PE:
+  ENABLED: true
+  MODEL_NAME: PE-Core-L14-336
+SEED: 123
+SOLVER:
+  AMP:
+    ENABLED: true
+  BACKBONE_MULTIPLIER: 0.1
+  BASE_LR: 0.0001
+  BASE_LR_END: 0.0
+  BIAS_LR_FACTOR: 1.0
+  CHECKPOINT_PERIOD: 50000000
+  CLIP_GRADIENTS:
+    CLIP_TYPE: full_model
+    CLIP_VALUE: 0.01
+    ENABLED: true
+    NORM_TYPE: 2.0
+  GAMMA: 0.1
+  IMS_PER_BATCH: 1
+  LR_SCHEDULER_NAME: WarmupPolyLR
+  MAX_ITER: 55000
+  MOMENTUM: 0.9
+  NESTEROV: false
+  NUM_DECAYS: 3
+  OPTIMIZER: ADAMW
+  POLY_LR_CONSTANT_ENDING: 0.0
+  POLY_LR_POWER: 0.9
+  REFERENCE_WORLD_SIZE: 0
+  RESCALE_INTERVAL: false
+  STEPS:
+  - 327778
+  - 355092
+  WARMUP_FACTOR: 1.0
+  WARMUP_ITERS: 0
+  WARMUP_METHOD: linear
+  WEIGHT_DECAY: 2.0e-05
+  WEIGHT_DECAY_BIAS: null
+  WEIGHT_DECAY_EMBED: 0.0
+  WEIGHT_DECAY_NORM: 0.0
+TEST:
+  AUG:
+    ENABLED: false
+    FLIP: true
+    MAX_SIZE: 4000
+    MIN_SIZES:
+    - 400
+    - 500
+    - 600
+    - 700
+    - 800
+    - 900
+    - 1000
+    - 1100
+    - 1200
+  DETECTIONS_PER_IMAGE: 100
+  EVAL_PERIOD: 5000
+  EXPECTED_RESULTS: []
+  KEYPOINT_OKS_SIGMAS: []
+  PRECISE_BN:
+    ENABLED: false
+    NUM_ITER: 200
+VERSION: 2
+VIS_PERIOD: 0
+
+[10/28 15:51:58] detectron2 INFO: Full config saved to ./out/semantic/evaluation/config.yaml
+[10/28 15:52:16] d2.engine.defaults INFO: Model:
+MAFT_Plus(
+  (backbone): PEEncoder(
+    (pe_model): CLIP(
+      (token_embedding): Embedding(49408, 1024)
+      (transformer): Transformer(
+        (resblocks): ModuleList(
+          (0-23): 24 x ResidualAttentionBlock(
+            (attn): MultiheadAttention(
+              (out_proj): NonDynamicallyQuantizableLinear(in_features=1024, out_features=1024, bias=True)
+            )
+            (ls_1): Identity()
+            (ls_2): Identity()
+            (ln_1): LayerNorm((1024,), eps=1e-05, elementwise_affine=True)
+            (ln_2): LayerNorm((1024,), eps=1e-05, elementwise_affine=True)
+            (drop_path1): Identity()
+            (drop_path2): Identity()
+            (mlp): Sequential(
+              (c_fc): Linear(in_features=1024, out_features=4096, bias=True)
+              (gelu): GELU(approximate='none')
+              (c_proj): Linear(in_features=4096, out_features=1024, bias=True)
+            )
+          )
+        )
+      )
+      (ln_final): LayerNorm((1024,), eps=1e-05, elementwise_affine=True)
+      (visual): VisionTransformer(
+        (conv1): Conv2d(3, 1024, kernel_size=(14, 14), stride=(14, 14), bias=False)
+        (ln_pre): LayerNorm((1024,), eps=1e-05, elementwise_affine=True)
+        (ln_post): LayerNorm((1024,), eps=1e-05, elementwise_affine=True)
+        (transformer): Transformer(
+          (resblocks): ModuleList(
+            (0-23): 24 x ResidualAttentionBlock(
+              (attn): SelfAttention(
+                (out_proj): Linear(in_features=1024, out_features=1024, bias=True)
+              )
+              (ls_1): Identity()
+              (ls_2): Identity()
+              (ln_1): LayerNorm((1024,), eps=1e-05, elementwise_affine=True)
+              (ln_2): LayerNorm((1024,), eps=1e-05, elementwise_affine=True)
+              (drop_path1): Identity()
+              (drop_path2): Identity()
+              (mlp): Sequential(
+                (c_fc): Linear(in_features=1024, out_features=4096, bias=True)
+                (gelu): GELU(approximate='none')
+                (c_proj): Linear(in_features=4096, out_features=1024, bias=True)
+              )
+            )
+          )
+        )
+        (attn_pool): AttentionPooling(
+          (attn): MultiheadAttention(
+            (out_proj): NonDynamicallyQuantizableLinear(in_features=1024, out_features=1024, bias=True)
+          )
+          (layernorm): LayerNorm((1024,), eps=1e-05, elementwise_affine=True)
+          (mlp): Sequential(
+            (c_fc): Linear(in_features=1024, out_features=4096, bias=True)
+            (gelu): GELU(approximate='none')
+            (c_proj): Linear(in_features=4096, out_features=1024, bias=True)
+          )
+        )
+      )
+    )
+  )
+  (void_embedding): Embedding(1, 1024)
+)
+[10/28 15:52:16] d2.checkpoint.detection_checkpoint INFO: [DetectionCheckpointer] Loading from  ...
+[10/28 15:52:16] fvcore.common.checkpoint INFO: No checkpoint found. Initializing model from scratch
+[10/28 15:52:16] d2.data.dataset_mapper INFO: [DatasetMapper] Augmentations used in inference: [ResizeShortestEdge(short_edge_length=(800, 800), max_size=1333, sample_style='choice')]
+[10/28 15:52:16] d2.data.common INFO: Serializing the dataset using: <class 'detectron2.data.common._TorchSerializedList'>
+[10/28 15:52:16] d2.data.common INFO: Serializing 2000 elements to byte tensors and concatenating them all ...
+[10/28 15:52:16] d2.data.common INFO: Serialized dataset takes 15.18 MiB
+[10/28 15:52:17] d2.evaluation.evaluator INFO: Start inference on 500 batches
+[10/28 15:52:32] d2.evaluation.evaluator INFO: Inference done 1/500. Dataloading: 6.6017 s/iter. Inference: 8.4109 s/iter. Eval: 0.0398 s/iter. Total: 15.0562 s/iter. ETA=2:05:13
+[10/28 15:52:37] d2.evaluation.evaluator INFO: Inference done 11/500. Dataloading: 0.0017 s/iter. Inference: 0.5036 s/iter. Eval: 0.0224 s/iter. Total: 0.5277 s/iter. ETA=0:04:18
+[10/28 15:52:42] d2.evaluation.evaluator INFO: Inference done 22/500. Dataloading: 0.0022 s/iter. Inference: 0.4589 s/iter. Eval: 0.0199 s/iter. Total: 0.4810 s/iter. ETA=0:03:49
+[10/28 15:52:47] d2.evaluation.evaluator INFO: Inference done 33/500. Dataloading: 0.0023 s/iter. Inference: 0.4509 s/iter. Eval: 0.0192 s/iter. Total: 0.4724 s/iter. ETA=0:03:40
+[10/28 15:52:52] d2.evaluation.evaluator INFO: Inference done 43/500. Dataloading: 0.0023 s/iter. Inference: 0.4635 s/iter. Eval: 0.0188 s/iter. Total: 0.4848 s/iter. ETA=0:03:41
+[10/28 15:52:58] d2.evaluation.evaluator INFO: Inference done 53/500. Dataloading: 0.0024 s/iter. Inference: 0.4700 s/iter. Eval: 0.0206 s/iter. Total: 0.4931 s/iter. ETA=0:03:40
+[10/28 15:53:03] d2.evaluation.evaluator INFO: Inference done 64/500. Dataloading: 0.0024 s/iter. Inference: 0.4692 s/iter. Eval: 0.0201 s/iter. Total: 0.4918 s/iter. ETA=0:03:34
+[10/28 15:53:08] d2.evaluation.evaluator INFO: Inference done 75/500. Dataloading: 0.0024 s/iter. Inference: 0.4675 s/iter. Eval: 0.0198 s/iter. Total: 0.4898 s/iter. ETA=0:03:28
+[10/28 15:53:13] d2.evaluation.evaluator INFO: Inference done 86/500. Dataloading: 0.0024 s/iter. Inference: 0.4641 s/iter. Eval: 0.0200 s/iter. Total: 0.4866 s/iter. ETA=0:03:21
+[10/28 15:53:19] d2.evaluation.evaluator INFO: Inference done 96/500. Dataloading: 0.0024 s/iter. Inference: 0.4682 s/iter. Eval: 0.0205 s/iter. Total: 0.4912 s/iter. ETA=0:03:18
+[10/28 15:53:24] d2.evaluation.evaluator INFO: Inference done 105/500. Dataloading: 0.0024 s/iter. Inference: 0.4730 s/iter. Eval: 0.0215 s/iter. Total: 0.4970 s/iter. ETA=0:03:16
+[10/28 15:53:29] d2.evaluation.evaluator INFO: Inference done 117/500. Dataloading: 0.0025 s/iter. Inference: 0.4691 s/iter. Eval: 0.0210 s/iter. Total: 0.4927 s/iter. ETA=0:03:08
+[10/28 15:53:35] d2.evaluation.evaluator INFO: Inference done 127/500. Dataloading: 0.0025 s/iter. Inference: 0.4722 s/iter. Eval: 0.0221 s/iter. Total: 0.4969 s/iter. ETA=0:03:05
+[10/28 15:53:40] d2.evaluation.evaluator INFO: Inference done 137/500. Dataloading: 0.0025 s/iter. Inference: 0.4744 s/iter. Eval: 0.0225 s/iter. Total: 0.4995 s/iter. ETA=0:03:01
+[10/28 15:53:45] d2.evaluation.evaluator INFO: Inference done 146/500. Dataloading: 0.0025 s/iter. Inference: 0.4787 s/iter. Eval: 0.0230 s/iter. Total: 0.5043 s/iter. ETA=0:02:58
+[10/28 15:53:50] d2.evaluation.evaluator INFO: Inference done 156/500. Dataloading: 0.0025 s/iter. Inference: 0.4798 s/iter. Eval: 0.0233 s/iter. Total: 0.5057 s/iter. ETA=0:02:53
+[10/28 15:53:56] d2.evaluation.evaluator INFO: Inference done 166/500. Dataloading: 0.0025 s/iter. Inference: 0.4804 s/iter. Eval: 0.0234 s/iter. Total: 0.5064 s/iter. ETA=0:02:49
+[10/28 15:54:01] d2.evaluation.evaluator INFO: Inference done 176/500. Dataloading: 0.0025 s/iter. Inference: 0.4822 s/iter. Eval: 0.0237 s/iter. Total: 0.5085 s/iter. ETA=0:02:44
+[10/28 15:54:06] d2.evaluation.evaluator INFO: Inference done 186/500. Dataloading: 0.0025 s/iter. Inference: 0.4829 s/iter. Eval: 0.0239 s/iter. Total: 0.5093 s/iter. ETA=0:02:39
+[10/28 15:54:11] d2.evaluation.evaluator INFO: Inference done 196/500. Dataloading: 0.0025 s/iter. Inference: 0.4835 s/iter. Eval: 0.0233 s/iter. Total: 0.5094 s/iter. ETA=0:02:34
+[10/28 15:54:16] d2.evaluation.evaluator INFO: Inference done 209/500. Dataloading: 0.0025 s/iter. Inference: 0.4768 s/iter. Eval: 0.0227 s/iter. Total: 0.5021 s/iter. ETA=0:02:26
+[10/28 15:54:22] d2.evaluation.evaluator INFO: Inference done 221/500. Dataloading: 0.0025 s/iter. Inference: 0.4745 s/iter. Eval: 0.0223 s/iter. Total: 0.4994 s/iter. ETA=0:02:19
+[10/28 15:54:27] d2.evaluation.evaluator INFO: Inference done 231/500. Dataloading: 0.0025 s/iter. Inference: 0.4753 s/iter. Eval: 0.0222 s/iter. Total: 0.5001 s/iter. ETA=0:02:14
+[10/28 15:54:32] d2.evaluation.evaluator INFO: Inference done 241/500. Dataloading: 0.0025 s/iter. Inference: 0.4764 s/iter. Eval: 0.0222 s/iter. Total: 0.5011 s/iter. ETA=0:02:09
+[10/28 15:54:37] d2.evaluation.evaluator INFO: Inference done 251/500. Dataloading: 0.0025 s/iter. Inference: 0.4770 s/iter. Eval: 0.0221 s/iter. Total: 0.5017 s/iter. ETA=0:02:04
+[10/28 15:54:43] d2.evaluation.evaluator INFO: Inference done 263/500. Dataloading: 0.0025 s/iter. Inference: 0.4746 s/iter. Eval: 0.0218 s/iter. Total: 0.4990 s/iter. ETA=0:01:58
+[10/28 15:54:48] d2.evaluation.evaluator INFO: Inference done 274/500. Dataloading: 0.0025 s/iter. Inference: 0.4744 s/iter. Eval: 0.0220 s/iter. Total: 0.4990 s/iter. ETA=0:01:52
+[10/28 15:54:54] d2.evaluation.evaluator INFO: Inference done 285/500. Dataloading: 0.0025 s/iter. Inference: 0.4743 s/iter. Eval: 0.0220 s/iter. Total: 0.4989 s/iter. ETA=0:01:47
+[10/28 15:54:59] d2.evaluation.evaluator INFO: Inference done 295/500. Dataloading: 0.0025 s/iter. Inference: 0.4749 s/iter. Eval: 0.0221 s/iter. Total: 0.4997 s/iter. ETA=0:01:42
+[10/28 15:55:04] d2.evaluation.evaluator INFO: Inference done 305/500. Dataloading: 0.0026 s/iter. Inference: 0.4761 s/iter. Eval: 0.0223 s/iter. Total: 0.5011 s/iter. ETA=0:01:37
+[10/28 15:55:10] d2.evaluation.evaluator INFO: Inference done 316/500. Dataloading: 0.0026 s/iter. Inference: 0.4759 s/iter. Eval: 0.0225 s/iter. Total: 0.5011 s/iter. ETA=0:01:32
+[10/28 15:55:15] d2.evaluation.evaluator INFO: Inference done 326/500. Dataloading: 0.0026 s/iter. Inference: 0.4762 s/iter. Eval: 0.0227 s/iter. Total: 0.5015 s/iter. ETA=0:01:27
+[10/28 15:55:20] d2.evaluation.evaluator INFO: Inference done 336/500. Dataloading: 0.0026 s/iter. Inference: 0.4766 s/iter. Eval: 0.0226 s/iter. Total: 0.5018 s/iter. ETA=0:01:22
+[10/28 15:55:26] d2.evaluation.evaluator INFO: Inference done 346/500. Dataloading: 0.0026 s/iter. Inference: 0.4779 s/iter. Eval: 0.0226 s/iter. Total: 0.5031 s/iter. ETA=0:01:17
+[10/28 15:55:31] d2.evaluation.evaluator INFO: Inference done 357/500. Dataloading: 0.0026 s/iter. Inference: 0.4774 s/iter. Eval: 0.0225 s/iter. Total: 0.5026 s/iter. ETA=0:01:11
+[10/28 15:55:36] d2.evaluation.evaluator INFO: Inference done 370/500. Dataloading: 0.0026 s/iter. Inference: 0.4750 s/iter. Eval: 0.0222 s/iter. Total: 0.4998 s/iter. ETA=0:01:04
+[10/28 15:55:42] d2.evaluation.evaluator INFO: Inference done 380/500. Dataloading: 0.0026 s/iter. Inference: 0.4757 s/iter. Eval: 0.0224 s/iter. Total: 0.5007 s/iter. ETA=0:01:00
+[10/28 15:55:47] d2.evaluation.evaluator INFO: Inference done 389/500. Dataloading: 0.0026 s/iter. Inference: 0.4773 s/iter. Eval: 0.0224 s/iter. Total: 0.5023 s/iter. ETA=0:00:55
+[10/28 15:55:53] d2.evaluation.evaluator INFO: Inference done 400/500. Dataloading: 0.0026 s/iter. Inference: 0.4777 s/iter. Eval: 0.0222 s/iter. Total: 0.5026 s/iter. ETA=0:00:50
+[10/28 15:55:58] d2.evaluation.evaluator INFO: Inference done 414/500. Dataloading: 0.0026 s/iter. Inference: 0.4733 s/iter. Eval: 0.0218 s/iter. Total: 0.4978 s/iter. ETA=0:00:42
+[10/28 15:56:03] d2.evaluation.evaluator INFO: Inference done 426/500. Dataloading: 0.0026 s/iter. Inference: 0.4714 s/iter. Eval: 0.0219 s/iter. Total: 0.4960 s/iter. ETA=0:00:36
+[10/28 15:56:08] d2.evaluation.evaluator INFO: Inference done 436/500. Dataloading: 0.0026 s/iter. Inference: 0.4720 s/iter. Eval: 0.0218 s/iter. Total: 0.4966 s/iter. ETA=0:00:31
+[10/28 15:56:13] d2.evaluation.evaluator INFO: Inference done 446/500. Dataloading: 0.0026 s/iter. Inference: 0.4725 s/iter. Eval: 0.0218 s/iter. Total: 0.4969 s/iter. ETA=0:00:26
+[10/28 15:56:18] d2.evaluation.evaluator INFO: Inference done 457/500. Dataloading: 0.0026 s/iter. Inference: 0.4723 s/iter. Eval: 0.0217 s/iter. Total: 0.4966 s/iter. ETA=0:00:21
+[10/28 15:56:24] d2.evaluation.evaluator INFO: Inference done 467/500. Dataloading: 0.0026 s/iter. Inference: 0.4729 s/iter. Eval: 0.0219 s/iter. Total: 0.4974 s/iter. ETA=0:00:16
+[10/28 15:56:29] d2.evaluation.evaluator INFO: Inference done 477/500. Dataloading: 0.0026 s/iter. Inference: 0.4738 s/iter. Eval: 0.0221 s/iter. Total: 0.4985 s/iter. ETA=0:00:11
+[10/28 15:56:34] d2.evaluation.evaluator INFO: Inference done 488/500. Dataloading: 0.0026 s/iter. Inference: 0.4730 s/iter. Eval: 0.0220 s/iter. Total: 0.4976 s/iter. ETA=0:00:05
+[10/28 15:56:40] d2.evaluation.evaluator INFO: Inference done 499/500. Dataloading: 0.0026 s/iter. Inference: 0.4727 s/iter. Eval: 0.0219 s/iter. Total: 0.4973 s/iter. ETA=0:00:00
+[10/28 15:56:41] d2.evaluation.evaluator INFO: Total inference time: 0:04:07.238314 (0.499471 s / iter per device, on 4 devices)
+[10/28 15:56:41] d2.evaluation.evaluator INFO: Total inference pure compute time: 0:03:54 (0.472767 s / iter per device, on 4 devices)
+[10/28 15:56:44] d2.engine.defaults INFO: Evaluation results for openvocab_ade20k_panoptic_val in csv format:
+[10/28 15:56:44] d2.evaluation.testing INFO: copypaste: Task: sem_seg
+[10/28 15:56:44] d2.evaluation.testing INFO: copypaste: mIoU,fwIoU,mACC,pACC
+[10/28 15:56:44] d2.evaluation.testing INFO: copypaste: 9.6126,14.5131,24.0097,21.4840

@@ -65,8 +65,17 @@ class PEEncoder(Backbone):
 
     def forward(self, x):
         """ 
-        Detectron2 Backbone 的标准入口。
-        我们将在这里提取并返回密集特征图。
+        重写从密集特征图到真正用于匹配的语义特征图的过程，放在 core/vision_encoder/pe.py 的 class AttentionPooling
+        def dense_forward(self, x: torch.Tensor):
+            batch, num, _ = x.shape
+            q = self.probe.repeat((batch * num, 1, 1)).to(x.dtype)
+            x = x.view(batch * num, 1, -1)
+            x = self.attn(q, x, x, need_weights=False)[0]
+            x = x.view(batch, num, -1)
+            # x = self.attn(x, x, x, need_weights=False)[0] # 这样修改输出整张图都是同一类别
+            x = x + self.mlp(self.layernorm(x))
+
+            return x
         """
         with torch.no_grad():
             visual_backbone = self.pe_model.visual
@@ -78,7 +87,7 @@ class PEEncoder(Backbone):
             )
             
             attn_pool = self.pe_model.visual.attn_pool
-            dense_tokens = attn_pool(dense_tokens)
+            dense_tokens = attn_pool.dense_forward(dense_tokens)
             dense_tokens = dense_tokens @ visual_backbone.proj
 
             # 将 token 序列 (B, N, C) 重塑为特征图 (B, C, H_grid, W_grid)

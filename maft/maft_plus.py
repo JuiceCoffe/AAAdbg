@@ -501,7 +501,7 @@ class MAFT_Plus(nn.Module):
         pred_result = post_process(seg_probs)
         
 
-        visualize_segmentation(pred_result, self.vis_class_names+['void'],batched_inputs[0]["image"],f"./show/{file_names[0]}_")
+        # visualize_segmentation(pred_result, self.vis_class_names+['void'],batched_inputs[0]["image"],f"./show/{file_names[0]}_")
 
 
 
