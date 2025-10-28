@@ -78,10 +78,12 @@ class AttentionPooling(nn.Module):
         )
 
     def forward(self, x: torch.Tensor):
-        batch, _, _ = x.shape
-
-        q = self.probe.repeat((batch, 1, 1)).to(x.dtype)
+        batch, num, _ = x.shape
+        q = self.probe.repeat((batch * num, 1, 1)).to(x.dtype)
+        x = x.view(batch * num, 1, -1)
         x = self.attn(q, x, x, need_weights=False)[0]
+        x = x.view(batch, num, -1)
+        # x = self.attn(x, x, x, need_weights=False)[0] # 这样修改输出整张图都是同一类别
         x = x + self.mlp(self.layernorm(x))
 
         return x
@@ -485,6 +487,7 @@ class VisionTransformer(nn.Module):
         return pos_embed[None, ...]
 
     def _pool(self, x: torch.Tensor):
+        print("Pooling type:", self.pool_type)
         if self.pool_type == "tok":
             return x[:, 0]
         elif self.pool_type == "avg":

@@ -76,6 +76,9 @@ class PEEncoder(Backbone):
                 norm=True,            # LayerNorm
                 strip_cls_token=True  # 只是在结尾去掉 CLS token，不影响中间计算（仍可有cls token）
             )
+            
+            attn_pool = self.pe_model.visual.attn_pool
+            dense_tokens = attn_pool(dense_tokens)
             dense_tokens = dense_tokens @ visual_backbone.proj
 
             # 将 token 序列 (B, N, C) 重塑为特征图 (B, C, H_grid, W_grid)
