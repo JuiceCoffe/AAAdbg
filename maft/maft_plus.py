@@ -45,6 +45,7 @@ class MAFT_Plus(nn.Module):
         self,
         *,
         backbone: Backbone,
+        backbone_name: str,
         # backbone_t,
         num_queries: int,
         object_mask_threshold: float,
@@ -69,6 +70,7 @@ class MAFT_Plus(nn.Module):
 
         super().__init__()
         self.backbone = backbone
+        self.backbone_name = backbone_name
         # self.backbone_t = backbone_t
         self.num_queries = num_queries
         self.overlap_threshold = overlap_threshold
@@ -271,6 +273,7 @@ class MAFT_Plus(nn.Module):
                 text_classifier = torch.cat(text_classifier, dim=0)
 
                 text_classifier /= text_classifier.norm(dim=-1, keepdim=True)
+                print("text_classifier shape before reshape:", text_classifier.shape)
                 text_classifier = text_classifier.reshape(text_classifier.shape[0]//len(VILD_PROMPT), len(VILD_PROMPT), text_classifier.shape[-1]).mean(1) 
                 text_classifier /= text_classifier.norm(dim=-1, keepdim=True)
                 self.test_text_classifier = text_classifier
@@ -355,6 +358,7 @@ class MAFT_Plus(nn.Module):
         test_metadata = {i: MetadataCatalog.get(i) for i in cfg.DATASETS.TEST}
         return {
             "backbone": backbone,
+            "backbone_name": cfg.MODEL.BACKBONE.NAME,
             # "backbone_t":backbone_t,
             "num_queries": cfg.MODEL.MASK_FORMER.NUM_OBJECT_QUERIES,
             "object_mask_threshold": cfg.MODEL.MASK_FORMER.TEST.OBJECT_MASK_THRESHOLD,
@@ -415,10 +419,7 @@ class MAFT_Plus(nn.Module):
         original_image = images[0].clone() # for visualization only
 
         
-        if self.PE_ENABLED:
-            # import torch
-            # import torchvision.transforms as T
-            # from torchvision.transforms import functional as F
+        if self.backbone_name == 'PEEncoder':
             images = [image.float().div(127.5).sub(1.0) for image in images]  # scale to [-1, 1]
             images = ImageList.from_tensors(images, self.size_divisibility)
             features = self.backbone.extract_features(images.tensor) 
@@ -436,7 +437,8 @@ class MAFT_Plus(nn.Module):
         # text_classifier, num_templates = self.get_text_classifier('openvocab_ade20k_panoptic_val')
         text_classifier, num_templates = self.get_text_classifier(meta['dataname'])
         # print("meta['dataname']:",meta['dataname'])
-        text_classifier = torch.cat([text_classifier, F.normalize(self.void_embedding.weight, dim=-1)], dim=0)
+        if self.backbone_name == 'CLIP':
+            text_classifier = torch.cat([text_classifier, F.normalize(self.void_embedding.weight, dim=-1)], dim=0)
         # print("text_classifier:", text_classifier.shape) # text_classifier: torch.Size([329, 768]) 328个类别+1个void
     
         
@@ -447,10 +449,12 @@ class MAFT_Plus(nn.Module):
         features['num_templates'] = num_templates
 
         clip_feature = features['clip_vis_dense'] # torch.Size([1, 1536, 38, 25])
-        if self.PE_ENABLED:
+        if self.backbone_name == 'PEEncoder':
             img_feat = clip_feature # PE情况下直接输出图像特征
-        else:
+        elif self.backbone_name == 'CLIP':
             img_feat = self.visual_prediction_forward_convnext_2d(clip_feature) # 输出可以在CLIP空间中直接理解的语义特征图
+        elif self.backbone_name == 'DINOv3TXT':
+            img_feat = clip_feature
         # print("img_feat shape:", img_feat.shape)
 
         img_feats = F.normalize(img_feat, dim=1) # B C H W

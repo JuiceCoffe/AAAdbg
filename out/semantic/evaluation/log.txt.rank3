@@ -1,1086 +1,171 @@
-[10/20 16:50:18] detectron2 INFO: Rank of current process: 3. World size: 4
-[10/20 16:50:19] detectron2 INFO: Environment info:
--------------------------------  ------------------------------------------------------------------------
+[10/29 16:58:47] detectron2 INFO: Rank of current process: 3. World size: 4
+[10/29 16:58:47] detectron2 INFO: Environment info:
+-------------------------------  ----------------------------------------------------------------------------------
 sys.platform                     linux
-Python                           3.8.20 (default, Oct  3 2024, 15:24:27) [GCC 11.2.0]
-numpy                            1.22.4
-detectron2                       0.6 @/data/hmp/conda_envs/AAA/lib/python3.8/site-packages/detectron2
+Python                           3.11.14 (main, Oct 21 2025, 18:31:21) [GCC 11.2.0]
+numpy                            1.26.4
+detectron2                       0.6 @/data/hmp/TASK/OVS/AAAdbg/detectron2/detectron2
 Compiler                         GCC 9.4
-CUDA compiler                    CUDA 11.8
+CUDA compiler                    CUDA 12.4
 detectron2 arch flags            8.6
 DETECTRON2_ENV_MODULE            <not set>
-PyTorch                          2.4.1 @/data/hmp/conda_envs/AAA/lib/python3.8/site-packages/torch
+PyTorch                          2.5.1+cu121 @/data/hmp/conda_envs/dinov3/lib/python3.11/site-packages/torch
 PyTorch debug build              False
 torch._C._GLIBCXX_USE_CXX11_ABI  False
 GPU available                    Yes
 GPU 0,1,2,3                      NVIDIA GeForce RTX 3090 (arch=8.6)
 Driver version                   550.144.03
-CUDA_HOME                        /data/hmp/CUDA/11.8
+CUDA_HOME                        /usr/local/cuda-12.4
 Pillow                           9.3.0
-torchvision                      0.20.0 @/data/hmp/conda_envs/AAA/lib/python3.8/site-packages/torchvision
-torchvision arch flags           3.5, 5.0, 6.0, 7.0, 7.5, 8.0, 8.6
+torchvision                      0.20.1+cu121 @/data/hmp/conda_envs/dinov3/lib/python3.11/site-packages/torchvision
+torchvision arch flags           5.0, 6.0, 7.0, 7.5, 8.0, 8.6, 9.0
 fvcore                           0.1.5.post20221221
 iopath                           0.1.9
-cv2                              4.12.0
--------------------------------  ------------------------------------------------------------------------
+cv2                              4.7.0
+-------------------------------  ----------------------------------------------------------------------------------
 PyTorch built with:
   - GCC 9.3
   - C++ Version: 201703
-  - Intel(R) oneAPI Math Kernel Library Version 2023.1-Product Build 20230303 for Intel(R) 64 architecture applications
-  - Intel(R) MKL-DNN v3.4.2 (Git Hash 1137e04ec0b5251ca2b4400a4fd3c667ce843d67)
+  - Intel(R) oneAPI Math Kernel Library Version 2024.2-Product Build 20240605 for Intel(R) 64 architecture applications
+  - Intel(R) MKL-DNN v3.5.3 (Git Hash 66f0cb9eb66affd2da3bf5f8d897376f04aae6af)
   - OpenMP 201511 (a.k.a. OpenMP 4.5)
   - LAPACK is enabled (usually provided by MKL)
   - NNPACK is enabled
   - CPU capability usage: AVX512
-  - CUDA Runtime 11.8
-  - NVCC architecture flags: -gencode;arch=compute_50,code=sm_50;-gencode;arch=compute_60,code=sm_60;-gencode;arch=compute_61,code=sm_61;-gencode;arch=compute_70,code=sm_70;-gencode;arch=compute_75,code=sm_75;-gencode;arch=compute_80,code=sm_80;-gencode;arch=compute_86,code=sm_86;-gencode;arch=compute_37,code=sm_37;-gencode;arch=compute_90,code=sm_90;-gencode;arch=compute_37,code=compute_37
-  - CuDNN 90.1
+  - CUDA Runtime 12.1
+  - NVCC architecture flags: -gencode;arch=compute_50,code=sm_50;-gencode;arch=compute_60,code=sm_60;-gencode;arch=compute_70,code=sm_70;-gencode;arch=compute_75,code=sm_75;-gencode;arch=compute_80,code=sm_80;-gencode;arch=compute_86,code=sm_86;-gencode;arch=compute_90,code=sm_90
+  - CuDNN 90.1  (built against CUDA 12.4)
   - Magma 2.6.1
-  - Build settings: BLAS_INFO=mkl, BUILD_TYPE=Release, CUDA_VERSION=11.8, CUDNN_VERSION=9.1.0, CXX_COMPILER=/opt/rh/devtoolset-9/root/usr/bin/c++, CXX_FLAGS= -D_GLIBCXX_USE_CXX11_ABI=0 -fabi-version=11 -fvisibility-inlines-hidden -DUSE_PTHREADPOOL -DNDEBUG -DUSE_KINETO -DLIBKINETO_NOROCTRACER -DUSE_FBGEMM -DUSE_PYTORCH_QNNPACK -DUSE_XNNPACK -DSYMBOLICATE_MOBILE_DEBUG_HANDLE -O2 -fPIC -Wall -Wextra -Werror=return-type -Werror=non-virtual-dtor -Werror=bool-operation -Wnarrowing -Wno-missing-field-initializers -Wno-type-limits -Wno-array-bounds -Wno-unknown-pragmas -Wno-unused-parameter -Wno-unused-function -Wno-unused-result -Wno-strict-overflow -Wno-strict-aliasing -Wno-stringop-overflow -Wsuggest-override -Wno-psabi -Wno-error=pedantic -Wno-error=old-style-cast -Wno-missing-braces -fdiagnostics-color=always -faligned-new -Wno-unused-but-set-variable -Wno-maybe-uninitialized -fno-math-errno -fno-trapping-math -Werror=format -Wno-stringop-overflow, LAPACK_INFO=mkl, PERF_WITH_AVX=1, PERF_WITH_AVX2=1, PERF_WITH_AVX512=1, TORCH_VERSION=2.4.1, USE_CUDA=ON, USE_CUDNN=ON, USE_CUSPARSELT=1, USE_EXCEPTION_PTR=1, USE_GFLAGS=OFF, USE_GLOG=OFF, USE_GLOO=ON, USE_MKL=ON, USE_MKLDNN=ON, USE_MPI=OFF, USE_NCCL=ON, USE_NNPACK=ON, USE_OPENMP=ON, USE_ROCM=OFF, USE_ROCM_KERNEL_ASSERT=OFF, 
+  - Build settings: BLAS_INFO=mkl, BUILD_TYPE=Release, CUDA_VERSION=12.1, CUDNN_VERSION=9.1.0, CXX_COMPILER=/opt/rh/devtoolset-9/root/usr/bin/c++, CXX_FLAGS= -D_GLIBCXX_USE_CXX11_ABI=0 -fabi-version=11 -fvisibility-inlines-hidden -DUSE_PTHREADPOOL -DNDEBUG -DUSE_KINETO -DLIBKINETO_NOROCTRACER -DLIBKINETO_NOXPUPTI=ON -DUSE_FBGEMM -DUSE_PYTORCH_QNNPACK -DUSE_XNNPACK -DSYMBOLICATE_MOBILE_DEBUG_HANDLE -O2 -fPIC -Wall -Wextra -Werror=return-type -Werror=non-virtual-dtor -Werror=bool-operation -Wnarrowing -Wno-missing-field-initializers -Wno-type-limits -Wno-array-bounds -Wno-unknown-pragmas -Wno-unused-parameter -Wno-strict-overflow -Wno-strict-aliasing -Wno-stringop-overflow -Wsuggest-override -Wno-psabi -Wno-error=old-style-cast -Wno-missing-braces -fdiagnostics-color=always -faligned-new -Wno-unused-but-set-variable -Wno-maybe-uninitialized -fno-math-errno -fno-trapping-math -Werror=format -Wno-stringop-overflow, LAPACK_INFO=mkl, PERF_WITH_AVX=1, PERF_WITH_AVX2=1, TORCH_VERSION=2.5.1, USE_CUDA=ON, USE_CUDNN=ON, USE_CUSPARSELT=1, USE_EXCEPTION_PTR=1, USE_GFLAGS=OFF, USE_GLOG=OFF, USE_GLOO=ON, USE_MKL=ON, USE_MKLDNN=ON, USE_MPI=OFF, USE_NCCL=1, USE_NNPACK=ON, USE_OPENMP=ON, USE_ROCM=OFF, USE_ROCM_KERNEL_ASSERT=OFF, 
 
-[10/20 16:50:19] detectron2 INFO: Command line arguments: Namespace(config_file='configs/semantic/eval.yaml', dist_url='tcp://127.0.0.1:50185', eval_only=True, machine_rank=0, num_gpus=4, num_machines=1, opts=[], resume=False)
-[10/20 16:50:19] detectron2 INFO: Contents of args.config_file=configs/semantic/eval.yaml:
-# python train_net.py --config-file configs/semantic/eval.yaml  --num-gpus 8 --eval-only
+[10/29 16:58:47] detectron2 INFO: Command line arguments: Namespace(config_file='configs/semantic/eval_dino.yaml', resume=False, eval_only=True, num_gpus=4, num_machines=1, machine_rank=0, dist_url='tcp://127.0.0.1:50185', opts=[])
+[10/29 16:58:47] detectron2 INFO: Contents of args.config_file=configs/semantic/eval_dino.yaml:
+[38;5;245m# python train_net.py --config-file configs/semantic/eval.yaml  --num-gpus 8 --eval-only[39m
 
-_BASE_: ./train_semantic_large.yaml
-MODEL:
-  WEIGHTS: out/semantic/MAFT_Plus/maftp_l.pth  # path to maftp_l.pth
-  META_ARCHITECTURE: "MAFT_Plus"
-  FC_CLIP:
-    CLIP_MODEL_NAME: "convnext_large_d_320"  
-    CLIP_PRETRAINED_WEIGHTS: "laion2b_s29b_b131k_ft_soup" 
-    EMBED_DIM: 768
-    GEOMETRIC_ENSEMBLE_ALPHA: -1.
-    GEOMETRIC_ENSEMBLE_BETA: -1.
+[38;5;204m_BASE_[39m[38;5;15m:[39m[38;5;15m [39m[38;5;141m./train_semantic_large.yaml[39m
+[38;5;204mMODEL[39m[38;5;15m:[39m
+[38;5;15m  [39m[38;5;204mBACKBONE[39m[38;5;15m:[39m
+[38;5;15m    [39m[38;5;204mNAME[39m[38;5;15m:[39m[38;5;15m [39m[38;5;186m"[39m[38;5;186mDINOv3TXT[39m[38;5;186m"[39m
+[38;5;15m  [39m[38;5;204mMETA_ARCHITECTURE[39m[38;5;15m:[39m[38;5;15m [39m[38;5;186m"[39m[38;5;186mMAFT_Plus[39m[38;5;186m"[39m
 
-DATASETS:
-  TEST: ("openvocab_pascal20_sem_seg_val", "openvocab_ade20k_full_sem_seg_val", 'openvocab_pascal_ctx459_sem_seg_val', 'openvocab_pascal_ctx59_sem_seg_val', 'openvocab_ade20k_panoptic_val') 
-  # TEST: ("openvocab_ade20k_full_sem_seg_val",) #'openvocab_ade20k_panoptic_val',)
 
-OUTPUT_DIR: ./out/semantic/evaluation
+[38;5;204mDATASETS[39m[38;5;15m:[39m
+[38;5;15m  [39m[38;5;204mTEST[39m[38;5;15m:[39m[38;5;15m [39m[38;5;141m("openvocab_pascal20_sem_seg_val",[39m[38;5;141m [39m[38;5;141m"openvocab_ade20k_full_sem_seg_val",[39m[38;5;141m [39m[38;5;141m'openvocab_pascal_ctx459_sem_seg_val',[39m[38;5;141m [39m[38;5;141m'openvocab_pascal_ctx59_sem_seg_val',[39m[38;5;141m [39m[38;5;141m'openvocab_ade20k_panoptic_val')[39m[38;5;15m [39m
+[38;5;15m  [39m[38;5;245m# TEST: ( 'openvocab_ade20k_panoptic_val',)[39m
 
-[10/20 16:50:40] detectron2.engine.defaults INFO: Model:
+[38;5;204mOUTPUT_DIR[39m[38;5;15m:[39m[38;5;15m [39m[38;5;141m./out/semantic/evaluation[39m
+
+[10/29 16:59:04] detectron2.engine.defaults INFO: Model:
 MAFT_Plus(
-  (backbone): CLIP(
-    (clip_model): CLIP(
-      (visual): TimmModel(
-        (trunk): ConvNeXt(
-          (stem): Sequential(
-            (0): Conv2d(3, 192, kernel_size=(4, 4), stride=(4, 4))
-            (1): LayerNorm2d((192,), eps=1e-06, elementwise_affine=True)
-          )
-          (stages): Sequential(
-            (0): ConvNeXtStage(
-              (downsample): Identity()
-              (blocks): Sequential(
-                (0): ConvNeXtBlock(
-                  (conv_dw): Conv2d(192, 192, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=192)
-                  (norm): LayerNorm((192,), eps=1e-06, elementwise_affine=True)
-                  (mlp): Mlp(
-                    (fc1): Linear(in_features=192, out_features=768, bias=True)
-                    (act): GELU()
-                    (drop1): Dropout(p=0.0, inplace=False)
-                    (norm): Identity()
-                    (fc2): Linear(in_features=768, out_features=192, bias=True)
-                    (drop2): Dropout(p=0.0, inplace=False)
-                  )
-                  (shortcut): Identity()
-                  (drop_path): Identity()
-                )
-                (1): ConvNeXtBlock(
-                  (conv_dw): Conv2d(192, 192, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=192)
-                  (norm): LayerNorm((192,), eps=1e-06, elementwise_affine=True)
-                  (mlp): Mlp(
-                    (fc1): Linear(in_features=192, out_features=768, bias=True)
-                    (act): GELU()
-                    (drop1): Dropout(p=0.0, inplace=False)
-                    (norm): Identity()
-                    (fc2): Linear(in_features=768, out_features=192, bias=True)
-                    (drop2): Dropout(p=0.0, inplace=False)
-                  )
-                  (shortcut): Identity()
-                  (drop_path): DropPath(drop_prob=0.003)
-                )
-                (2): ConvNeXtBlock(
-                  (conv_dw): Conv2d(192, 192, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=192)
-                  (norm): LayerNorm((192,), eps=1e-06, elementwise_affine=True)
-                  (mlp): Mlp(
-                    (fc1): Linear(in_features=192, out_features=768, bias=True)
-                    (act): GELU()
-                    (drop1): Dropout(p=0.0, inplace=False)
-                    (norm): Identity()
-                    (fc2): Linear(in_features=768, out_features=192, bias=True)
-                    (drop2): Dropout(p=0.0, inplace=False)
-                  )
-                  (shortcut): Identity()
-                  (drop_path): DropPath(drop_prob=0.006)
-                )
-              )
-            )
-            (1): ConvNeXtStage(
-              (downsample): Sequential(
-                (0): LayerNorm2d((192,), eps=1e-06, elementwise_affine=True)
-                (1): Conv2d(192, 384, kernel_size=(2, 2), stride=(2, 2))
-              )
-              (blocks): Sequential(
-                (0): ConvNeXtBlock(
-                  (conv_dw): Conv2d(384, 384, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=384)
-                  (norm): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
-                  (mlp): Mlp(
-                    (fc1): Linear(in_features=384, out_features=1536, bias=True)
-                    (act): GELU()
-                    (drop1): Dropout(p=0.0, inplace=False)
-                    (norm): Identity()
-                    (fc2): Linear(in_features=1536, out_features=384, bias=True)
-                    (drop2): Dropout(p=0.0, inplace=False)
-                  )
-                  (shortcut): Identity()
-                  (drop_path): DropPath(drop_prob=0.009)
-                )
-                (1): ConvNeXtBlock(
-                  (conv_dw): Conv2d(384, 384, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=384)
-                  (norm): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
-                  (mlp): Mlp(
-                    (fc1): Linear(in_features=384, out_features=1536, bias=True)
-                    (act): GELU()
-                    (drop1): Dropout(p=0.0, inplace=False)
-                    (norm): Identity()
-                    (fc2): Linear(in_features=1536, out_features=384, bias=True)
-                    (drop2): Dropout(p=0.0, inplace=False)
-                  )
-                  (shortcut): Identity()
-                  (drop_path): DropPath(drop_prob=0.011)
-                )
-                (2): ConvNeXtBlock(
-                  (conv_dw): Conv2d(384, 384, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=384)
-                  (norm): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
-                  (mlp): Mlp(
-                    (fc1): Linear(in_features=384, out_features=1536, bias=True)
-                    (act): GELU()
-                    (drop1): Dropout(p=0.0, inplace=False)
-                    (norm): Identity()
-                    (fc2): Linear(in_features=1536, out_features=384, bias=True)
-                    (drop2): Dropout(p=0.0, inplace=False)
-                  )
-                  (shortcut): Identity()
-                  (drop_path): DropPath(drop_prob=0.014)
-                )
-              )
-            )
-            (2): ConvNeXtStage(
-              (downsample): Sequential(
-                (0): LayerNorm2d((384,), eps=1e-06, elementwise_affine=True)
-                (1): Conv2d(384, 768, kernel_size=(2, 2), stride=(2, 2))
-              )
-              (blocks): Sequential(
-                (0): ConvNeXtBlock(
-                  (conv_dw): Conv2d(768, 768, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=768)
-                  (norm): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
-                  (mlp): Mlp(
-                    (fc1): Linear(in_features=768, out_features=3072, bias=True)
-                    (act): GELU()
-                    (drop1): Dropout(p=0.0, inplace=False)
-                    (norm): Identity()
-                    (fc2): Linear(in_features=3072, out_features=768, bias=True)
-                    (drop2): Dropout(p=0.0, inplace=False)
-                  )
-                  (shortcut): Identity()
-                  (drop_path): DropPath(drop_prob=0.017)
-                )
-                (1): ConvNeXtBlock(
-                  (conv_dw): Conv2d(768, 768, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=768)
-                  (norm): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
-                  (mlp): Mlp(
-                    (fc1): Linear(in_features=768, out_features=3072, bias=True)
-                    (act): GELU()
-                    (drop1): Dropout(p=0.0, inplace=False)
-                    (norm): Identity()
-                    (fc2): Linear(in_features=3072, out_features=768, bias=True)
-                    (drop2): Dropout(p=0.0, inplace=False)
-                  )
-                  (shortcut): Identity()
-                  (drop_path): DropPath(drop_prob=0.020)
-                )
-                (2): ConvNeXtBlock(
-                  (conv_dw): Conv2d(768, 768, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=768)
-                  (norm): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
-                  (mlp): Mlp(
-                    (fc1): Linear(in_features=768, out_features=3072, bias=True)
-                    (act): GELU()
-                    (drop1): Dropout(p=0.0, inplace=False)
-                    (norm): Identity()
-                    (fc2): Linear(in_features=3072, out_features=768, bias=True)
-                    (drop2): Dropout(p=0.0, inplace=False)
-                  )
-                  (shortcut): Identity()
-                  (drop_path): DropPath(drop_prob=0.023)
-                )
-                (3): ConvNeXtBlock(
-                  (conv_dw): Conv2d(768, 768, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=768)
-                  (norm): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
-                  (mlp): Mlp(
-                    (fc1): Linear(in_features=768, out_features=3072, bias=True)
-                    (act): GELU()
-                    (drop1): Dropout(p=0.0, inplace=False)
-                    (norm): Identity()
-                    (fc2): Linear(in_features=3072, out_features=768, bias=True)
-                    (drop2): Dropout(p=0.0, inplace=False)
-                  )
-                  (shortcut): Identity()
-                  (drop_path): DropPath(drop_prob=0.026)
-                )
-                (4): ConvNeXtBlock(
-                  (conv_dw): Conv2d(768, 768, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=768)
-                  (norm): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
-                  (mlp): Mlp(
-                    (fc1): Linear(in_features=768, out_features=3072, bias=True)
-                    (act): GELU()
-                    (drop1): Dropout(p=0.0, inplace=False)
-                    (norm): Identity()
-                    (fc2): Linear(in_features=3072, out_features=768, bias=True)
-                    (drop2): Dropout(p=0.0, inplace=False)
-                  )
-                  (shortcut): Identity()
-                  (drop_path): DropPath(drop_prob=0.029)
-                )
-                (5): ConvNeXtBlock(
-                  (conv_dw): Conv2d(768, 768, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=768)
-                  (norm): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
-                  (mlp): Mlp(
-                    (fc1): Linear(in_features=768, out_features=3072, bias=True)
-                    (act): GELU()
-                    (drop1): Dropout(p=0.0, inplace=False)
-                    (norm): Identity()
-                    (fc2): Linear(in_features=3072, out_features=768, bias=True)
-                    (drop2): Dropout(p=0.0, inplace=False)
-                  )
-                  (shortcut): Identity()
-                  (drop_path): DropPath(drop_prob=0.031)
-                )
-                (6): ConvNeXtBlock(
-                  (conv_dw): Conv2d(768, 768, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=768)
-                  (norm): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
-                  (mlp): Mlp(
-                    (fc1): Linear(in_features=768, out_features=3072, bias=True)
-                    (act): GELU()
-                    (drop1): Dropout(p=0.0, inplace=False)
-                    (norm): Identity()
-                    (fc2): Linear(in_features=3072, out_features=768, bias=True)
-                    (drop2): Dropout(p=0.0, inplace=False)
-                  )
-                  (shortcut): Identity()
-                  (drop_path): DropPath(drop_prob=0.034)
-                )
-                (7): ConvNeXtBlock(
-                  (conv_dw): Conv2d(768, 768, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=768)
-                  (norm): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
-                  (mlp): Mlp(
-                    (fc1): Linear(in_features=768, out_features=3072, bias=True)
-                    (act): GELU()
-                    (drop1): Dropout(p=0.0, inplace=False)
-                    (norm): Identity()
-                    (fc2): Linear(in_features=3072, out_features=768, bias=True)
-                    (drop2): Dropout(p=0.0, inplace=False)
-                  )
-                  (shortcut): Identity()
-                  (drop_path): DropPath(drop_prob=0.037)
-                )
-                (8): ConvNeXtBlock(
-                  (conv_dw): Conv2d(768, 768, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=768)
-                  (norm): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
-                  (mlp): Mlp(
-                    (fc1): Linear(in_features=768, out_features=3072, bias=True)
-                    (act): GELU()
-                    (drop1): Dropout(p=0.0, inplace=False)
-                    (norm): Identity()
-                    (fc2): Linear(in_features=3072, out_features=768, bias=True)
-                    (drop2): Dropout(p=0.0, inplace=False)
-                  )
-                  (shortcut): Identity()
-                  (drop_path): DropPath(drop_prob=0.040)
-                )
-                (9): ConvNeXtBlock(
-                  (conv_dw): Conv2d(768, 768, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=768)
-                  (norm): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
-                  (mlp): Mlp(
-                    (fc1): Linear(in_features=768, out_features=3072, bias=True)
-                    (act): GELU()
-                    (drop1): Dropout(p=0.0, inplace=False)
-                    (norm): Identity()
-                    (fc2): Linear(in_features=3072, out_features=768, bias=True)
-                    (drop2): Dropout(p=0.0, inplace=False)
-                  )
-                  (shortcut): Identity()
-                  (drop_path): DropPath(drop_prob=0.043)
-                )
-                (10): ConvNeXtBlock(
-                  (conv_dw): Conv2d(768, 768, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=768)
-                  (norm): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
-                  (mlp): Mlp(
-                    (fc1): Linear(in_features=768, out_features=3072, bias=True)
-                    (act): GELU()
-                    (drop1): Dropout(p=0.0, inplace=False)
-                    (norm): Identity()
-                    (fc2): Linear(in_features=3072, out_features=768, bias=True)
-                    (drop2): Dropout(p=0.0, inplace=False)
-                  )
-                  (shortcut): Identity()
-                  (drop_path): DropPath(drop_prob=0.046)
-                )
-                (11): ConvNeXtBlock(
-                  (conv_dw): Conv2d(768, 768, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=768)
-                  (norm): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
-                  (mlp): Mlp(
-                    (fc1): Linear(in_features=768, out_features=3072, bias=True)
-                    (act): GELU()
-                    (drop1): Dropout(p=0.0, inplace=False)
-                    (norm): Identity()
-                    (fc2): Linear(in_features=3072, out_features=768, bias=True)
-                    (drop2): Dropout(p=0.0, inplace=False)
-                  )
-                  (shortcut): Identity()
-                  (drop_path): DropPath(drop_prob=0.049)
-                )
-                (12): ConvNeXtBlock(
-                  (conv_dw): Conv2d(768, 768, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=768)
-                  (norm): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
-                  (mlp): Mlp(
-                    (fc1): Linear(in_features=768, out_features=3072, bias=True)
-                    (act): GELU()
-                    (drop1): Dropout(p=0.0, inplace=False)
-                    (norm): Identity()
-                    (fc2): Linear(in_features=3072, out_features=768, bias=True)
-                    (drop2): Dropout(p=0.0, inplace=False)
-                  )
-                  (shortcut): Identity()
-                  (drop_path): DropPath(drop_prob=0.051)
-                )
-                (13): ConvNeXtBlock(
-                  (conv_dw): Conv2d(768, 768, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=768)
-                  (norm): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
-                  (mlp): Mlp(
-                    (fc1): Linear(in_features=768, out_features=3072, bias=True)
-                    (act): GELU()
-                    (drop1): Dropout(p=0.0, inplace=False)
-                    (norm): Identity()
-                    (fc2): Linear(in_features=3072, out_features=768, bias=True)
-                    (drop2): Dropout(p=0.0, inplace=False)
-                  )
-                  (shortcut): Identity()
-                  (drop_path): DropPath(drop_prob=0.054)
-                )
-                (14): ConvNeXtBlock(
-                  (conv_dw): Conv2d(768, 768, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=768)
-                  (norm): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
-                  (mlp): Mlp(
-                    (fc1): Linear(in_features=768, out_features=3072, bias=True)
-                    (act): GELU()
-                    (drop1): Dropout(p=0.0, inplace=False)
-                    (norm): Identity()
-                    (fc2): Linear(in_features=3072, out_features=768, bias=True)
-                    (drop2): Dropout(p=0.0, inplace=False)
-                  )
-                  (shortcut): Identity()
-                  (drop_path): DropPath(drop_prob=0.057)
-                )
-                (15): ConvNeXtBlock(
-                  (conv_dw): Conv2d(768, 768, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=768)
-                  (norm): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
-                  (mlp): Mlp(
-                    (fc1): Linear(in_features=768, out_features=3072, bias=True)
-                    (act): GELU()
-                    (drop1): Dropout(p=0.0, inplace=False)
-                    (norm): Identity()
-                    (fc2): Linear(in_features=3072, out_features=768, bias=True)
-                    (drop2): Dropout(p=0.0, inplace=False)
-                  )
-                  (shortcut): Identity()
-                  (drop_path): DropPath(drop_prob=0.060)
-                )
-                (16): ConvNeXtBlock(
-                  (conv_dw): Conv2d(768, 768, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=768)
-                  (norm): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
-                  (mlp): Mlp(
-                    (fc1): Linear(in_features=768, out_features=3072, bias=True)
-                    (act): GELU()
-                    (drop1): Dropout(p=0.0, inplace=False)
-                    (norm): Identity()
-                    (fc2): Linear(in_features=3072, out_features=768, bias=True)
-                    (drop2): Dropout(p=0.0, inplace=False)
-                  )
-                  (shortcut): Identity()
-                  (drop_path): DropPath(drop_prob=0.063)
-                )
-                (17): ConvNeXtBlock(
-                  (conv_dw): Conv2d(768, 768, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=768)
-                  (norm): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
-                  (mlp): Mlp(
-                    (fc1): Linear(in_features=768, out_features=3072, bias=True)
-                    (act): GELU()
-                    (drop1): Dropout(p=0.0, inplace=False)
-                    (norm): Identity()
-                    (fc2): Linear(in_features=3072, out_features=768, bias=True)
-                    (drop2): Dropout(p=0.0, inplace=False)
-                  )
-                  (shortcut): Identity()
-                  (drop_path): DropPath(drop_prob=0.066)
-                )
-                (18): ConvNeXtBlock(
-                  (conv_dw): Conv2d(768, 768, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=768)
-                  (norm): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
-                  (mlp): Mlp(
-                    (fc1): Linear(in_features=768, out_features=3072, bias=True)
-                    (act): GELU()
-                    (drop1): Dropout(p=0.0, inplace=False)
-                    (norm): Identity()
-                    (fc2): Linear(in_features=3072, out_features=768, bias=True)
-                    (drop2): Dropout(p=0.0, inplace=False)
-                  )
-                  (shortcut): Identity()
-                  (drop_path): DropPath(drop_prob=0.069)
-                )
-                (19): ConvNeXtBlock(
-                  (conv_dw): Conv2d(768, 768, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=768)
-                  (norm): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
-                  (mlp): Mlp(
-                    (fc1): Linear(in_features=768, out_features=3072, bias=True)
-                    (act): GELU()
-                    (drop1): Dropout(p=0.0, inplace=False)
-                    (norm): Identity()
-                    (fc2): Linear(in_features=3072, out_features=768, bias=True)
-                    (drop2): Dropout(p=0.0, inplace=False)
-                  )
-                  (shortcut): Identity()
-                  (drop_path): DropPath(drop_prob=0.071)
-                )
-                (20): ConvNeXtBlock(
-                  (conv_dw): Conv2d(768, 768, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=768)
-                  (norm): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
-                  (mlp): Mlp(
-                    (fc1): Linear(in_features=768, out_features=3072, bias=True)
-                    (act): GELU()
-                    (drop1): Dropout(p=0.0, inplace=False)
-                    (norm): Identity()
-                    (fc2): Linear(in_features=3072, out_features=768, bias=True)
-                    (drop2): Dropout(p=0.0, inplace=False)
-                  )
-                  (shortcut): Identity()
-                  (drop_path): DropPath(drop_prob=0.074)
-                )
-                (21): ConvNeXtBlock(
-                  (conv_dw): Conv2d(768, 768, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=768)
-                  (norm): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
-                  (mlp): Mlp(
-                    (fc1): Linear(in_features=768, out_features=3072, bias=True)
-                    (act): GELU()
-                    (drop1): Dropout(p=0.0, inplace=False)
-                    (norm): Identity()
-                    (fc2): Linear(in_features=3072, out_features=768, bias=True)
-                    (drop2): Dropout(p=0.0, inplace=False)
-                  )
-                  (shortcut): Identity()
-                  (drop_path): DropPath(drop_prob=0.077)
-                )
-                (22): ConvNeXtBlock(
-                  (conv_dw): Conv2d(768, 768, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=768)
-                  (norm): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
-                  (mlp): Mlp(
-                    (fc1): Linear(in_features=768, out_features=3072, bias=True)
-                    (act): GELU()
-                    (drop1): Dropout(p=0.0, inplace=False)
-                    (norm): Identity()
-                    (fc2): Linear(in_features=3072, out_features=768, bias=True)
-                    (drop2): Dropout(p=0.0, inplace=False)
-                  )
-                  (shortcut): Identity()
-                  (drop_path): DropPath(drop_prob=0.080)
-                )
-                (23): ConvNeXtBlock(
-                  (conv_dw): Conv2d(768, 768, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=768)
-                  (norm): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
-                  (mlp): Mlp(
-                    (fc1): Linear(in_features=768, out_features=3072, bias=True)
-                    (act): GELU()
-                    (drop1): Dropout(p=0.0, inplace=False)
-                    (norm): Identity()
-                    (fc2): Linear(in_features=3072, out_features=768, bias=True)
-                    (drop2): Dropout(p=0.0, inplace=False)
-                  )
-                  (shortcut): Identity()
-                  (drop_path): DropPath(drop_prob=0.083)
-                )
-                (24): ConvNeXtBlock(
-                  (conv_dw): Conv2d(768, 768, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=768)
-                  (norm): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
-                  (mlp): Mlp(
-                    (fc1): Linear(in_features=768, out_features=3072, bias=True)
-                    (act): GELU()
-                    (drop1): Dropout(p=0.0, inplace=False)
-                    (norm): Identity()
-                    (fc2): Linear(in_features=3072, out_features=768, bias=True)
-                    (drop2): Dropout(p=0.0, inplace=False)
-                  )
-                  (shortcut): Identity()
-                  (drop_path): DropPath(drop_prob=0.086)
-                )
-                (25): ConvNeXtBlock(
-                  (conv_dw): Conv2d(768, 768, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=768)
-                  (norm): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
-                  (mlp): Mlp(
-                    (fc1): Linear(in_features=768, out_features=3072, bias=True)
-                    (act): GELU()
-                    (drop1): Dropout(p=0.0, inplace=False)
-                    (norm): Identity()
-                    (fc2): Linear(in_features=3072, out_features=768, bias=True)
-                    (drop2): Dropout(p=0.0, inplace=False)
-                  )
-                  (shortcut): Identity()
-                  (drop_path): DropPath(drop_prob=0.089)
-                )
-                (26): ConvNeXtBlock(
-                  (conv_dw): Conv2d(768, 768, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=768)
-                  (norm): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
-                  (mlp): Mlp(
-                    (fc1): Linear(in_features=768, out_features=3072, bias=True)
-                    (act): GELU()
-                    (drop1): Dropout(p=0.0, inplace=False)
-                    (norm): Identity()
-                    (fc2): Linear(in_features=3072, out_features=768, bias=True)
-                    (drop2): Dropout(p=0.0, inplace=False)
-                  )
-                  (shortcut): Identity()
-                  (drop_path): DropPath(drop_prob=0.091)
-                )
-              )
-            )
-            (3): ConvNeXtStage(
-              (downsample): Sequential(
-                (0): LayerNorm2d((768,), eps=1e-06, elementwise_affine=True)
-                (1): Conv2d(768, 1536, kernel_size=(2, 2), stride=(2, 2))
-              )
-              (blocks): Sequential(
-                (0): ConvNeXtBlock(
-                  (conv_dw): Conv2d(1536, 1536, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=1536)
-                  (norm): LayerNorm((1536,), eps=1e-06, elementwise_affine=True)
-                  (mlp): Mlp(
-                    (fc1): Linear(in_features=1536, out_features=6144, bias=True)
-                    (act): GELU()
-                    (drop1): Dropout(p=0.0, inplace=False)
-                    (norm): Identity()
-                    (fc2): Linear(in_features=6144, out_features=1536, bias=True)
-                    (drop2): Dropout(p=0.0, inplace=False)
-                  )
-                  (shortcut): Identity()
-                  (drop_path): DropPath(drop_prob=0.094)
-                )
-                (1): ConvNeXtBlock(
-                  (conv_dw): Conv2d(1536, 1536, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=1536)
-                  (norm): LayerNorm((1536,), eps=1e-06, elementwise_affine=True)
-                  (mlp): Mlp(
-                    (fc1): Linear(in_features=1536, out_features=6144, bias=True)
-                    (act): GELU()
-                    (drop1): Dropout(p=0.0, inplace=False)
-                    (norm): Identity()
-                    (fc2): Linear(in_features=6144, out_features=1536, bias=True)
-                    (drop2): Dropout(p=0.0, inplace=False)
-                  )
-                  (shortcut): Identity()
-                  (drop_path): DropPath(drop_prob=0.097)
-                )
-                (2): ConvNeXtBlock(
-                  (conv_dw): Conv2d(1536, 1536, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=1536)
-                  (norm): LayerNorm((1536,), eps=1e-06, elementwise_affine=True)
-                  (mlp): Mlp(
-                    (fc1): Linear(in_features=1536, out_features=6144, bias=True)
-                    (act): GELU()
-                    (drop1): Dropout(p=0.0, inplace=False)
-                    (norm): Identity()
-                    (fc2): Linear(in_features=6144, out_features=1536, bias=True)
-                    (drop2): Dropout(p=0.0, inplace=False)
-                  )
-                  (shortcut): Identity()
-                  (drop_path): DropPath(drop_prob=0.100)
-                )
-              )
-            )
-          )
-          (norm_pre): Identity()
-          (head): NormMlpClassifierHead(
-            (global_pool): SelectAdaptivePool2d(pool_type=avg, flatten=Identity())
-            (norm): LayerNorm2d((1536,), eps=1e-06, elementwise_affine=True)
-            (flatten): Flatten(start_dim=1, end_dim=-1)
-            (pre_logits): Identity()
-            (drop): Dropout(p=0.0, inplace=False)
-            (fc): Identity()
-          )
-        )
-        (head): Sequential(
-          (mlp): Mlp(
-            (fc1): Linear(in_features=1536, out_features=1536, bias=True)
-            (act): GELU(approximate='none')
-            (drop1): Dropout(p=0.0, inplace=False)
+  (backbone): DINOv3TXT(
+    (model): DINOTxt(
+      (visual_model): VisionTower(
+        (backbone): DinoVisionTransformer(
+          (patch_embed): PatchEmbed(
+            (proj): Conv2d(3, 1024, kernel_size=(16, 16), stride=(16, 16))
             (norm): Identity()
-            (fc2): Linear(in_features=1536, out_features=768, bias=False)
-            (drop2): Dropout(p=0, inplace=False)
           )
-        )
-      )
-      (transformer): Transformer(
-        (resblocks): ModuleList(
-          (0-15): 16 x ResidualAttentionBlock(
-            (ln_1): LayerNorm((768,), eps=1e-05, elementwise_affine=True)
-            (attn): MultiheadAttention(
-              (out_proj): NonDynamicallyQuantizableLinear(in_features=768, out_features=768, bias=True)
-            )
-            (ls_1): Identity()
-            (ln_2): LayerNorm((768,), eps=1e-05, elementwise_affine=True)
-            (mlp): Sequential(
-              (c_fc): Linear(in_features=768, out_features=3072, bias=True)
-              (gelu): GELU(approximate='none')
-              (c_proj): Linear(in_features=3072, out_features=768, bias=True)
-            )
-            (ls_2): Identity()
-          )
-        )
-      )
-      (token_embedding): Embedding(49408, 768)
-      (ln_final): LayerNorm((768,), eps=1e-05, elementwise_affine=True)
-    )
-  )
-  (void_embedding): Embedding(1, 768)
-)
-[10/20 16:50:40] detectron2.checkpoint.detection_checkpoint INFO: [DetectionCheckpointer] Loading from out/semantic/MAFT_Plus/maftp_l.pth ...
-[10/20 16:50:40] fvcore.common.checkpoint INFO: [Checkpointer] Loading from out/semantic/MAFT_Plus/maftp_l.pth ...
-[10/20 16:50:40] detectron2.data.dataset_mapper INFO: [DatasetMapper] Augmentations used in inference: [ResizeShortestEdge(short_edge_length=(800, 800), max_size=1333, sample_style='choice')]
-[10/20 16:50:40] detectron2.data.common INFO: Serializing the dataset using: <class 'detectron2.data.common._TorchSerializedList'>
-[10/20 16:50:40] detectron2.data.common INFO: Serializing 1449 elements to byte tensors and concatenating them all ...
-[10/20 16:50:40] detectron2.data.common INFO: Serialized dataset takes 1.38 MiB
-[10/20 16:50:40] detectron2.evaluation.evaluator INFO: Start inference on 362 batches
-[10/20 16:50:50] detectron2.evaluation.evaluator INFO: Inference done 11/362. Dataloading: 0.0015 s/iter. Inference: 0.0924 s/iter. Eval: 0.0081 s/iter. Total: 0.1021 s/iter. ETA=0:00:35
-[10/20 16:50:55] detectron2.evaluation.evaluator INFO: Inference done 61/362. Dataloading: 0.0023 s/iter. Inference: 0.0903 s/iter. Eval: 0.0091 s/iter. Total: 0.1018 s/iter. ETA=0:00:30
-[10/20 16:51:00] detectron2.evaluation.evaluator INFO: Inference done 110/362. Dataloading: 0.0027 s/iter. Inference: 0.0904 s/iter. Eval: 0.0093 s/iter. Total: 0.1025 s/iter. ETA=0:00:25
-[10/20 16:51:05] detectron2.evaluation.evaluator INFO: Inference done 159/362. Dataloading: 0.0027 s/iter. Inference: 0.0907 s/iter. Eval: 0.0095 s/iter. Total: 0.1030 s/iter. ETA=0:00:20
-[10/20 16:51:10] detectron2.evaluation.evaluator INFO: Inference done 208/362. Dataloading: 0.0027 s/iter. Inference: 0.0909 s/iter. Eval: 0.0093 s/iter. Total: 0.1030 s/iter. ETA=0:00:15
-[10/20 16:51:15] detectron2.evaluation.evaluator INFO: Inference done 257/362. Dataloading: 0.0027 s/iter. Inference: 0.0910 s/iter. Eval: 0.0092 s/iter. Total: 0.1029 s/iter. ETA=0:00:10
-[10/20 16:51:20] detectron2.evaluation.evaluator INFO: Inference done 307/362. Dataloading: 0.0027 s/iter. Inference: 0.0907 s/iter. Eval: 0.0091 s/iter. Total: 0.1026 s/iter. ETA=0:00:05
-[10/20 16:51:25] detectron2.evaluation.evaluator INFO: Inference done 356/362. Dataloading: 0.0027 s/iter. Inference: 0.0908 s/iter. Eval: 0.0090 s/iter. Total: 0.1026 s/iter. ETA=0:00:00
-[10/20 16:51:29] detectron2.evaluation.evaluator INFO: Total inference time: 0:00:39.472250 (0.110567 s / iter per device, on 4 devices)
-[10/20 16:51:29] detectron2.evaluation.evaluator INFO: Total inference pure compute time: 0:00:32 (0.090770 s / iter per device, on 4 devices)
-[10/20 16:51:29] detectron2.data.dataset_mapper INFO: [DatasetMapper] Augmentations used in inference: [ResizeShortestEdge(short_edge_length=(800, 800), max_size=1333, sample_style='choice')]
-[10/20 16:51:29] detectron2.data.common INFO: Serializing the dataset using: <class 'detectron2.data.common._TorchSerializedList'>
-[10/20 16:51:29] detectron2.data.common INFO: Serializing 2000 elements to byte tensors and concatenating them all ...
-[10/20 16:51:29] detectron2.data.common INFO: Serialized dataset takes 27.14 MiB
-[10/20 16:51:29] detectron2.evaluation.evaluator INFO: Start inference on 500 batches
-[10/20 16:52:00] detectron2.evaluation.evaluator INFO: Inference done 1/500. Dataloading: 6.4464 s/iter. Inference: 24.2629 s/iter. Eval: 0.0428 s/iter. Total: 30.7574 s/iter. ETA=4:15:47
-[10/20 16:52:05] detectron2.evaluation.evaluator INFO: Inference done 41/500. Dataloading: 0.0028 s/iter. Inference: 0.1066 s/iter. Eval: 0.0163 s/iter. Total: 0.1258 s/iter. ETA=0:00:57
-[10/20 16:52:10] detectron2.evaluation.evaluator INFO: Inference done 85/500. Dataloading: 0.0027 s/iter. Inference: 0.1026 s/iter. Eval: 0.0149 s/iter. Total: 0.1202 s/iter. ETA=0:00:49
-[10/20 16:52:15] detectron2.evaluation.evaluator INFO: Inference done 130/500. Dataloading: 0.0027 s/iter. Inference: 0.1006 s/iter. Eval: 0.0139 s/iter. Total: 0.1173 s/iter. ETA=0:00:43
-[10/20 16:52:20] detectron2.evaluation.evaluator INFO: Inference done 174/500. Dataloading: 0.0026 s/iter. Inference: 0.1005 s/iter. Eval: 0.0133 s/iter. Total: 0.1164 s/iter. ETA=0:00:37
-[10/20 16:52:25] detectron2.evaluation.evaluator INFO: Inference done 215/500. Dataloading: 0.0027 s/iter. Inference: 0.1013 s/iter. Eval: 0.0136 s/iter. Total: 0.1176 s/iter. ETA=0:00:33
-[10/20 16:52:30] detectron2.evaluation.evaluator INFO: Inference done 261/500. Dataloading: 0.0027 s/iter. Inference: 0.1004 s/iter. Eval: 0.0131 s/iter. Total: 0.1163 s/iter. ETA=0:00:27
-[10/20 16:52:35] detectron2.evaluation.evaluator INFO: Inference done 302/500. Dataloading: 0.0027 s/iter. Inference: 0.1010 s/iter. Eval: 0.0136 s/iter. Total: 0.1173 s/iter. ETA=0:00:23
-[10/20 16:52:41] detectron2.evaluation.evaluator INFO: Inference done 342/500. Dataloading: 0.0027 s/iter. Inference: 0.1016 s/iter. Eval: 0.0142 s/iter. Total: 0.1185 s/iter. ETA=0:00:18
-[10/20 16:52:46] detectron2.evaluation.evaluator INFO: Inference done 387/500. Dataloading: 0.0027 s/iter. Inference: 0.1008 s/iter. Eval: 0.0141 s/iter. Total: 0.1177 s/iter. ETA=0:00:13
-[10/20 16:52:51] detectron2.evaluation.evaluator INFO: Inference done 430/500. Dataloading: 0.0027 s/iter. Inference: 0.1009 s/iter. Eval: 0.0140 s/iter. Total: 0.1176 s/iter. ETA=0:00:08
-[10/20 16:52:56] detectron2.evaluation.evaluator INFO: Inference done 472/500. Dataloading: 0.0027 s/iter. Inference: 0.1009 s/iter. Eval: 0.0141 s/iter. Total: 0.1178 s/iter. ETA=0:00:03
-[10/20 16:53:00] detectron2.evaluation.evaluator INFO: Total inference time: 0:00:59.469714 (0.120141 s / iter per device, on 4 devices)
-[10/20 16:53:00] detectron2.evaluation.evaluator INFO: Total inference pure compute time: 0:00:49 (0.100640 s / iter per device, on 4 devices)
-[10/20 16:53:10] detectron2.data.dataset_mapper INFO: [DatasetMapper] Augmentations used in inference: [ResizeShortestEdge(short_edge_length=(800, 800), max_size=1333, sample_style='choice')]
-[10/20 16:53:10] detectron2.data.common INFO: Serializing the dataset using: <class 'detectron2.data.common._TorchSerializedList'>
-[10/20 16:53:10] detectron2.data.common INFO: Serializing 5104 elements to byte tensors and concatenating them all ...
-[10/20 16:53:10] detectron2.data.common INFO: Serialized dataset takes 39.02 MiB
-[10/20 16:53:10] detectron2.evaluation.evaluator INFO: Start inference on 1276 batches
-[10/20 16:53:27] detectron2.evaluation.evaluator INFO: Inference done 1/1276. Dataloading: 6.5828 s/iter. Inference: 10.2261 s/iter. Eval: 0.0149 s/iter. Total: 16.8264 s/iter. ETA=5:57:33
-[10/20 16:53:32] detectron2.evaluation.evaluator INFO: Inference done 47/1276. Dataloading: 0.0024 s/iter. Inference: 0.0967 s/iter. Eval: 0.0094 s/iter. Total: 0.1086 s/iter. ETA=0:02:13
-[10/20 16:53:37] detectron2.evaluation.evaluator INFO: Inference done 93/1276. Dataloading: 0.0025 s/iter. Inference: 0.0976 s/iter. Eval: 0.0092 s/iter. Total: 0.1093 s/iter. ETA=0:02:09
-[10/20 16:53:42] detectron2.evaluation.evaluator INFO: Inference done 140/1276. Dataloading: 0.0026 s/iter. Inference: 0.0972 s/iter. Eval: 0.0092 s/iter. Total: 0.1091 s/iter. ETA=0:02:03
-[10/20 16:53:47] detectron2.evaluation.evaluator INFO: Inference done 187/1276. Dataloading: 0.0026 s/iter. Inference: 0.0970 s/iter. Eval: 0.0091 s/iter. Total: 0.1088 s/iter. ETA=0:01:58
-[10/20 16:53:52] detectron2.evaluation.evaluator INFO: Inference done 233/1276. Dataloading: 0.0026 s/iter. Inference: 0.0973 s/iter. Eval: 0.0091 s/iter. Total: 0.1091 s/iter. ETA=0:01:53
-[10/20 16:53:57] detectron2.evaluation.evaluator INFO: Inference done 279/1276. Dataloading: 0.0026 s/iter. Inference: 0.0976 s/iter. Eval: 0.0090 s/iter. Total: 0.1093 s/iter. ETA=0:01:48
-[10/20 16:54:02] detectron2.evaluation.evaluator INFO: Inference done 325/1276. Dataloading: 0.0026 s/iter. Inference: 0.0977 s/iter. Eval: 0.0091 s/iter. Total: 0.1095 s/iter. ETA=0:01:44
-[10/20 16:54:07] detectron2.evaluation.evaluator INFO: Inference done 371/1276. Dataloading: 0.0026 s/iter. Inference: 0.0977 s/iter. Eval: 0.0092 s/iter. Total: 0.1095 s/iter. ETA=0:01:39
-[10/20 16:54:12] detectron2.evaluation.evaluator INFO: Inference done 416/1276. Dataloading: 0.0027 s/iter. Inference: 0.0978 s/iter. Eval: 0.0092 s/iter. Total: 0.1097 s/iter. ETA=0:01:34
-[10/20 16:54:17] detectron2.evaluation.evaluator INFO: Inference done 462/1276. Dataloading: 0.0027 s/iter. Inference: 0.0977 s/iter. Eval: 0.0092 s/iter. Total: 0.1096 s/iter. ETA=0:01:29
-[10/20 16:54:22] detectron2.evaluation.evaluator INFO: Inference done 509/1276. Dataloading: 0.0027 s/iter. Inference: 0.0976 s/iter. Eval: 0.0092 s/iter. Total: 0.1095 s/iter. ETA=0:01:23
-[10/20 16:54:28] detectron2.evaluation.evaluator INFO: Inference done 555/1276. Dataloading: 0.0027 s/iter. Inference: 0.0976 s/iter. Eval: 0.0091 s/iter. Total: 0.1095 s/iter. ETA=0:01:18
-[10/20 16:54:33] detectron2.evaluation.evaluator INFO: Inference done 601/1276. Dataloading: 0.0027 s/iter. Inference: 0.0976 s/iter. Eval: 0.0091 s/iter. Total: 0.1095 s/iter. ETA=0:01:13
-[10/20 16:54:38] detectron2.evaluation.evaluator INFO: Inference done 647/1276. Dataloading: 0.0027 s/iter. Inference: 0.0976 s/iter. Eval: 0.0091 s/iter. Total: 0.1095 s/iter. ETA=0:01:08
-[10/20 16:54:43] detectron2.evaluation.evaluator INFO: Inference done 692/1276. Dataloading: 0.0027 s/iter. Inference: 0.0978 s/iter. Eval: 0.0091 s/iter. Total: 0.1096 s/iter. ETA=0:01:03
-[10/20 16:54:48] detectron2.evaluation.evaluator INFO: Inference done 738/1276. Dataloading: 0.0027 s/iter. Inference: 0.0978 s/iter. Eval: 0.0091 s/iter. Total: 0.1096 s/iter. ETA=0:00:58
-[10/20 16:54:53] detectron2.evaluation.evaluator INFO: Inference done 784/1276. Dataloading: 0.0027 s/iter. Inference: 0.0978 s/iter. Eval: 0.0091 s/iter. Total: 0.1096 s/iter. ETA=0:00:53
-[10/20 16:54:58] detectron2.evaluation.evaluator INFO: Inference done 830/1276. Dataloading: 0.0027 s/iter. Inference: 0.0979 s/iter. Eval: 0.0091 s/iter. Total: 0.1097 s/iter. ETA=0:00:48
-[10/20 16:55:03] detectron2.evaluation.evaluator INFO: Inference done 876/1276. Dataloading: 0.0027 s/iter. Inference: 0.0979 s/iter. Eval: 0.0091 s/iter. Total: 0.1098 s/iter. ETA=0:00:43
-[10/20 16:55:08] detectron2.evaluation.evaluator INFO: Inference done 922/1276. Dataloading: 0.0027 s/iter. Inference: 0.0979 s/iter. Eval: 0.0091 s/iter. Total: 0.1098 s/iter. ETA=0:00:38
-[10/20 16:55:13] detectron2.evaluation.evaluator INFO: Inference done 968/1276. Dataloading: 0.0027 s/iter. Inference: 0.0980 s/iter. Eval: 0.0091 s/iter. Total: 0.1098 s/iter. ETA=0:00:33
-[10/20 16:55:18] detectron2.evaluation.evaluator INFO: Inference done 1013/1276. Dataloading: 0.0027 s/iter. Inference: 0.0980 s/iter. Eval: 0.0092 s/iter. Total: 0.1099 s/iter. ETA=0:00:28
-[10/20 16:55:23] detectron2.evaluation.evaluator INFO: Inference done 1059/1276. Dataloading: 0.0027 s/iter. Inference: 0.0979 s/iter. Eval: 0.0092 s/iter. Total: 0.1098 s/iter. ETA=0:00:23
-[10/20 16:55:28] detectron2.evaluation.evaluator INFO: Inference done 1104/1276. Dataloading: 0.0027 s/iter. Inference: 0.0980 s/iter. Eval: 0.0092 s/iter. Total: 0.1100 s/iter. ETA=0:00:18
-[10/20 16:55:33] detectron2.evaluation.evaluator INFO: Inference done 1150/1276. Dataloading: 0.0027 s/iter. Inference: 0.0980 s/iter. Eval: 0.0092 s/iter. Total: 0.1099 s/iter. ETA=0:00:13
-[10/20 16:55:38] detectron2.evaluation.evaluator INFO: Inference done 1196/1276. Dataloading: 0.0027 s/iter. Inference: 0.0981 s/iter. Eval: 0.0092 s/iter. Total: 0.1099 s/iter. ETA=0:00:08
-[10/20 16:55:43] detectron2.evaluation.evaluator INFO: Inference done 1242/1276. Dataloading: 0.0027 s/iter. Inference: 0.0981 s/iter. Eval: 0.0091 s/iter. Total: 0.1100 s/iter. ETA=0:00:03
-[10/20 16:55:48] detectron2.evaluation.evaluator INFO: Total inference time: 0:02:21.062391 (0.110985 s / iter per device, on 4 devices)
-[10/20 16:55:48] detectron2.evaluation.evaluator INFO: Total inference pure compute time: 0:02:04 (0.098092 s / iter per device, on 4 devices)
-[10/20 16:56:05] detectron2.data.dataset_mapper INFO: [DatasetMapper] Augmentations used in inference: [ResizeShortestEdge(short_edge_length=(800, 800), max_size=1333, sample_style='choice')]
-[10/20 16:56:05] detectron2.data.common INFO: Serializing the dataset using: <class 'detectron2.data.common._TorchSerializedList'>
-[10/20 16:56:05] detectron2.data.common INFO: Serializing 5104 elements to byte tensors and concatenating them all ...
-[10/20 16:56:05] detectron2.data.common INFO: Serialized dataset takes 8.84 MiB
-[10/20 16:56:05] detectron2.evaluation.evaluator INFO: Start inference on 1276 batches
-[10/20 16:56:16] detectron2.evaluation.evaluator INFO: Inference done 11/1276. Dataloading: 0.0016 s/iter. Inference: 0.0931 s/iter. Eval: 0.0076 s/iter. Total: 0.1023 s/iter. ETA=0:02:09
-[10/20 16:56:21] detectron2.evaluation.evaluator INFO: Inference done 60/1276. Dataloading: 0.0023 s/iter. Inference: 0.0917 s/iter. Eval: 0.0089 s/iter. Total: 0.1030 s/iter. ETA=0:02:05
-[10/20 16:56:26] detectron2.evaluation.evaluator INFO: Inference done 108/1276. Dataloading: 0.0024 s/iter. Inference: 0.0921 s/iter. Eval: 0.0090 s/iter. Total: 0.1036 s/iter. ETA=0:02:00
-[10/20 16:56:31] detectron2.evaluation.evaluator INFO: Inference done 157/1276. Dataloading: 0.0025 s/iter. Inference: 0.0917 s/iter. Eval: 0.0091 s/iter. Total: 0.1033 s/iter. ETA=0:01:55
-[10/20 16:56:36] detectron2.evaluation.evaluator INFO: Inference done 206/1276. Dataloading: 0.0025 s/iter. Inference: 0.0916 s/iter. Eval: 0.0092 s/iter. Total: 0.1034 s/iter. ETA=0:01:50
-[10/20 16:56:41] detectron2.evaluation.evaluator INFO: Inference done 254/1276. Dataloading: 0.0025 s/iter. Inference: 0.0921 s/iter. Eval: 0.0092 s/iter. Total: 0.1039 s/iter. ETA=0:01:46
-[10/20 16:56:46] detectron2.evaluation.evaluator INFO: Inference done 302/1276. Dataloading: 0.0025 s/iter. Inference: 0.0924 s/iter. Eval: 0.0092 s/iter. Total: 0.1042 s/iter. ETA=0:01:41
-[10/20 16:56:52] detectron2.evaluation.evaluator INFO: Inference done 350/1276. Dataloading: 0.0025 s/iter. Inference: 0.0924 s/iter. Eval: 0.0092 s/iter. Total: 0.1043 s/iter. ETA=0:01:36
-[10/20 16:56:57] detectron2.evaluation.evaluator INFO: Inference done 398/1276. Dataloading: 0.0025 s/iter. Inference: 0.0925 s/iter. Eval: 0.0092 s/iter. Total: 0.1043 s/iter. ETA=0:01:31
-[10/20 16:57:02] detectron2.evaluation.evaluator INFO: Inference done 446/1276. Dataloading: 0.0025 s/iter. Inference: 0.0926 s/iter. Eval: 0.0092 s/iter. Total: 0.1044 s/iter. ETA=0:01:26
-[10/20 16:57:07] detectron2.evaluation.evaluator INFO: Inference done 495/1276. Dataloading: 0.0025 s/iter. Inference: 0.0924 s/iter. Eval: 0.0091 s/iter. Total: 0.1042 s/iter. ETA=0:01:21
-[10/20 16:57:12] detectron2.evaluation.evaluator INFO: Inference done 543/1276. Dataloading: 0.0025 s/iter. Inference: 0.0925 s/iter. Eval: 0.0091 s/iter. Total: 0.1042 s/iter. ETA=0:01:16
-[10/20 16:57:17] detectron2.evaluation.evaluator INFO: Inference done 592/1276. Dataloading: 0.0025 s/iter. Inference: 0.0924 s/iter. Eval: 0.0091 s/iter. Total: 0.1041 s/iter. ETA=0:01:11
-[10/20 16:57:22] detectron2.evaluation.evaluator INFO: Inference done 641/1276. Dataloading: 0.0025 s/iter. Inference: 0.0925 s/iter. Eval: 0.0090 s/iter. Total: 0.1041 s/iter. ETA=0:01:06
-[10/20 16:57:27] detectron2.evaluation.evaluator INFO: Inference done 688/1276. Dataloading: 0.0025 s/iter. Inference: 0.0926 s/iter. Eval: 0.0090 s/iter. Total: 0.1042 s/iter. ETA=0:01:01
-[10/20 16:57:32] detectron2.evaluation.evaluator INFO: Inference done 736/1276. Dataloading: 0.0025 s/iter. Inference: 0.0927 s/iter. Eval: 0.0090 s/iter. Total: 0.1043 s/iter. ETA=0:00:56
-[10/20 16:57:37] detectron2.evaluation.evaluator INFO: Inference done 785/1276. Dataloading: 0.0025 s/iter. Inference: 0.0927 s/iter. Eval: 0.0090 s/iter. Total: 0.1043 s/iter. ETA=0:00:51
-[10/20 16:57:42] detectron2.evaluation.evaluator INFO: Inference done 833/1276. Dataloading: 0.0025 s/iter. Inference: 0.0927 s/iter. Eval: 0.0090 s/iter. Total: 0.1043 s/iter. ETA=0:00:46
-[10/20 16:57:47] detectron2.evaluation.evaluator INFO: Inference done 881/1276. Dataloading: 0.0025 s/iter. Inference: 0.0928 s/iter. Eval: 0.0090 s/iter. Total: 0.1043 s/iter. ETA=0:00:41
-[10/20 16:57:52] detectron2.evaluation.evaluator INFO: Inference done 929/1276. Dataloading: 0.0025 s/iter. Inference: 0.0928 s/iter. Eval: 0.0090 s/iter. Total: 0.1043 s/iter. ETA=0:00:36
-[10/20 16:57:57] detectron2.evaluation.evaluator INFO: Inference done 977/1276. Dataloading: 0.0025 s/iter. Inference: 0.0928 s/iter. Eval: 0.0090 s/iter. Total: 0.1044 s/iter. ETA=0:00:31
-[10/20 16:58:02] detectron2.evaluation.evaluator INFO: Inference done 1026/1276. Dataloading: 0.0025 s/iter. Inference: 0.0928 s/iter. Eval: 0.0090 s/iter. Total: 0.1044 s/iter. ETA=0:00:26
-[10/20 16:58:07] detectron2.evaluation.evaluator INFO: Inference done 1075/1276. Dataloading: 0.0025 s/iter. Inference: 0.0928 s/iter. Eval: 0.0090 s/iter. Total: 0.1043 s/iter. ETA=0:00:20
-[10/20 16:58:12] detectron2.evaluation.evaluator INFO: Inference done 1123/1276. Dataloading: 0.0025 s/iter. Inference: 0.0928 s/iter. Eval: 0.0090 s/iter. Total: 0.1043 s/iter. ETA=0:00:15
-[10/20 16:58:17] detectron2.evaluation.evaluator INFO: Inference done 1172/1276. Dataloading: 0.0025 s/iter. Inference: 0.0928 s/iter. Eval: 0.0089 s/iter. Total: 0.1043 s/iter. ETA=0:00:10
-[10/20 16:58:22] detectron2.evaluation.evaluator INFO: Inference done 1220/1276. Dataloading: 0.0025 s/iter. Inference: 0.0928 s/iter. Eval: 0.0089 s/iter. Total: 0.1043 s/iter. ETA=0:00:05
-[10/20 16:58:27] detectron2.evaluation.evaluator INFO: Inference done 1268/1276. Dataloading: 0.0025 s/iter. Inference: 0.0928 s/iter. Eval: 0.0089 s/iter. Total: 0.1043 s/iter. ETA=0:00:00
-[10/20 16:58:29] detectron2.evaluation.evaluator INFO: Total inference time: 0:02:13.844660 (0.105307 s / iter per device, on 4 devices)
-[10/20 16:58:29] detectron2.evaluation.evaluator INFO: Total inference pure compute time: 0:01:57 (0.092827 s / iter per device, on 4 devices)
-[10/20 16:58:46] detectron2.data.dataset_mapper INFO: [DatasetMapper] Augmentations used in inference: [ResizeShortestEdge(short_edge_length=(800, 800), max_size=1333, sample_style='choice')]
-[10/20 16:58:46] detectron2.data.common INFO: Serializing the dataset using: <class 'detectron2.data.common._TorchSerializedList'>
-[10/20 16:58:46] detectron2.data.common INFO: Serializing 2000 elements to byte tensors and concatenating them all ...
-[10/20 16:58:46] detectron2.data.common INFO: Serialized dataset takes 15.18 MiB
-[10/20 16:58:46] detectron2.evaluation.evaluator INFO: Start inference on 500 batches
-[10/20 16:59:00] detectron2.evaluation.evaluator INFO: Inference done 1/500. Dataloading: 6.2058 s/iter. Inference: 7.5752 s/iter. Eval: 0.0306 s/iter. Total: 13.8143 s/iter. ETA=1:54:53
-[10/20 16:59:05] detectron2.evaluation.evaluator INFO: Inference done 47/500. Dataloading: 0.0024 s/iter. Inference: 0.0933 s/iter. Eval: 0.0144 s/iter. Total: 0.1102 s/iter. ETA=0:00:49
-[10/20 16:59:10] detectron2.evaluation.evaluator INFO: Inference done 95/500. Dataloading: 0.0025 s/iter. Inference: 0.0902 s/iter. Eval: 0.0143 s/iter. Total: 0.1071 s/iter. ETA=0:00:43
-[10/20 16:59:15] detectron2.evaluation.evaluator INFO: Inference done 145/500. Dataloading: 0.0025 s/iter. Inference: 0.0891 s/iter. Eval: 0.0130 s/iter. Total: 0.1047 s/iter. ETA=0:00:37
-[10/20 16:59:20] detectron2.evaluation.evaluator INFO: Inference done 194/500. Dataloading: 0.0026 s/iter. Inference: 0.0893 s/iter. Eval: 0.0123 s/iter. Total: 0.1042 s/iter. ETA=0:00:31
-[10/20 16:59:25] detectron2.evaluation.evaluator INFO: Inference done 241/500. Dataloading: 0.0026 s/iter. Inference: 0.0898 s/iter. Eval: 0.0125 s/iter. Total: 0.1049 s/iter. ETA=0:00:27
-[10/20 16:59:30] detectron2.evaluation.evaluator INFO: Inference done 292/500. Dataloading: 0.0026 s/iter. Inference: 0.0891 s/iter. Eval: 0.0122 s/iter. Total: 0.1039 s/iter. ETA=0:00:21
-[10/20 16:59:35] detectron2.evaluation.evaluator INFO: Inference done 336/500. Dataloading: 0.0026 s/iter. Inference: 0.0896 s/iter. Eval: 0.0130 s/iter. Total: 0.1052 s/iter. ETA=0:00:17
-[10/20 16:59:40] detectron2.evaluation.evaluator INFO: Inference done 387/500. Dataloading: 0.0026 s/iter. Inference: 0.0889 s/iter. Eval: 0.0129 s/iter. Total: 0.1045 s/iter. ETA=0:00:11
-[10/20 16:59:45] detectron2.evaluation.evaluator INFO: Inference done 435/500. Dataloading: 0.0026 s/iter. Inference: 0.0891 s/iter. Eval: 0.0128 s/iter. Total: 0.1045 s/iter. ETA=0:00:06
-[10/20 16:59:50] detectron2.evaluation.evaluator INFO: Inference done 484/500. Dataloading: 0.0026 s/iter. Inference: 0.0889 s/iter. Eval: 0.0127 s/iter. Total: 0.1043 s/iter. ETA=0:00:01
-[10/20 16:59:53] detectron2.evaluation.evaluator INFO: Total inference time: 0:00:52.708294 (0.106481 s / iter per device, on 4 devices)
-[10/20 16:59:53] detectron2.evaluation.evaluator INFO: Total inference pure compute time: 0:00:43 (0.088782 s / iter per device, on 4 devices)
-[10/28 15:50:32] detectron2 INFO: Rank of current process: 3. World size: 4
-[10/28 15:50:33] detectron2 INFO: Environment info:
--------------------------------  ------------------------------------------------------------------------
-sys.platform                     linux
-Python                           3.8.20 (default, Oct  3 2024, 15:24:27) [GCC 11.2.0]
-numpy                            1.22.4
-detectron2                       0.6 @/data/hmp/conda_envs/AAA/lib/python3.8/site-packages/detectron2
-Compiler                         GCC 9.4
-CUDA compiler                    CUDA 11.8
-detectron2 arch flags            8.6
-DETECTRON2_ENV_MODULE            <not set>
-PyTorch                          2.4.1 @/data/hmp/conda_envs/AAA/lib/python3.8/site-packages/torch
-PyTorch debug build              False
-torch._C._GLIBCXX_USE_CXX11_ABI  False
-GPU available                    Yes
-GPU 0,1,2,3                      NVIDIA GeForce RTX 3090 (arch=8.6)
-Driver version                   550.144.03
-CUDA_HOME                        /data/hmp/CUDA/11.8
-Pillow                           9.3.0
-torchvision                      0.20.0 @/data/hmp/conda_envs/AAA/lib/python3.8/site-packages/torchvision
-torchvision arch flags           3.5, 5.0, 6.0, 7.0, 7.5, 8.0, 8.6
-fvcore                           0.1.5.post20221221
-iopath                           0.1.9
-cv2                              4.12.0
--------------------------------  ------------------------------------------------------------------------
-PyTorch built with:
-  - GCC 9.3
-  - C++ Version: 201703
-  - Intel(R) oneAPI Math Kernel Library Version 2023.1-Product Build 20230303 for Intel(R) 64 architecture applications
-  - Intel(R) MKL-DNN v3.4.2 (Git Hash 1137e04ec0b5251ca2b4400a4fd3c667ce843d67)
-  - OpenMP 201511 (a.k.a. OpenMP 4.5)
-  - LAPACK is enabled (usually provided by MKL)
-  - NNPACK is enabled
-  - CPU capability usage: AVX512
-  - CUDA Runtime 11.8
-  - NVCC architecture flags: -gencode;arch=compute_50,code=sm_50;-gencode;arch=compute_60,code=sm_60;-gencode;arch=compute_61,code=sm_61;-gencode;arch=compute_70,code=sm_70;-gencode;arch=compute_75,code=sm_75;-gencode;arch=compute_80,code=sm_80;-gencode;arch=compute_86,code=sm_86;-gencode;arch=compute_37,code=sm_37;-gencode;arch=compute_90,code=sm_90;-gencode;arch=compute_37,code=compute_37
-  - CuDNN 90.1
-  - Magma 2.6.1
-  - Build settings: BLAS_INFO=mkl, BUILD_TYPE=Release, CUDA_VERSION=11.8, CUDNN_VERSION=9.1.0, CXX_COMPILER=/opt/rh/devtoolset-9/root/usr/bin/c++, CXX_FLAGS= -D_GLIBCXX_USE_CXX11_ABI=0 -fabi-version=11 -fvisibility-inlines-hidden -DUSE_PTHREADPOOL -DNDEBUG -DUSE_KINETO -DLIBKINETO_NOROCTRACER -DUSE_FBGEMM -DUSE_PYTORCH_QNNPACK -DUSE_XNNPACK -DSYMBOLICATE_MOBILE_DEBUG_HANDLE -O2 -fPIC -Wall -Wextra -Werror=return-type -Werror=non-virtual-dtor -Werror=bool-operation -Wnarrowing -Wno-missing-field-initializers -Wno-type-limits -Wno-array-bounds -Wno-unknown-pragmas -Wno-unused-parameter -Wno-unused-function -Wno-unused-result -Wno-strict-overflow -Wno-strict-aliasing -Wno-stringop-overflow -Wsuggest-override -Wno-psabi -Wno-error=pedantic -Wno-error=old-style-cast -Wno-missing-braces -fdiagnostics-color=always -faligned-new -Wno-unused-but-set-variable -Wno-maybe-uninitialized -fno-math-errno -fno-trapping-math -Werror=format -Wno-stringop-overflow, LAPACK_INFO=mkl, PERF_WITH_AVX=1, PERF_WITH_AVX2=1, PERF_WITH_AVX512=1, TORCH_VERSION=2.4.1, USE_CUDA=ON, USE_CUDNN=ON, USE_CUSPARSELT=1, USE_EXCEPTION_PTR=1, USE_GFLAGS=OFF, USE_GLOG=OFF, USE_GLOO=ON, USE_MKL=ON, USE_MKLDNN=ON, USE_MPI=OFF, USE_NCCL=ON, USE_NNPACK=ON, USE_OPENMP=ON, USE_ROCM=OFF, USE_ROCM_KERNEL_ASSERT=OFF, 
-
-[10/28 15:50:33] detectron2 INFO: Command line arguments: Namespace(config_file='configs/semantic/eval_PE.yaml', dist_url='tcp://127.0.0.1:50185', eval_only=True, machine_rank=0, num_gpus=4, num_machines=1, opts=[], resume=False)
-[10/28 15:50:33] detectron2 INFO: Contents of args.config_file=configs/semantic/eval_PE.yaml:
-# python train_net.py --config-file configs/semantic/eval.yaml  --num-gpus 8 --eval-only
-
-_BASE_: ./train_semantic_large.yaml
-MODEL:
-  BACKBONE:
-    NAME: "PEEncoder"
-  META_ARCHITECTURE: "MAFT_Plus"
-
-
-DATASETS:
-  # TEST: ("openvocab_pascal20_sem_seg_val", "openvocab_ade20k_full_sem_seg_val", 'openvocab_pascal_ctx459_sem_seg_val', 'openvocab_pascal_ctx59_sem_seg_val', 'openvocab_ade20k_panoptic_val') 
-  TEST: ( 'openvocab_ade20k_panoptic_val',)
-
-OUTPUT_DIR: ./out/semantic/evaluation
-
-PE:
-  ENABLED: True
-  MODEL_NAME: "PE-Core-L14-336"
-[10/28 15:50:52] detectron2.engine.defaults INFO: Model:
-MAFT_Plus(
-  (backbone): PEEncoder(
-    (pe_model): CLIP(
-      (token_embedding): Embedding(49408, 1024)
-      (transformer): Transformer(
-        (resblocks): ModuleList(
-          (0-23): 24 x ResidualAttentionBlock(
-            (attn): MultiheadAttention(
-              (out_proj): NonDynamicallyQuantizableLinear(in_features=1024, out_features=1024, bias=True)
-            )
-            (ls_1): Identity()
-            (ls_2): Identity()
-            (ln_1): LayerNorm((1024,), eps=1e-05, elementwise_affine=True)
-            (ln_2): LayerNorm((1024,), eps=1e-05, elementwise_affine=True)
-            (drop_path1): Identity()
-            (drop_path2): Identity()
-            (mlp): Sequential(
-              (c_fc): Linear(in_features=1024, out_features=4096, bias=True)
-              (gelu): GELU(approximate='none')
-              (c_proj): Linear(in_features=4096, out_features=1024, bias=True)
-            )
-          )
-        )
-      )
-      (ln_final): LayerNorm((1024,), eps=1e-05, elementwise_affine=True)
-      (visual): VisionTransformer(
-        (conv1): Conv2d(3, 1024, kernel_size=(14, 14), stride=(14, 14), bias=False)
-        (ln_pre): LayerNorm((1024,), eps=1e-05, elementwise_affine=True)
-        (ln_post): LayerNorm((1024,), eps=1e-05, elementwise_affine=True)
-        (transformer): Transformer(
-          (resblocks): ModuleList(
-            (0-23): 24 x ResidualAttentionBlock(
+          (rope_embed): RopePositionEmbedding()
+          (blocks): ModuleList(
+            (0-23): 24 x SelfAttentionBlock(
+              (norm1): LayerNorm((1024,), eps=1e-05, elementwise_affine=True)
               (attn): SelfAttention(
-                (out_proj): Linear(in_features=1024, out_features=1024, bias=True)
+                (qkv): LinearKMaskedBias(in_features=1024, out_features=3072, bias=True)
+                (attn_drop): Dropout(p=0.0, inplace=False)
+                (proj): Linear(in_features=1024, out_features=1024, bias=True)
+                (proj_drop): Dropout(p=0.0, inplace=False)
               )
-              (ls_1): Identity()
-              (ls_2): Identity()
-              (ln_1): LayerNorm((1024,), eps=1e-05, elementwise_affine=True)
-              (ln_2): LayerNorm((1024,), eps=1e-05, elementwise_affine=True)
-              (drop_path1): Identity()
-              (drop_path2): Identity()
-              (mlp): Sequential(
-                (c_fc): Linear(in_features=1024, out_features=4096, bias=True)
-                (gelu): GELU(approximate='none')
-                (c_proj): Linear(in_features=4096, out_features=1024, bias=True)
+              (ls1): LayerScale()
+              (norm2): LayerNorm((1024,), eps=1e-05, elementwise_affine=True)
+              (mlp): Mlp(
+                (fc1): Linear(in_features=1024, out_features=4096, bias=True)
+                (act): GELU(approximate='none')
+                (fc2): Linear(in_features=4096, out_features=1024, bias=True)
+                (drop): Dropout(p=0.0, inplace=False)
               )
+              (ls2): LayerScale()
             )
           )
+          (norm): LayerNorm((1024,), eps=1e-05, elementwise_affine=True)
+          (head): Identity()
         )
-        (attn_pool): AttentionPooling(
-          (attn): MultiheadAttention(
-            (out_proj): NonDynamicallyQuantizableLinear(in_features=1024, out_features=1024, bias=True)
-          )
-          (layernorm): LayerNorm((1024,), eps=1e-05, elementwise_affine=True)
-          (mlp): Sequential(
-            (c_fc): Linear(in_features=1024, out_features=4096, bias=True)
-            (gelu): GELU(approximate='none')
-            (c_proj): Linear(in_features=4096, out_features=1024, bias=True)
-          )
-        )
-      )
-    )
-  )
-  (void_embedding): Embedding(1, 1024)
-)
-[10/28 15:50:52] detectron2.checkpoint.detection_checkpoint INFO: [DetectionCheckpointer] Loading from  ...
-[10/28 15:50:52] fvcore.common.checkpoint INFO: No checkpoint found. Initializing model from scratch
-[10/28 15:50:52] detectron2.data.dataset_mapper INFO: [DatasetMapper] Augmentations used in inference: [ResizeShortestEdge(short_edge_length=(800, 800), max_size=1333, sample_style='choice')]
-[10/28 15:50:52] detectron2.data.common INFO: Serializing the dataset using: <class 'detectron2.data.common._TorchSerializedList'>
-[10/28 15:50:52] detectron2.data.common INFO: Serializing 2000 elements to byte tensors and concatenating them all ...
-[10/28 15:50:52] detectron2.data.common INFO: Serialized dataset takes 15.18 MiB
-[10/28 15:50:53] detectron2.evaluation.evaluator INFO: Start inference on 500 batches
-[10/28 15:51:57] detectron2 INFO: Rank of current process: 3. World size: 4
-[10/28 15:51:58] detectron2 INFO: Environment info:
--------------------------------  ------------------------------------------------------------------------
-sys.platform                     linux
-Python                           3.8.20 (default, Oct  3 2024, 15:24:27) [GCC 11.2.0]
-numpy                            1.22.4
-detectron2                       0.6 @/data/hmp/conda_envs/AAA/lib/python3.8/site-packages/detectron2
-Compiler                         GCC 9.4
-CUDA compiler                    CUDA 11.8
-detectron2 arch flags            8.6
-DETECTRON2_ENV_MODULE            <not set>
-PyTorch                          2.4.1 @/data/hmp/conda_envs/AAA/lib/python3.8/site-packages/torch
-PyTorch debug build              False
-torch._C._GLIBCXX_USE_CXX11_ABI  False
-GPU available                    Yes
-GPU 0,1,2,3                      NVIDIA GeForce RTX 3090 (arch=8.6)
-Driver version                   550.144.03
-CUDA_HOME                        /data/hmp/CUDA/11.8
-Pillow                           9.3.0
-torchvision                      0.20.0 @/data/hmp/conda_envs/AAA/lib/python3.8/site-packages/torchvision
-torchvision arch flags           3.5, 5.0, 6.0, 7.0, 7.5, 8.0, 8.6
-fvcore                           0.1.5.post20221221
-iopath                           0.1.9
-cv2                              4.12.0
--------------------------------  ------------------------------------------------------------------------
-PyTorch built with:
-  - GCC 9.3
-  - C++ Version: 201703
-  - Intel(R) oneAPI Math Kernel Library Version 2023.1-Product Build 20230303 for Intel(R) 64 architecture applications
-  - Intel(R) MKL-DNN v3.4.2 (Git Hash 1137e04ec0b5251ca2b4400a4fd3c667ce843d67)
-  - OpenMP 201511 (a.k.a. OpenMP 4.5)
-  - LAPACK is enabled (usually provided by MKL)
-  - NNPACK is enabled
-  - CPU capability usage: AVX512
-  - CUDA Runtime 11.8
-  - NVCC architecture flags: -gencode;arch=compute_50,code=sm_50;-gencode;arch=compute_60,code=sm_60;-gencode;arch=compute_61,code=sm_61;-gencode;arch=compute_70,code=sm_70;-gencode;arch=compute_75,code=sm_75;-gencode;arch=compute_80,code=sm_80;-gencode;arch=compute_86,code=sm_86;-gencode;arch=compute_37,code=sm_37;-gencode;arch=compute_90,code=sm_90;-gencode;arch=compute_37,code=compute_37
-  - CuDNN 90.1
-  - Magma 2.6.1
-  - Build settings: BLAS_INFO=mkl, BUILD_TYPE=Release, CUDA_VERSION=11.8, CUDNN_VERSION=9.1.0, CXX_COMPILER=/opt/rh/devtoolset-9/root/usr/bin/c++, CXX_FLAGS= -D_GLIBCXX_USE_CXX11_ABI=0 -fabi-version=11 -fvisibility-inlines-hidden -DUSE_PTHREADPOOL -DNDEBUG -DUSE_KINETO -DLIBKINETO_NOROCTRACER -DUSE_FBGEMM -DUSE_PYTORCH_QNNPACK -DUSE_XNNPACK -DSYMBOLICATE_MOBILE_DEBUG_HANDLE -O2 -fPIC -Wall -Wextra -Werror=return-type -Werror=non-virtual-dtor -Werror=bool-operation -Wnarrowing -Wno-missing-field-initializers -Wno-type-limits -Wno-array-bounds -Wno-unknown-pragmas -Wno-unused-parameter -Wno-unused-function -Wno-unused-result -Wno-strict-overflow -Wno-strict-aliasing -Wno-stringop-overflow -Wsuggest-override -Wno-psabi -Wno-error=pedantic -Wno-error=old-style-cast -Wno-missing-braces -fdiagnostics-color=always -faligned-new -Wno-unused-but-set-variable -Wno-maybe-uninitialized -fno-math-errno -fno-trapping-math -Werror=format -Wno-stringop-overflow, LAPACK_INFO=mkl, PERF_WITH_AVX=1, PERF_WITH_AVX2=1, PERF_WITH_AVX512=1, TORCH_VERSION=2.4.1, USE_CUDA=ON, USE_CUDNN=ON, USE_CUSPARSELT=1, USE_EXCEPTION_PTR=1, USE_GFLAGS=OFF, USE_GLOG=OFF, USE_GLOO=ON, USE_MKL=ON, USE_MKLDNN=ON, USE_MPI=OFF, USE_NCCL=ON, USE_NNPACK=ON, USE_OPENMP=ON, USE_ROCM=OFF, USE_ROCM_KERNEL_ASSERT=OFF, 
-
-[10/28 15:51:58] detectron2 INFO: Command line arguments: Namespace(config_file='configs/semantic/eval_PE.yaml', dist_url='tcp://127.0.0.1:50185', eval_only=True, machine_rank=0, num_gpus=4, num_machines=1, opts=[], resume=False)
-[10/28 15:51:58] detectron2 INFO: Contents of args.config_file=configs/semantic/eval_PE.yaml:
-# python train_net.py --config-file configs/semantic/eval.yaml  --num-gpus 8 --eval-only
-
-_BASE_: ./train_semantic_large.yaml
-MODEL:
-  BACKBONE:
-    NAME: "PEEncoder"
-  META_ARCHITECTURE: "MAFT_Plus"
-
-
-DATASETS:
-  # TEST: ("openvocab_pascal20_sem_seg_val", "openvocab_ade20k_full_sem_seg_val", 'openvocab_pascal_ctx459_sem_seg_val', 'openvocab_pascal_ctx59_sem_seg_val', 'openvocab_ade20k_panoptic_val') 
-  TEST: ( 'openvocab_ade20k_panoptic_val',)
-
-OUTPUT_DIR: ./out/semantic/evaluation
-
-PE:
-  ENABLED: True
-  MODEL_NAME: "PE-Core-L14-336"
-[10/28 15:52:19] detectron2.engine.defaults INFO: Model:
-MAFT_Plus(
-  (backbone): PEEncoder(
-    (pe_model): CLIP(
-      (token_embedding): Embedding(49408, 1024)
-      (transformer): Transformer(
-        (resblocks): ModuleList(
-          (0-23): 24 x ResidualAttentionBlock(
-            (attn): MultiheadAttention(
-              (out_proj): NonDynamicallyQuantizableLinear(in_features=1024, out_features=1024, bias=True)
-            )
-            (ls_1): Identity()
-            (ls_2): Identity()
-            (ln_1): LayerNorm((1024,), eps=1e-05, elementwise_affine=True)
-            (ln_2): LayerNorm((1024,), eps=1e-05, elementwise_affine=True)
-            (drop_path1): Identity()
-            (drop_path2): Identity()
-            (mlp): Sequential(
-              (c_fc): Linear(in_features=1024, out_features=4096, bias=True)
-              (gelu): GELU(approximate='none')
-              (c_proj): Linear(in_features=4096, out_features=1024, bias=True)
-            )
-          )
-        )
-      )
-      (ln_final): LayerNorm((1024,), eps=1e-05, elementwise_affine=True)
-      (visual): VisionTransformer(
-        (conv1): Conv2d(3, 1024, kernel_size=(14, 14), stride=(14, 14), bias=False)
-        (ln_pre): LayerNorm((1024,), eps=1e-05, elementwise_affine=True)
-        (ln_post): LayerNorm((1024,), eps=1e-05, elementwise_affine=True)
-        (transformer): Transformer(
-          (resblocks): ModuleList(
-            (0-23): 24 x ResidualAttentionBlock(
+        (head): VisionHead(
+          (ln_final): LayerNorm((1024,), eps=1e-05, elementwise_affine=True)
+          (blocks): ModuleList(
+            (0-1): 2 x SelfAttentionBlock(
+              (norm1): LayerNorm((1024,), eps=1e-05, elementwise_affine=True)
               (attn): SelfAttention(
-                (out_proj): Linear(in_features=1024, out_features=1024, bias=True)
+                (qkv): Linear(in_features=1024, out_features=3072, bias=False)
+                (attn_drop): Dropout(p=0.0, inplace=False)
+                (proj): Linear(in_features=1024, out_features=1024, bias=True)
+                (proj_drop): Dropout(p=0.0, inplace=False)
               )
-              (ls_1): Identity()
-              (ls_2): Identity()
-              (ln_1): LayerNorm((1024,), eps=1e-05, elementwise_affine=True)
-              (ln_2): LayerNorm((1024,), eps=1e-05, elementwise_affine=True)
-              (drop_path1): Identity()
-              (drop_path2): Identity()
-              (mlp): Sequential(
-                (c_fc): Linear(in_features=1024, out_features=4096, bias=True)
-                (gelu): GELU(approximate='none')
-                (c_proj): Linear(in_features=4096, out_features=1024, bias=True)
+              (ls1): LayerScale()
+              (norm2): LayerNorm((1024,), eps=1e-05, elementwise_affine=True)
+              (mlp): SwiGLUFFN(
+                (w1): Linear(in_features=1024, out_features=2752, bias=True)
+                (w2): Linear(in_features=1024, out_features=2752, bias=True)
+                (w3): Linear(in_features=2752, out_features=1024, bias=True)
               )
+              (ls2): LayerScale()
             )
           )
+          (linear_projection): Identity()
         )
-        (attn_pool): AttentionPooling(
-          (attn): MultiheadAttention(
-            (out_proj): NonDynamicallyQuantizableLinear(in_features=1024, out_features=1024, bias=True)
+      )
+      (text_model): TextTower(
+        (backbone): TextTransformer(
+          (token_embedding): Embedding(49408, 1280)
+          (dropout): Dropout(p=0.0, inplace=False)
+          (blocks): ModuleList(
+            (0-23): 24 x CausalSelfAttentionBlock(
+              (ls1): Identity()
+              (attention_norm): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              (attention): CausalSelfAttention(
+                (qkv): Linear(in_features=1280, out_features=3840, bias=False)
+                (proj): Linear(in_features=1280, out_features=1280, bias=True)
+                (proj_drop): Dropout(p=0.0, inplace=False)
+              )
+              (ffn_norm): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              (feed_forward): Mlp(
+                (fc1): Linear(in_features=1280, out_features=5120, bias=True)
+                (act): GELU(approximate='none')
+                (fc2): Linear(in_features=5120, out_features=1280, bias=True)
+                (drop): Dropout(p=0.0, inplace=False)
+              )
+              (ls2): Identity()
+            )
           )
-          (layernorm): LayerNorm((1024,), eps=1e-05, elementwise_affine=True)
-          (mlp): Sequential(
-            (c_fc): Linear(in_features=1024, out_features=4096, bias=True)
-            (gelu): GELU(approximate='none')
-            (c_proj): Linear(in_features=4096, out_features=1024, bias=True)
+          (ln_final): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+        )
+        (head): TextHead(
+          (ln_final): Identity()
+          (blocks): ModuleList(
+            (0): Identity()
           )
+          (linear_projection): Linear(in_features=1280, out_features=2048, bias=False)
         )
       )
     )
   )
-  (void_embedding): Embedding(1, 1024)
+  (void_embedding): Embedding(1, 2048)
 )
-[10/28 15:52:19] detectron2.checkpoint.detection_checkpoint INFO: [DetectionCheckpointer] Loading from  ...
-[10/28 15:52:19] fvcore.common.checkpoint INFO: No checkpoint found. Initializing model from scratch
-[10/28 15:52:19] detectron2.data.dataset_mapper INFO: [DatasetMapper] Augmentations used in inference: [ResizeShortestEdge(short_edge_length=(800, 800), max_size=1333, sample_style='choice')]
-[10/28 15:52:19] detectron2.data.common INFO: Serializing the dataset using: <class 'detectron2.data.common._TorchSerializedList'>
-[10/28 15:52:19] detectron2.data.common INFO: Serializing 2000 elements to byte tensors and concatenating them all ...
-[10/28 15:52:19] detectron2.data.common INFO: Serialized dataset takes 15.18 MiB
-[10/28 15:52:19] detectron2.evaluation.evaluator INFO: Start inference on 500 batches
-[10/28 15:52:35] detectron2.evaluation.evaluator INFO: Inference done 1/500. Dataloading: 7.8442 s/iter. Inference: 8.1753 s/iter. Eval: 0.0450 s/iter. Total: 16.0671 s/iter. ETA=2:13:37
-[10/28 15:52:40] detectron2.evaluation.evaluator INFO: Inference done 11/500. Dataloading: 0.0019 s/iter. Inference: 0.4919 s/iter. Eval: 0.0322 s/iter. Total: 0.5259 s/iter. ETA=0:04:17
-[10/28 15:52:46] detectron2.evaluation.evaluator INFO: Inference done 21/500. Dataloading: 0.0026 s/iter. Inference: 0.4971 s/iter. Eval: 0.0324 s/iter. Total: 0.5322 s/iter. ETA=0:04:14
-[10/28 15:52:51] detectron2.evaluation.evaluator INFO: Inference done 32/500. Dataloading: 0.0026 s/iter. Inference: 0.4849 s/iter. Eval: 0.0292 s/iter. Total: 0.5168 s/iter. ETA=0:04:01
-[10/28 15:52:57] detectron2.evaluation.evaluator INFO: Inference done 44/500. Dataloading: 0.0026 s/iter. Inference: 0.4707 s/iter. Eval: 0.0259 s/iter. Total: 0.4992 s/iter. ETA=0:03:47
-[10/28 15:53:02] detectron2.evaluation.evaluator INFO: Inference done 56/500. Dataloading: 0.0027 s/iter. Inference: 0.4605 s/iter. Eval: 0.0240 s/iter. Total: 0.4873 s/iter. ETA=0:03:36
-[10/28 15:53:07] detectron2.evaluation.evaluator INFO: Inference done 68/500. Dataloading: 0.0026 s/iter. Inference: 0.4491 s/iter. Eval: 0.0222 s/iter. Total: 0.4740 s/iter. ETA=0:03:24
-[10/28 15:53:12] detectron2.evaluation.evaluator INFO: Inference done 79/500. Dataloading: 0.0026 s/iter. Inference: 0.4497 s/iter. Eval: 0.0230 s/iter. Total: 0.4754 s/iter. ETA=0:03:20
-[10/28 15:53:18] detectron2.evaluation.evaluator INFO: Inference done 90/500. Dataloading: 0.0026 s/iter. Inference: 0.4497 s/iter. Eval: 0.0238 s/iter. Total: 0.4762 s/iter. ETA=0:03:15
-[10/28 15:53:23] detectron2.evaluation.evaluator INFO: Inference done 102/500. Dataloading: 0.0026 s/iter. Inference: 0.4483 s/iter. Eval: 0.0235 s/iter. Total: 0.4745 s/iter. ETA=0:03:08
-[10/28 15:53:29] detectron2.evaluation.evaluator INFO: Inference done 114/500. Dataloading: 0.0026 s/iter. Inference: 0.4449 s/iter. Eval: 0.0227 s/iter. Total: 0.4703 s/iter. ETA=0:03:01
-[10/28 15:53:34] detectron2.evaluation.evaluator INFO: Inference done 127/500. Dataloading: 0.0026 s/iter. Inference: 0.4375 s/iter. Eval: 0.0216 s/iter. Total: 0.4618 s/iter. ETA=0:02:52
-[10/28 15:53:39] detectron2.evaluation.evaluator INFO: Inference done 137/500. Dataloading: 0.0026 s/iter. Inference: 0.4431 s/iter. Eval: 0.0217 s/iter. Total: 0.4675 s/iter. ETA=0:02:49
-[10/28 15:53:44] detectron2.evaluation.evaluator INFO: Inference done 150/500. Dataloading: 0.0027 s/iter. Inference: 0.4392 s/iter. Eval: 0.0215 s/iter. Total: 0.4634 s/iter. ETA=0:02:42
-[10/28 15:53:49] detectron2.evaluation.evaluator INFO: Inference done 161/500. Dataloading: 0.0026 s/iter. Inference: 0.4391 s/iter. Eval: 0.0210 s/iter. Total: 0.4629 s/iter. ETA=0:02:36
-[10/28 15:53:55] detectron2.evaluation.evaluator INFO: Inference done 172/500. Dataloading: 0.0026 s/iter. Inference: 0.4400 s/iter. Eval: 0.0206 s/iter. Total: 0.4633 s/iter. ETA=0:02:31
-[10/28 15:54:00] detectron2.evaluation.evaluator INFO: Inference done 182/500. Dataloading: 0.0027 s/iter. Inference: 0.4433 s/iter. Eval: 0.0204 s/iter. Total: 0.4664 s/iter. ETA=0:02:28
-[10/28 15:54:05] detectron2.evaluation.evaluator INFO: Inference done 193/500. Dataloading: 0.0027 s/iter. Inference: 0.4445 s/iter. Eval: 0.0204 s/iter. Total: 0.4676 s/iter. ETA=0:02:23
-[10/28 15:54:10] detectron2.evaluation.evaluator INFO: Inference done 204/500. Dataloading: 0.0027 s/iter. Inference: 0.4450 s/iter. Eval: 0.0207 s/iter. Total: 0.4685 s/iter. ETA=0:02:18
-[10/28 15:54:16] detectron2.evaluation.evaluator INFO: Inference done 215/500. Dataloading: 0.0027 s/iter. Inference: 0.4465 s/iter. Eval: 0.0208 s/iter. Total: 0.4700 s/iter. ETA=0:02:13
-[10/28 15:54:21] detectron2.evaluation.evaluator INFO: Inference done 226/500. Dataloading: 0.0027 s/iter. Inference: 0.4466 s/iter. Eval: 0.0209 s/iter. Total: 0.4702 s/iter. ETA=0:02:08
-[10/28 15:54:27] detectron2.evaluation.evaluator INFO: Inference done 237/500. Dataloading: 0.0027 s/iter. Inference: 0.4472 s/iter. Eval: 0.0209 s/iter. Total: 0.4709 s/iter. ETA=0:02:03
-[10/28 15:54:32] detectron2.evaluation.evaluator INFO: Inference done 247/500. Dataloading: 0.0027 s/iter. Inference: 0.4496 s/iter. Eval: 0.0208 s/iter. Total: 0.4732 s/iter. ETA=0:01:59
-[10/28 15:54:37] detectron2.evaluation.evaluator INFO: Inference done 262/500. Dataloading: 0.0027 s/iter. Inference: 0.4437 s/iter. Eval: 0.0202 s/iter. Total: 0.4666 s/iter. ETA=0:01:51
-[10/28 15:54:43] detectron2.evaluation.evaluator INFO: Inference done 274/500. Dataloading: 0.0027 s/iter. Inference: 0.4436 s/iter. Eval: 0.0200 s/iter. Total: 0.4665 s/iter. ETA=0:01:45
-[10/28 15:54:48] detectron2.evaluation.evaluator INFO: Inference done 285/500. Dataloading: 0.0027 s/iter. Inference: 0.4438 s/iter. Eval: 0.0202 s/iter. Total: 0.4668 s/iter. ETA=0:01:40
-[10/28 15:54:53] detectron2.evaluation.evaluator INFO: Inference done 296/500. Dataloading: 0.0027 s/iter. Inference: 0.4443 s/iter. Eval: 0.0205 s/iter. Total: 0.4675 s/iter. ETA=0:01:35
-[10/28 15:54:59] detectron2.evaluation.evaluator INFO: Inference done 307/500. Dataloading: 0.0027 s/iter. Inference: 0.4450 s/iter. Eval: 0.0209 s/iter. Total: 0.4687 s/iter. ETA=0:01:30
-[10/28 15:55:04] detectron2.evaluation.evaluator INFO: Inference done 318/500. Dataloading: 0.0027 s/iter. Inference: 0.4454 s/iter. Eval: 0.0212 s/iter. Total: 0.4693 s/iter. ETA=0:01:25
-[10/28 15:55:10] detectron2.evaluation.evaluator INFO: Inference done 329/500. Dataloading: 0.0027 s/iter. Inference: 0.4457 s/iter. Eval: 0.0215 s/iter. Total: 0.4701 s/iter. ETA=0:01:20
-[10/28 15:55:15] detectron2.evaluation.evaluator INFO: Inference done 340/500. Dataloading: 0.0027 s/iter. Inference: 0.4461 s/iter. Eval: 0.0218 s/iter. Total: 0.4706 s/iter. ETA=0:01:15
-[10/28 15:55:20] detectron2.evaluation.evaluator INFO: Inference done 351/500. Dataloading: 0.0027 s/iter. Inference: 0.4465 s/iter. Eval: 0.0220 s/iter. Total: 0.4713 s/iter. ETA=0:01:10
-[10/28 15:55:25] detectron2.evaluation.evaluator INFO: Inference done 363/500. Dataloading: 0.0027 s/iter. Inference: 0.4450 s/iter. Eval: 0.0220 s/iter. Total: 0.4698 s/iter. ETA=0:01:04
-[10/28 15:55:31] detectron2.evaluation.evaluator INFO: Inference done 378/500. Dataloading: 0.0027 s/iter. Inference: 0.4409 s/iter. Eval: 0.0215 s/iter. Total: 0.4652 s/iter. ETA=0:00:56
-[10/28 15:55:36] detectron2.evaluation.evaluator INFO: Inference done 389/500. Dataloading: 0.0027 s/iter. Inference: 0.4419 s/iter. Eval: 0.0216 s/iter. Total: 0.4663 s/iter. ETA=0:00:51
-[10/28 15:55:42] detectron2.evaluation.evaluator INFO: Inference done 400/500. Dataloading: 0.0027 s/iter. Inference: 0.4422 s/iter. Eval: 0.0215 s/iter. Total: 0.4665 s/iter. ETA=0:00:46
-[10/28 15:55:47] detectron2.evaluation.evaluator INFO: Inference done 412/500. Dataloading: 0.0027 s/iter. Inference: 0.4419 s/iter. Eval: 0.0214 s/iter. Total: 0.4661 s/iter. ETA=0:00:41
-[10/28 15:55:52] detectron2.evaluation.evaluator INFO: Inference done 423/500. Dataloading: 0.0027 s/iter. Inference: 0.4419 s/iter. Eval: 0.0213 s/iter. Total: 0.4659 s/iter. ETA=0:00:35
-[10/28 15:55:57] detectron2.evaluation.evaluator INFO: Inference done 433/500. Dataloading: 0.0027 s/iter. Inference: 0.4427 s/iter. Eval: 0.0213 s/iter. Total: 0.4668 s/iter. ETA=0:00:31
-[10/28 15:56:02] detectron2.evaluation.evaluator INFO: Inference done 444/500. Dataloading: 0.0027 s/iter. Inference: 0.4427 s/iter. Eval: 0.0213 s/iter. Total: 0.4668 s/iter. ETA=0:00:26
-[10/28 15:56:07] detectron2.evaluation.evaluator INFO: Inference done 456/500. Dataloading: 0.0027 s/iter. Inference: 0.4419 s/iter. Eval: 0.0213 s/iter. Total: 0.4660 s/iter. ETA=0:00:20
-[10/28 15:56:13] detectron2.evaluation.evaluator INFO: Inference done 467/500. Dataloading: 0.0027 s/iter. Inference: 0.4424 s/iter. Eval: 0.0215 s/iter. Total: 0.4667 s/iter. ETA=0:00:15
-[10/28 15:56:18] detectron2.evaluation.evaluator INFO: Inference done 479/500. Dataloading: 0.0027 s/iter. Inference: 0.4417 s/iter. Eval: 0.0215 s/iter. Total: 0.4660 s/iter. ETA=0:00:09
-[10/28 15:56:23] detectron2.evaluation.evaluator INFO: Inference done 490/500. Dataloading: 0.0027 s/iter. Inference: 0.4420 s/iter. Eval: 0.0214 s/iter. Total: 0.4662 s/iter. ETA=0:00:04
-[10/28 15:56:29] detectron2.evaluation.evaluator INFO: Total inference time: 0:03:51.245400 (0.467162 s / iter per device, on 4 devices)
-[10/28 15:56:29] detectron2.evaluation.evaluator INFO: Total inference pure compute time: 0:03:38 (0.440996 s / iter per device, on 4 devices)
+[10/29 16:59:04] detectron2.checkpoint.detection_checkpoint INFO: [DetectionCheckpointer] Loading from  ...
+[10/29 16:59:04] fvcore.common.checkpoint INFO: No checkpoint found. Initializing model from scratch
+[10/29 16:59:04] detectron2.data.dataset_mapper INFO: [DatasetMapper] Augmentations used in inference: [ResizeShortestEdge(short_edge_length=(800, 800), max_size=1333, sample_style='choice')]
+[10/29 16:59:04] detectron2.data.common INFO: Serializing the dataset using: <class 'detectron2.data.common._TorchSerializedList'>
+[10/29 16:59:04] detectron2.data.common INFO: Serializing 1449 elements to byte tensors and concatenating them all ...
+[10/29 16:59:04] detectron2.data.common INFO: Serialized dataset takes 1.38 MiB
+[10/29 16:59:04] detectron2.evaluation.evaluator INFO: Start inference on 362 batches
+[10/29 16:59:18] detectron2.evaluation.evaluator INFO: Inference done 1/362. Dataloading: 8.7479 s/iter. Inference: 5.4754 s/iter. Eval: 0.0166 s/iter. Total: 14.2424 s/iter. ETA=1:25:41
+[10/29 16:59:24] detectron2.evaluation.evaluator INFO: Inference done 16/362. Dataloading: 0.0018 s/iter. Inference: 0.3295 s/iter. Eval: 0.0107 s/iter. Total: 0.3421 s/iter. ETA=0:01:58
+[10/29 16:59:29] detectron2.evaluation.evaluator INFO: Inference done 31/362. Dataloading: 0.0020 s/iter. Inference: 0.3345 s/iter. Eval: 0.0098 s/iter. Total: 0.3464 s/iter. ETA=0:01:54
+[10/29 16:59:34] detectron2.evaluation.evaluator INFO: Inference done 46/362. Dataloading: 0.0021 s/iter. Inference: 0.3392 s/iter. Eval: 0.0103 s/iter. Total: 0.3516 s/iter. ETA=0:01:51
+[10/29 16:59:39] detectron2.evaluation.evaluator INFO: Inference done 61/362. Dataloading: 0.0021 s/iter. Inference: 0.3365 s/iter. Eval: 0.0101 s/iter. Total: 0.3488 s/iter. ETA=0:01:44
+[10/29 16:59:44] detectron2.evaluation.evaluator INFO: Inference done 75/362. Dataloading: 0.0021 s/iter. Inference: 0.3404 s/iter. Eval: 0.0101 s/iter. Total: 0.3526 s/iter. ETA=0:01:41
+[10/29 16:59:50] detectron2.evaluation.evaluator INFO: Inference done 90/362. Dataloading: 0.0021 s/iter. Inference: 0.3403 s/iter. Eval: 0.0101 s/iter. Total: 0.3526 s/iter. ETA=0:01:35
+[10/29 16:59:55] detectron2.evaluation.evaluator INFO: Inference done 105/362. Dataloading: 0.0021 s/iter. Inference: 0.3407 s/iter. Eval: 0.0101 s/iter. Total: 0.3530 s/iter. ETA=0:01:30
+[10/29 17:00:00] detectron2.evaluation.evaluator INFO: Inference done 120/362. Dataloading: 0.0021 s/iter. Inference: 0.3408 s/iter. Eval: 0.0100 s/iter. Total: 0.3530 s/iter. ETA=0:01:25
+[10/29 17:00:05] detectron2.evaluation.evaluator INFO: Inference done 134/362. Dataloading: 0.0021 s/iter. Inference: 0.3418 s/iter. Eval: 0.0098 s/iter. Total: 0.3539 s/iter. ETA=0:01:20
+[10/29 17:00:11] detectron2.evaluation.evaluator INFO: Inference done 149/362. Dataloading: 0.0022 s/iter. Inference: 0.3419 s/iter. Eval: 0.0098 s/iter. Total: 0.3539 s/iter. ETA=0:01:15
+[10/29 17:00:16] detectron2.evaluation.evaluator INFO: Inference done 163/362. Dataloading: 0.0022 s/iter. Inference: 0.3423 s/iter. Eval: 0.0099 s/iter. Total: 0.3544 s/iter. ETA=0:01:10

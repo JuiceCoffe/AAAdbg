@@ -18,3 +18,4 @@ from .pixel_decoder.msdeformattn import MSDeformAttnPixelDecoder
 from .meta_arch.fcclip_head import FCCLIPHead
 
 from .backbone import PEEncoder
+from .backbone import dinov3txt
