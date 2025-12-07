@@ -29,9 +29,12 @@ from .modeling.maft.content_dependent_transfer import ContentDependentTransfer
 from .utils.text_templetes import VILD_PROMPT
 
 import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
+
 import os
 import numpy as np
 import torchvision
+
 
 
 @META_ARCH_REGISTRY.register()
@@ -101,7 +104,6 @@ class MAFT_Plus(nn.Module):
         self.void_embedding = nn.Embedding(1, backbone.dim_latent) # use this for void
 
         _, self.train_num_templates, self.train_class_names = self.prepare_class_names_from_metadata(train_metadata, train_metadata)
-        _, _, self.raw_class_names = self.prepare_raw_class_names_from_metadata(train_metadata, train_metadata)
         # print(f"Test dataset has {len(self.raw_class_names)} classes:\n", self.raw_class_names)
 
         # self.cdt = ContentDependentTransfer(d_model = cdt_params[0], nhead = cdt_params[1], panoptic_on = panoptic_on)
@@ -182,58 +184,6 @@ class MAFT_Plus(nn.Module):
         class_names = templated_class_names        
         return category_overlapping_mask, num_templates, class_names
 
-    def prepare_raw_class_names_from_metadata(self, metadata, train_metadata):
-        def split_labels(x):
-            res = []
-            for x_ in x:
-                x_ = x_.replace(', ', ',')
-                x_ = x_.split(',') # there can be multiple synonyms for single class
-                res.append(x_)
-            return res
-        # get text classifier
-        try:
-            class_names = split_labels(metadata.stuff_classes) # it includes both thing and stuff
-            train_class_names = split_labels(train_metadata.stuff_classes)
-        except:
-            # this could be for insseg, where only thing_classes are available
-            class_names = split_labels(metadata.thing_classes)
-            train_class_names = split_labels(train_metadata.thing_classes)
-        train_class_names = {l for label in train_class_names for l in label}
-        category_overlapping_list = []
-        for test_class_names in class_names:
-            is_overlapping = not set(train_class_names).isdisjoint(set(test_class_names)) 
-            category_overlapping_list.append(is_overlapping)
-        category_overlapping_mask = torch.tensor(
-            category_overlapping_list, dtype=torch.long)
-        
-        # --- 修改开始 ---
-        # 1. 删除了内部函数 fill_all_templates_ensemble 和相关的 VILD_PROMPT 模板。
-        #    因为我们不再需要用模板来扩展类别名称。
-
-        # 2. 删除了遍历 class_names 并调用模板函数的循环。
-
-        # 3. 直接处理 `class_names` 变量以提取原始类别名。
-        #    此时的 `class_names` 是一个列表的列表，例如: [['wall'], ['building'], ['chest of drawers']]
-        #    我们通过列表推导式提取每个子列表的第一个元素，得到一个扁平的字符串列表。
-        original_class_names = [x[0] for x in class_names]
-        # print(f"Original class names: {len(original_class_names)}:\n", original_class_names)
-        """
-        Original class names: 171:
-        ['person', 'bicycle', 'car', 'motorcycle', 'airplane', 'bus', 'train', 'truck', 'boat', 'traffic light', 'fire hydrant', 'stop sign', 'parking meter', 'bench', 'bird', 'cat', 'dog', 'horse', 'sheep', 'cow', 'elephant', 'bear', 'zebra', 'giraffe', 'backpack', 'umbrella', 'handbag', 'tie', 'suitcase', 'frisbee', 'skis', 'snowboard', 'sports ball', 'kite', 'baseball bat', 'baseball glove', 'skateboard', 'surfboard', 'tennis racket', 'bottle', 'wine glass', 'cup', 'fork', 'knife', 'spoon', 'bowl', 'banana', 'apple', 'sandwich', 'orange', 'broccoli', 'carrot', 'hot dog', 'pizza', 'donut', 'cake', 'chair', 'couch', 'potted plant', 'bed', 'dining table', 'toilet', 'tv', 'laptop', 'mouse', 'remote', 'keyboard', 'cell phone', 'microwave', 'oven', 'toaster', 'sink', 'refrigerator', 'book', 'clock', 'vase', 'scissors', 'teddy bear', 'hair drier', 'toothbrush', 'banner', 'blanket', 'branch', 'bridge', 'building', 'bush', 'cabinet', 'cage', 'cardboard', 'carpet', 'ceiling-other', 'ceiling-tile', 'cloth', 'clothes', 'clouds', 'counter', 'cupboard', 'curtain', 'desk-stuff', 'dirt', 'door-stuff', 'fence', 'floor-marble', 'floor-other', 'floor-stone', 'floor-tile', 'floor-wood', 'flower', 'fog', 'food-other', 'fruit', 'furniture-other', 'grass', 'gravel', 'ground-other', 'hill', 'house', 'leaves', 'light', 'mat', 'metal', 'mirror-stuff', 'moss', 'mountain', 'mud', 'napkin', 'net', 'paper', 'pavement', 'pillow', 'plant-other', 'plastic', 'platform', 'playingfield', 'railing', 'railroad', 'river', 'road', 'rock', 'roof', 'rug', 'salad', 'sand', 'sea', 'shelf', 'sky-other', 'skyscraper', 'snow', 'solid-other', 'stairs', 'stone', 'straw', 'structural-other', 'table', 'tent', 'textile-other', 'towel', 'tree', 'vegetable', 'wall-brick', 'wall-concrete', 'wall-other', 'wall-panel', 'wall-stone', 'wall-tile', 'wall-wood', 'water-other', 'waterdrops', 'window-blind', 'window-other', 'wood']
-        """
-       
-        # 4. 由于我们不再使用模板，第二个返回参数（原为 num_templates）需要调整。
-        #    为了保持函数返回三个值的结构，我们创建一个占位符。
-        #    这个列表记录每个类别我们只使用了1个名称（即原始名称）。
-        num_names_per_category = [1] * len(original_class_names)
-        # --- 修改结束 ---
-
-        # 函数现在返回：
-        # 1. 类别是否重叠的掩码 (不变)
-        # 2. 每个类别使用的名称数量 (现在恒为1)
-        # 3. 干净的、未经模板化的原始类别名列表
-        return category_overlapping_mask, num_names_per_category, original_class_names
-
     def set_metadata(self, metadata):
         self.test_metadata = metadata
         self.category_overlapping_mask, self.test_num_templates, self.test_class_names = self.prepare_class_names_from_metadata(metadata, self.train_metadata)
@@ -281,65 +231,7 @@ class MAFT_Plus(nn.Module):
                 self.class_name_of_classifier = [element for index, element in enumerate(self.train_class_names) if index % len(VILD_PROMPT) == 0]
             return self.test_text_classifier, self.test_num_templates
 
-    def get_text_embeds(self, dataname): # 来自CAT-SEG，用于计算代价体
-        if self.cache is not None and not self.training:
-            return self.cache
-
-        # print("classnames: ", classnames)
-        # print("templates: ", templates)
-        # print("prompt: ", prompt)
-        """
-        CAT-SEG原始打印结果
-        classnames:  ['wall', 'building', 'sky', 'floor', 'tree', 'ceiling', 'road', 'bed ', 'windowpane', 'grass', 'cabinet', 'sidewalk', 'person', 'earth', 'door', 'table', 'mountain', 'plant', 'curtain', 'chair', 'car', 'water', 'painting', 'sofa', 'shelf', 'house', 'sea', 'mirror', 'rug', 'field', 'armchair', 'seat', 'fence', 'desk', 'rock', 'wardrobe', 'lamp', 'bathtub', 'railing', 'cushion', 'base', 'box', 'column', 'signboard', 'chest of drawers', 'counter', 'sand', 'sink', 'skyscraper', 'fireplace', 'refrigerator', 'grandstand', 'path', 'stairs', 'runway', 'case', 'pool table', 'pillow', 'screen door', 'stairway', 'river', 'bridge', 'bookcase', 'blind', 'coffee table', 'toilet', 'flower', 'book', 'hill', 'bench', 'countertop', 'stove', 'palm', 'kitchen island', 'computer', 'swivel chair', 'boat', 'bar', 'arcade machine', 'hovel', 'bus', 'towel', 'light', 'truck', 'tower', 'chandelier', 'awning', 'streetlight', 'booth', 'television receiver', 'airplane', 'dirt track', 'apparel', 'pole', 'land', 'bannister', 'escalator', 'ottoman', 'bottle', 'buffet', 'poster', 'stage', 'van', 'ship', 'fountain', 'conveyer belt', 'canopy', 'washer', 'plaything', 'swimming pool', 'stool', 'barrel', 'basket', 'waterfall', 'tent', 'bag', 'minibike', 'cradle', 'oven', 'ball', 'food', 'step', 'tank', 'trade name', 'microwave', 'pot', 'animal', 'bicycle', 'lake', 'dishwasher', 'screen', 'blanket', 'sculpture', 'hood', 'sconce', 'vase', 'traffic light', 'tray', 'ashcan', 'fan', 'pier', 'crt screen', 'plate', 'monitor', 'bulletin board', 'shower', 'radiator', 'glass', 'clock', 'flag']
-        templates:  ['A photo of a {} in the scene']
-        prompt:  None
-        """
-        prompt = None
-        templates = ['A photo of a {} in the scene']
-        tokens = []
-
-        if self.training:
-            # 在训练期间，使用训练元数据
-            metadata = self.train_metadata
-        else:
-            # 在评估期间，使用特定的测试元数据
-            metadata = self.test_metadata[dataname]
-
-        _,_,classnames = self.prepare_raw_class_names_from_metadata(metadata, self.train_metadata)
-        
-        self.raw_class_names = classnames
-
-        for classname in classnames:
-            if ', ' in classname:
-                classname_splits = classname.split(', ')
-                texts = [template.format(classname_splits[0]) for template in templates]
-            else:
-                texts = [template.format(classname) for template in templates]  # format with class
-            texts =  self.backbone.tokenize_text(texts).cuda()
-            tokens.append(texts)
-        tokens = torch.stack(tokens, dim=0).squeeze(1)
-       
-        self.tokens = tokens
-
-
-        # class_embeddings = clip_model.encode_text(tokens, prompt)
-        class_embeddings =  self.backbone.encode_text(tokens)
-        # print("class_embeddings shape:", class_embeddings.shape)
-        '''
-        class_embeddings shape: torch.Size([171, 768])
-        '''
-        class_embeddings = class_embeddings / class_embeddings.norm(dim=-1, keepdim=True)
-        
-        
-        class_embeddings = class_embeddings.unsqueeze(1)
-        class_embeddings = class_embeddings.unsqueeze(0)
-        
-        if not self.training:
-            self.cache = class_embeddings
-        # print("class_embeddings:", class_embeddings.shape) # class_embeddings: torch.Size([171, 1, 768])
-
-        return class_embeddings
-
+    
     @classmethod
     def from_config(cls, cfg):
         backbone = build_backbone(cfg) # cfg.MODEL.BACKBONE.NAME : CLIP
@@ -414,6 +306,7 @@ class MAFT_Plus(nn.Module):
                     segments_info (list[dict]): Describe each segment in `panoptic_seg`.
                         Each dict contains keys "id", "category_id", "isthing".
         """
+
         images = [x["image"].to(self.device) for x in batched_inputs]
 
         original_image = images[0].clone() # for visualization only
@@ -473,18 +366,279 @@ class MAFT_Plus(nn.Module):
         for num_t in num_templates: 
             final_seg_logits.append(seg_logits[:, cur_idx: cur_idx + num_t,:,:].max(1).values)
             cur_idx += num_t
-        final_seg_logits.append(seg_logits[:, -1,:,:]) # the last classifier is for void
-        final_seg_logits = torch.stack(final_seg_logits, dim=1)
-        #final_seg_logits = nn.functional.interpolate(final_seg_logits, size=original_image.shape[-2:], mode='bilinear', align_corners=False)
-        seg_probs = torch.softmax(final_seg_logits, dim=1) # B T(纯类别)+1 H W
+        if self.backbone_name == 'CLIP':
+            final_seg_logits.append(seg_logits[:, -1,:,:]) # the last classifier is for void
+            
+        final_seg_logits = torch.stack(final_seg_logits, dim=1) # B T(+1) H W
+        seg_probs = torch.softmax(final_seg_logits, dim=1) # B T(纯类别)(+1) H W
 
-        # pred_result = torch.argmax(seg_probs, dim=1) # B H W
+        def get_PseudoMasks(logits):
+
+
+                   
+            B, T, H, W = logits.shape
+            threshold = 1.3/(H*W)  # 设置阈值为1/(H*W)
+            
+            # 应用softmax转换为概率
+            logits = F.softmax(logits.view(B, T, -1), dim=2).view(B, T, H, W)
+            
+            # 二值化：将概率大于阈值的设为1，否则设为0
+            binary_masks = (logits > threshold).float()
+
+            pseudo_masks_list = []
+            pseudo_points_list = []
+            N0 = 5  # 设定聚类数量
+
+            # 获取设备信息，确保新建的tensor在同一个设备上
+            device = binary_masks.device 
+
+            for b in range(B):
+                for t in range(T):
+                    # --- 初始化当前 (b, t) 的临时列表 ---
+                    current_masks = []
+                    current_points = []
+                    
+                    # 获取当前类别和batch的二值掩码
+                    mask = binary_masks[b, t]
+                    
+                    # 找到mask中为1的像素坐标
+                    coords = torch.nonzero(mask > 0, as_tuple=True)
+                    
+                    # --- 情况1：完全没有前景像素 ---
+                    if len(coords[0]) == 0:
+                        # 必须填充 N0 个空数据，以满足 view 的形状要求
+                        for _ in range(N0):
+                            pseudo_masks_list.append(torch.zeros(H, W, device=device))
+                            pseudo_points_list.append([0, 0])
+                        continue
+                        
+                    # 将坐标转换为二维坐标 (2, N)
+                    coords = torch.stack(coords, dim=1)
+                    coords = coords.float().t() # Shape: (2, N)
+                    
+                    num_pixels = coords.shape[1]
+                    
+                    # --- 情况2 & 3：像素数量处理 ---
+                    if num_pixels < N0:
+                        # 如果像素太少，不进行kmeans，直接把每个像素当作一个聚类中心
+                        # 这种情况下，有效聚类数 = 像素数
+                        # print(f"Warning: num_pixels ({num_pixels}) < N0 ({N0}). Using pixel coords as cluster centers.")
+                        cluster_centers = coords
+                        # 标签直接就是 0, 1, 2...
+                        cluster_labels = torch.arange(num_pixels, device=device)
+                        valid_clusters = num_pixels
+                    else:
+                        # 正常执行 k-means
+                        # 注意：需确保 kmeans 函数能处理 device 问题
+                        cluster_centers, cluster_labels = simple_kmeans(coords, num_clusters=N0)
+                        valid_clusters = N0
+                    
+                    # --- 处理有效的聚类区域 ---
+                    for i in range(valid_clusters):
+                        # 获取当前聚类的像素索引
+                        idx = (cluster_labels == i).nonzero(as_tuple=True)[0]
+                        
+                        # 创建掩码
+                        mask_region = torch.zeros(H, W, device=device)
+                        
+                        if len(idx) > 0:
+                            # 填充 mask
+                            # 注意 coords 是 (2, N)，即 (y, x) 还是 (x, y) 取决于你的 nonzero 顺序
+                            # 通常 nonzero 返回 (y, x)
+                            y_coords = coords[0, idx].long()
+                            x_coords = coords[1, idx].long()
+                            mask_region[y_coords, x_coords] = 1
+                        
+                        # 概率掩码乘积
+                        prob_mask = logits[b, t] * mask_region
+                        current_masks.append(prob_mask)
+                        
+                        # 找到中心点
+                        # 这里的逻辑是找离聚类中心最近的真实像素点
+                        if len(idx) > 0:
+                            dists = torch.norm(coords[:, idx] - cluster_centers[:, i].unsqueeze(1), dim=0)
+                            min_dist_idx = torch.argmin(dists)
+                            # 还原回在 coords 中的全局索引
+                            center_idx = idx[min_dist_idx]
+                            current_points.append([coords[0, center_idx].item(), coords[1, center_idx].item()])
+                        else:
+                            # 理论上 k-means 不会产生空簇，但在特殊初始化下可能发生，做个防守
+                            current_points.append([0, 0])
+
+                    # --- 填充 (Padding) ---
+                    # 如果有效聚类数小于 N0（即 num_pixels < N0 的情况），补齐剩余的空位
+                    for _ in range(N0 - valid_clusters):
+                        current_masks.append(torch.zeros(H, W, device=device))
+                        current_points.append([0, 0])
+                    
+                    # --- 将当前 batch/class 的结果存入总列表 ---
+                    # 此时 current_masks 长度必然为 5
+                    pseudo_masks_list.extend(current_masks)
+                    pseudo_points_list.extend(current_points)
+            
+
+            # 转换张量
+            # 此时列表长度保证为 B * T * N0
+            pseudo_masks = torch.stack(pseudo_masks_list).view(B, T, N0, H, W)
+            pseudo_points = torch.tensor(pseudo_points_list, device=device).view(B, T, N0, 2)
+
+            return pseudo_masks, pseudo_points
+            
+        def get_PseudoMasksfromMasks(logits):
+                   
+            B, T, H, W = logits.shape
+            n = 3  # 这里设定你想要的 n 值 (Top-N)
+
+            # 1. 获取 logits 在 dim=1 (类别维度) 上前 n 大的索引
+            # topk_values: (B, n, H, W), topk_indices: (B, n, H, W)
+            _, topk_indices = torch.topk(logits, k=n, dim=1)
+
+            # 2. 创建一个全 0 的 mask，形状与 logits 相同
+            binary_masks = torch.zeros_like(logits)
+
+            # 3. 使用 scatter_ 将对应索引位置的值设为 1
+            # dim=1 表示在类别维度操作
+            # src=1.0 表示填充的值
+            binary_masks.scatter_(1, topk_indices, 1.0)
+
+            pseudo_masks_list = []
+            pseudo_points_list = []
+            N0 = 5  # 设定聚类数量
+
+            # 获取设备信息，确保新建的tensor在同一个设备上
+            device = binary_masks.device 
+
+            for b in range(B):
+                for t in range(T):
+                    # --- 初始化当前 (b, t) 的临时列表 ---
+                    current_masks = []
+                    current_points = []
+                    
+                    # 获取当前类别和batch的二值掩码
+                    mask = binary_masks[b, t]
+                    
+                    # 找到mask中为1的像素坐标
+                    coords = torch.nonzero(mask > 0, as_tuple=True)
+                    
+                    # --- 情况1：完全没有前景像素 ---
+                    if len(coords[0]) == 0:
+                        # 必须填充 N0 个空数据，以满足 view 的形状要求
+                        for _ in range(N0):
+                            pseudo_masks_list.append(torch.zeros(H, W, device=device))
+                            pseudo_points_list.append([0, 0])
+                        continue
+                        
+                    # 将坐标转换为二维坐标 (2, N)
+                    coords = torch.stack(coords, dim=1)
+                    coords = coords.float().t() # Shape: (2, N)
+                    
+                    num_pixels = coords.shape[1]
+                    
+                    # --- 情况2 & 3：像素数量处理 ---
+                    if num_pixels < N0:
+                        # 如果像素太少，不进行kmeans，直接把每个像素当作一个聚类中心
+                        # 这种情况下，有效聚类数 = 像素数
+                        print(f"Warning: num_pixels ({num_pixels}) < N0 ({N0}). Using pixel coords as cluster centers.")
+                        cluster_centers = coords
+                        # 标签直接就是 0, 1, 2...
+                        cluster_labels = torch.arange(num_pixels, device=device)
+                        valid_clusters = num_pixels
+                    else:
+                        # 正常执行 k-means
+                        # 注意：需确保 kmeans 函数能处理 device 问题
+                        cluster_centers, cluster_labels = simple_kmeans(coords, num_clusters=N0)
+                        valid_clusters = N0
+                    
+                    # --- 处理有效的聚类区域 ---
+                    for i in range(valid_clusters):
+                        # 获取当前聚类的像素索引
+                        idx = (cluster_labels == i).nonzero(as_tuple=True)[0]
+                        
+                        # 创建掩码
+                        mask_region = torch.zeros(H, W, device=device)
+                        
+                        if len(idx) > 0:
+                            # 填充 mask
+                            # 注意 coords 是 (2, N)，即 (y, x) 还是 (x, y) 取决于你的 nonzero 顺序
+                            # 通常 nonzero 返回 (y, x)
+                            y_coords = coords[0, idx].long()
+                            x_coords = coords[1, idx].long()
+                            mask_region[y_coords, x_coords] = 1
+                        
+                        # 概率掩码乘积
+                        prob_mask = logits[b, t] * mask_region
+                        current_masks.append(prob_mask)
+                        
+                        # 找到中心点
+                        # 这里的逻辑是找离聚类中心最近的真实像素点
+                        if len(idx) > 0:
+                            dists = torch.norm(coords[:, idx] - cluster_centers[:, i].unsqueeze(1), dim=0)
+                            min_dist_idx = torch.argmin(dists)
+                            # 还原回在 coords 中的全局索引
+                            center_idx = idx[min_dist_idx]
+                            current_points.append([coords[0, center_idx].item(), coords[1, center_idx].item()])
+                        else:
+                            # 理论上 k-means 不会产生空簇，但在特殊初始化下可能发生，做个防守
+                            current_points.append([0, 0])
+
+                    # --- 填充 (Padding) ---
+                    # 如果有效聚类数小于 N0（即 num_pixels < N0 的情况），补齐剩余的空位
+                    for _ in range(N0 - valid_clusters):
+                        current_masks.append(torch.zeros(H, W, device=device))
+                        current_points.append([0, 0])
+                    
+                    # --- 将当前 batch/class 的结果存入总列表 ---
+                    # 此时 current_masks 长度必然为 5
+                    pseudo_masks_list.extend(current_masks)
+                    pseudo_points_list.extend(current_points)
+            # 转换张量
+            # 此时列表长度保证为 B * T * N0
+            pseudo_masks = torch.stack(pseudo_masks_list).view(B, T, N0, H, W)
+            pseudo_points = torch.tensor(pseudo_points_list, device=device).view(B, T, N0, 2)
+
+            return pseudo_masks, pseudo_points
+
+        pseudo_masks, pseudo_points = get_PseudoMasksfromMasks(final_seg_logits.clone())
+
+        visualize_pseudo_masks_and_points_inGT(
+            pseudo_masks = pseudo_masks,
+            pseudo_points = pseudo_points,
+            class_names = self.vis_class_names, 
+            original_image_tensor = original_image, 
+            gt_sem_seg= batched_inputs[0]["sem_seg"],
+            save_path=f"./pseudo_masks_fromMasks/{file_names[0]}_"
+        )
+
+        # pseudo_masks, pseudo_points = get_PseudoMasks(final_seg_logits.clone())
+
+        # visualize_pseudo_masks_and_points_inGT(
+        #     pseudo_masks = pseudo_masks,
+        #     pseudo_points = pseudo_points,
+        #     class_names = self.vis_class_names, 
+        #     original_image_tensor = original_image, 
+        #     gt_sem_seg= batched_inputs[0]["sem_seg"],
+        #     save_path=f"./pseudo_masks/{file_names[0]}_"
+        # )
+
+        # visualize_pseudo_masks_and_points(
+        #     pseudo_masks = pseudo_masks,
+        #     pseudo_points = pseudo_points,
+        #     class_names= self.vis_class_names, 
+        #     original_image_tensor= original_image, # (B, 3, H, W)
+        #     save_path=f"./pseudo_masks/{file_names[0]}_"
+        # )       
+
+
+
+
 
         def post_process(seg_probs):
         
             area_thd = 28.1 # 当前最佳 8.5 
-
-            corr_prob = seg_probs[:, :-1, :, :].clone()  # B T H W 去除void
+            if self.backbone_name == 'CLIP':
+                corr_prob = seg_probs[:, :-1, :, :].clone()  # B T H W 去除void
+            else:
+                corr_prob = seg_probs.clone()
             pred_cls = corr_prob.argmax(dim=1) # B H W 最大索引为T-1
             pred_mask = F.one_hot(pred_cls, num_classes=corr_prob.size(1)) # B H W T
             area = pred_mask.sum(dim=(1, 2))  # [B, T]
@@ -663,6 +817,72 @@ class MAFT_Plus(nn.Module):
         
         return clip_vis_dense
 
+    def sem_seg_2_gt_masks(self, sem_seg, height, width):
+        classes = torch.unique(sem_seg,sorted=False,return_inverse=False,return_counts=False)
+        gt_labels = classes[classes != 255]
+        masks = [sem_seg == class_id for class_id in gt_labels]
+
+        if len(masks) == 0:
+            gt_masks = torch.zeros((0, sem_seg.shape[-2],
+                                            sem_seg.shape[-1])).to(sem_seg)
+        else:
+            gt_masks = torch.stack(masks).squeeze(1)
+            
+        num_masks = gt_masks.shape[0]
+        total_masks = torch.zeros((num_masks, gt_masks.shape[1], gt_masks.shape[2]), dtype=gt_masks.dtype, device=gt_masks.device)
+        labels = torch.zeros((num_masks), device=gt_masks.device)
+        
+        total_masks[:num_masks] = gt_masks[:num_masks]
+        labels[:num_masks] = gt_labels[:num_masks]
+        
+        return total_masks.float(), labels
+
+def simple_kmeans(coords, num_clusters, max_iter=100, tol=1e-4):
+    """
+    一个简单的 PyTorch K-Means 实现。
+    Args:
+        coords: (2, N) or (D, N) 数据点
+        num_clusters: 聚类数量
+    Returns:
+        cluster_centers: (2, K) 聚类中心
+        cluster_labels: (N,) 每个点的标签
+    """
+    D, N = coords.shape
+    device = coords.device
+    
+    # 随机初始化中心
+    # 从数据中随机选择 num_clusters 个点作为初始中心
+    perm = torch.randperm(N, device=device)
+    centers = coords[:, perm[:num_clusters]] # (D, K)
+    
+    for i in range(max_iter):
+        old_centers = centers.clone()
+        
+        # 计算距离: (D, N, 1) - (D, 1, K) -> (D, N, K) -> norm -> (N, K)
+        # 这里为了省显存，手动展开计算
+        # dists = torch.norm(coords.unsqueeze(2) - centers.unsqueeze(1), dim=0) 
+        # 上面写法显存占用大，改用下式：
+        dists = torch.cdist(coords.t(), centers.t()) # (N, K)
+        
+        # 分配标签
+        labels = torch.argmin(dists, dim=1) # (N,)
+        
+        # 更新中心
+        for k in range(num_clusters):
+            mask = labels == k
+            if mask.sum() > 0:
+                centers[:, k] = coords[:, mask].mean(dim=1)
+            else:
+                # 处理空簇：重新随机选择一个点
+                idx = torch.randint(0, N, (1,), device=device)
+                centers[:, k] = coords[:, idx].squeeze()
+                
+        # 检查收敛
+        if torch.norm(centers - old_centers) < tol:
+            break
+            
+    return centers, labels
+
 def visualize_segmentation(pred_result, class_names,original_image_tensor, save_path="./show/",fig_size=(10, 10)):
     """
     可视化初步分割结果并将其保存到文件。
@@ -755,3 +975,345 @@ def visualize_segmentation(pred_result, class_names,original_image_tensor, save_
 
     plt.close(fig)
 
+
+def visualize_pseudo_masks_and_points(pseudo_masks, pseudo_points, class_names, original_image_tensor, save_path , batch_idx=0):
+    """
+    可视化生成的伪掩码聚类结果和中心点。
+    【无过滤版】
+    - 不进行二值化阈值过滤。
+    - 使用 Alpha 通道展示概率强弱（热力图效果）。
+    - 只要有非零数值，就会被画出来。
+    """
+    
+    # ---------------------------------------------------------
+    # 1. 图像数据准备
+    # ---------------------------------------------------------
+    img_tensor = original_image_tensor.cpu()
+    
+    # 处理 Batch 维度
+    if img_tensor.dim() == 4:
+        img_tensor = img_tensor[batch_idx] 
+    
+    # 转换为 Numpy (H, W, 3)
+    img = img_tensor.permute(1, 2, 0).numpy()
+    
+    # 归一化/类型转换检查
+    if img.dtype == np.float32 or img.dtype == np.float64:
+        if img.max() <= 1.05:
+            img = img * 255.0
+    img = np.clip(img, 0, 255).astype(np.uint8)
+    
+    H_img, W_img = img.shape[:2]
+
+    # ---------------------------------------------------------
+    # 2. 掩码与点数据准备 (自动上采样)
+    # ---------------------------------------------------------
+    masks_tensor = pseudo_masks[batch_idx].detach().float().cpu() 
+    points_tensor = pseudo_points[batch_idx].detach().float().cpu()
+
+    T, N0, H_mask, W_mask = masks_tensor.shape
+    
+    if H_mask != H_img or W_mask != W_img:
+        scale_y = H_img / H_mask
+        scale_x = W_img / W_mask
+        
+        # 掩码上采样
+        masks_reshaped = masks_tensor.view(1, T * N0, H_mask, W_mask)
+        masks_upsampled = F.interpolate(
+            masks_reshaped, 
+            size=(H_img, W_img), 
+            mode='bilinear', 
+            align_corners=False
+        )
+        masks_tensor = masks_upsampled.view(T, N0, H_img, W_img)
+        
+        # 坐标缩放
+        points_tensor[..., 0] *= scale_y 
+        points_tensor[..., 1] *= scale_x 
+
+    masks = masks_tensor.numpy()
+    points = points_tensor.numpy()
+
+    # ---------------------------------------------------------
+    # 3. 可视化循环
+    # ---------------------------------------------------------
+    os.makedirs(save_path, exist_ok=True)
+    cmap = plt.get_cmap('tab10')
+    
+    saved_count = 0
+    print(f"开始处理 {T} 个类别的伪掩码 (无过滤模式)...")
+
+    for t in range(T):
+        # 处理同义词列表名称
+        raw_name = class_names[t]
+        if isinstance(raw_name, list):
+            class_name = str(raw_name[0])
+        else:
+            class_name = str(raw_name)
+
+        class_masks = masks[t]   # (N0, H, W)
+        class_points = points[t] # (N0, 2)
+        
+        # 【唯一保留的过滤】：全零的掩码不画，否则会生成几百张纯原图，毫无意义。
+        # 这里判断非常宽松，只要最大值大于0就画。
+        if np.max(class_masks) <= 0:
+            continue
+
+        fig, ax = plt.subplots(figsize=(10, 10))
+        ax.imshow(img)
+        ax.axis('off')
+        ax.set_title(f"Class: {class_name} (ID: {t}) - Raw output", fontsize=15)
+        
+        legend_patches = []
+        has_content = False 
+        
+        for n in range(N0):
+            mask_region = class_masks[n] # (H, W)
+            center_point = class_points[n] # (y, x)
+            
+            mask_max = np.max(mask_region)
+            mask_min = np.min(mask_region)
+            
+            # 如果最大值是0，说明这个聚类是空的（Padding产生的）
+            if mask_max <= 0:
+                continue
+            
+            # ---【核心修改：移除二值化，使用归一化热力图】---
+            # 1. 相对归一化：将极小的数值映射到 0~1，以便肉眼可见
+            # 如果不这样做，spatial softmax 的值太小，画出来全是透明的
+            if mask_max - mask_min > 0:
+                norm_mask = (mask_region - mask_min) / (mask_max - mask_min)
+            else:
+                norm_mask = mask_region # 全是平的
+            
+            has_content = True
+            
+            # 2. 绘制：将归一化后的掩码直接赋值给 Alpha 通道
+            color_mask = np.zeros((H_img, W_img, 4))
+            r, g, b = cmap(n)[:3]
+            
+            color_mask[..., 0] = r
+            color_mask[..., 1] = g
+            color_mask[..., 2] = b
+            
+            # Alpha通道 = 掩码强度 * 0.7 (最大不透明度0.7)
+            # 这样你可以看到：哪里概率高（深色），哪里概率低（浅色）
+            color_mask[..., 3] = norm_mask * 0.7 
+            
+            ax.imshow(color_mask)
+            
+            # 3. 绘制中心点
+            pt_y, pt_x = center_point
+            
+            # 即使是 Padding 的点 (0,0)，只要在这个循环里，我们也画出来（除非越界）
+            if 0 <= pt_x < W_img and 0 <= pt_y < H_img:
+                # 白底黑圈点
+                ax.scatter(pt_x, pt_y, c='white', s=120, edgecolors='black', marker='o', linewidth=2, zorder=10)
+                ax.text(pt_x + 5, pt_y + 5, f"{n}", color='white', fontsize=12, fontweight='bold', 
+                        bbox=dict(facecolor='black', alpha=0.6, pad=1))
+            
+            legend_patches.append(mpatches.Patch(color=(r, g, b), label=f'Cluster {n}'))
+
+        if has_content:
+            if legend_patches:
+                ax.legend(handles=legend_patches, loc='upper right', fontsize=12, framealpha=0.8)
+            
+            safe_class_name = class_name.replace(" ", "_").replace("/", "-").replace(",", "")
+            save_filename = os.path.join(save_path, f"{t:03d}_{safe_class_name}.png")
+            
+            try:
+                plt.tight_layout()
+                plt.savefig(save_filename, bbox_inches='tight', dpi=100)
+                saved_count += 1
+            except Exception as e:
+                print(f"Error saving {class_name}: {e}")
+        
+        plt.close(fig)
+
+    print(f"可视化完成。路径: {save_path}，共保存类别: {saved_count}")
+
+def get_gt_labels_from_sem_seg(sem_seg):
+    """
+    基于 sem_seg_2_gt_masks 逻辑提取当前图像中存在的有效类别 ID。
+    """
+    # 确保是 2D 张量 (H, W)
+    if sem_seg.dim() == 3: 
+        sem_seg = sem_seg.squeeze(0)
+    
+    # 获取唯一类别
+    classes = torch.unique(sem_seg, sorted=False, return_inverse=False, return_counts=False)
+    
+    # 过滤掉背景/忽略类 (通常是 255，或者是 void 类)
+    # 注意：这里假设 255 是忽略索引，根据你的数据集调整
+    gt_labels = classes[classes != 255]
+    
+    return gt_labels.cpu().numpy().tolist()
+
+def visualize_pseudo_masks_and_points_inGT(pseudo_masks, pseudo_points, class_names, original_image_tensor, gt_sem_seg=None, save_path="./show_pseudo/", batch_idx=0):
+    """
+    可视化生成的伪掩码聚类结果和中心点。
+    【GT 过滤版 + 无阈值显示】
+    
+    Arguments:
+        pseudo_masks (torch.Tensor): (B, T, N0, H_mask, W_mask)
+        pseudo_points (torch.Tensor): (B, T, N0, 2)
+        class_names (list): 类别名称列表
+        original_image_tensor (torch.Tensor): (B, 3, H, W) 或 (3, H, W)
+        gt_sem_seg (torch.Tensor, optional): (H, W) 或 (B, H, W) 的语义分割真值标签。
+                                            如果提供，只保存该标签中存在的类别。
+        save_path (str): 保存路径
+        batch_idx (int): 处理 batch 中的哪张图
+    """
+    
+    # ---------------------------------------------------------
+    # 0. GT 标签过滤准备
+    # ---------------------------------------------------------
+    valid_gt_indices = None
+    if gt_sem_seg is not None:
+        # 处理 Batch 维度，取出当前图片的 GT
+        if gt_sem_seg.dim() == 3:
+            current_gt = gt_sem_seg[batch_idx]
+        else:
+            current_gt = gt_sem_seg
+            
+        # 调用辅助函数获取存在的类别 ID 列表
+        valid_gt_indices = get_gt_labels_from_sem_seg(current_gt)
+        # print(f"当前图片包含的 GT 类别索引: {valid_gt_indices}")
+
+    # ---------------------------------------------------------
+    # 1. 图像数据准备
+    # ---------------------------------------------------------
+    img_tensor = original_image_tensor.cpu()
+    if img_tensor.dim() == 4:
+        img_tensor = img_tensor[batch_idx] 
+    
+    img = img_tensor.permute(1, 2, 0).numpy()
+    
+    if img.dtype == np.float32 or img.dtype == np.float64:
+        if img.max() <= 1.05:
+            img = img * 255.0
+    img = np.clip(img, 0, 255).astype(np.uint8)
+    
+    H_img, W_img = img.shape[:2]
+
+    # ---------------------------------------------------------
+    # 2. 掩码与点数据准备 (自动上采样)
+    # ---------------------------------------------------------
+    masks_tensor = pseudo_masks[batch_idx].detach().float().cpu() 
+    points_tensor = pseudo_points[batch_idx].detach().float().cpu()
+
+    T, N0, H_mask, W_mask = masks_tensor.shape
+    
+    if H_mask != H_img or W_mask != W_img:
+        scale_y = H_img / H_mask
+        scale_x = W_img / W_mask
+        
+        masks_reshaped = masks_tensor.view(1, T * N0, H_mask, W_mask)
+        masks_upsampled = F.interpolate(
+            masks_reshaped, 
+            size=(H_img, W_img), 
+            mode='bilinear', 
+            align_corners=False
+        )
+        masks_tensor = masks_upsampled.view(T, N0, H_img, W_img)
+        points_tensor[..., 0] *= scale_y 
+        points_tensor[..., 1] *= scale_x 
+
+    masks = masks_tensor.numpy()
+    points = points_tensor.numpy()
+
+    # ---------------------------------------------------------
+    # 3. 可视化循环
+    # ---------------------------------------------------------
+    os.makedirs(save_path, exist_ok=True)
+    cmap = plt.get_cmap('tab10')
+    
+    saved_count = 0
+    # print(f"开始可视化... (仅保存 GT 中存在的类别)")
+
+    for t in range(T):
+        # ---【新增逻辑：GT 过滤】---
+        # 如果提供了 GT，且当前类别 t 不在 GT 列表中，直接跳过
+        if valid_gt_indices is not None:
+            if t not in valid_gt_indices:
+                continue
+        
+        # 处理类别名称
+        raw_name = class_names[t]
+        if isinstance(raw_name, list):
+            class_name = str(raw_name[0])
+        else:
+            class_name = str(raw_name)
+
+        class_masks = masks[t]   
+        class_points = points[t] 
+        
+        # 即使在 GT 中，如果模型完全没有预测出值（全是0），也可以跳过，或者选择强制画出来看模型到底有多差
+        # 这里为了稳健，还是保留“如果全是0就不画”的底线逻辑
+        if np.max(class_masks) <= 0:
+            print(f"Warning: Class {class_name} (ID {t}) exists in GT but model prediction is empty.")
+            continue
+
+        fig, ax = plt.subplots(figsize=(10, 10))
+        ax.imshow(img)
+        ax.axis('off')
+        ax.set_title(f"Class: {class_name} (ID: {t}) - GT Exists", fontsize=15)
+        
+        legend_patches = []
+        has_content = False 
+        
+        for n in range(N0):
+            mask_region = class_masks[n]
+            center_point = class_points[n]
+            
+            mask_max = np.max(mask_region)
+            mask_min = np.min(mask_region)
+            
+            if mask_max <= 0:
+                continue
+            
+            # 相对归一化 (热力图效果)
+            if mask_max - mask_min > 0:
+                norm_mask = (mask_region - mask_min) / (mask_max - mask_min)
+            else:
+                norm_mask = mask_region
+            
+            has_content = True
+            
+            # 绘制 (Alpha 通道映射概率)
+            color_mask = np.zeros((H_img, W_img, 4))
+            r, g, b = cmap(n)[:3]
+            color_mask[..., 0] = r
+            color_mask[..., 1] = g
+            color_mask[..., 2] = b
+            color_mask[..., 3] = norm_mask * 0.7 
+            
+            ax.imshow(color_mask)
+            
+            # 绘制点
+            pt_y, pt_x = center_point
+            if 0 <= pt_x < W_img and 0 <= pt_y < H_img:
+                ax.scatter(pt_x, pt_y, c='white', s=120, edgecolors='black', marker='o', linewidth=2, zorder=10)
+                ax.text(pt_x + 5, pt_y + 5, f"{n}", color='white', fontsize=12, fontweight='bold', 
+                        bbox=dict(facecolor='black', alpha=0.6, pad=1))
+            
+            legend_patches.append(mpatches.Patch(color=(r, g, b), label=f'Cluster {n}'))
+
+        if has_content:
+            if legend_patches:
+                ax.legend(handles=legend_patches, loc='upper right', fontsize=12, framealpha=0.8)
+            
+            safe_class_name = class_name.replace(" ", "_").replace("/", "-").replace(",", "")
+            # 文件名加上 GT 标记，方便区分
+            save_filename = os.path.join(save_path, f"GT_{t:03d}_{safe_class_name}.png")
+            
+            try:
+                plt.tight_layout()
+                plt.savefig(save_filename, bbox_inches='tight', dpi=100)
+                saved_count += 1
+            except Exception as e:
+                print(f"Error saving {class_name}: {e}")
+        
+        plt.close(fig)
+
+    print(f"可视化完成。仅保存了 GT 中存在的 {saved_count} 个类别结果至: {save_path}")
